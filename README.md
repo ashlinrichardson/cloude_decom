@@ -20,9 +20,15 @@ python3 cpp/compile.py
 cd T3
 cloude_view pauli.bin
 ```
-Note: **compile.py** installs:
+Notes:
+1) **compile.py** installs:
 * dependencies g++ and freeglut3-dev
 * binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
+
+2) Alternately, if you're not already [connected to github by ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh) please download the code using:
+```wget -O cloude_decom.zip https://github.com/ashlinrichardson/cloude_decom/archive/refs/heads/master.zip
+unzip cloude_decom.zip
+```
 
 ### Building and running the non-interactive version:
 
