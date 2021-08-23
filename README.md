@@ -28,5 +28,5 @@ Note: **compile.py** installs:
 
 ### Changing the target window size
 
-# Acknowledgements
+## Thanks
 Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and JAXA for providing ALOS-1 quad-pol data over San Fransisco, California.
