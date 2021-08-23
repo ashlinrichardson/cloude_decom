@@ -1,4 +1,4 @@
-/* m3ta3: reimagination of a (late 2011, early 2012) personal, primordial visualization library that inspired further developments at UVic, CFS and elsewhere.. */
+/* baed on m3ta3 */
 #include "my_math.h"
 float sgn(float x){
   if(x<0){
