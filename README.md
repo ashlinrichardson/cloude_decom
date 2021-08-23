@@ -39,4 +39,7 @@ unzip cloude_decom.zip
 Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and JAXA for providing ALOS-1 quad-pol data over San Fransisco, California.
 
 # Contributing
-Please feel welcome to submit a pull request, open an issue, or provide email feedback to Ashlin dot Richardson at gov dot bc dot ca
+At your convenience, please be welcome to:
+* submit a pull request,
+* open an issue,
+* or provide email feedback to Ashlin dot Richardson at gov dot bc dot ca
