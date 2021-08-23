@@ -26,7 +26,8 @@ cloude_view pauli.bin                                             # 5) run the i
 If all goes well, you should see an interactive visualization of the test data (as below). 
 
 ### Using the mouse
-Holding down the left mouse button over the image, will restore the default visualization provided (e.g. the pauli encoding). Releasing the left mouse button will perform the decomposition and display the optimized radar cross section
+* Holding down the left mouse button over the image, restores the default visualization used (e.g. the pauli encoding)
+* Releasing the left mouse button, runs the decomposition and displays the **optimized radar cross section** associated with the target area under the cursor, when the button was released
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png" width="800">
 
