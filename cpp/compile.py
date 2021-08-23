@@ -12,7 +12,7 @@ def run(cmd):
     return os.system(cmd)
 
 # ubuntu 20 dependencies
-if len(os.popen('g++').read().strip().split('fatal')) < 1:
+if len(os.popen('g++ 2>&1').read().strip().split('fatal')) < 1:
     run('sudo apt install g++')
 if not os.path.exists('/usr/include/GL/glut.h'):
     run('sudo apt install freeglut3-dev')
