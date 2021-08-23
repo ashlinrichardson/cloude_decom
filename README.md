@@ -13,9 +13,6 @@ Near-real-time interactive implementation of **Cloude Decomposition** [1] by [Sh
 
 ## Data
 Inputs: A) fully-polarimetric SAR data in standard [PolSARPro](https://ietr-lab.univ-rennes1.fr/polsarpro-bio/) "T3 coherency matrix" format with **config.txt** file B) an RGB encoding such as the well-known Pauli encoding, used for selection of a target location C) image coordinates of user-selected target to be "cancelled". Output: *optimised radar cross section* (a greyscale image)
-
-The interactive version supports exploring fully-polarimetric SAR data quickly, by selecting a target location using the mouse, then viewing the resulting **optimised radar cross section** promptly
-
 ## Running
 The interactive version supports exploring fully-polarimetric SAR data quickly, by selecting a target location using the mouse, then viewing the resulting optimised radar cross section promptly
 
