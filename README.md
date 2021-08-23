@@ -30,8 +30,7 @@ Holding down the left mouse button over the image, will restore the default visu
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png" width="600">
 
-For example, 
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="600">
+
 
 Notes:
 1) **[compile.py](https://github.com/ashlinrichardson/cloude_decom/blob/master/cpp/compile.py)** installs, provided you enter your super-user password:
