@@ -1,9 +1,6 @@
 # cloude_decom
 High-performance interactive implementation of **Cloude Decomposition** [1] by [Shane R Cloude](https://scholar.google.ca/citations?hl=en&user=h-ZWMcUAAAAJ&view_op=list_works&sortby=pubdate). Inputs:
-* T3 coherency matrix data in [PolSARPro](https://ietr-lab.univ-rennes1.fr/polsarpro-bio/) format, including config.txt file
-
-Outputs:
-* optimal power cross section (a greyscale image)
+* T3 coherency matrix data in standard [PolSARPro](https://ietr-lab.univ-rennes1.fr/polsarpro-bio/) format, including config.txt file. Output: *optimised radar cross section* (a greyscale image)
 
 ## Abstract
 "In this paper [1] we show how to develop the idea of orthogonality in radar polarimetry for enhanced target detection and land-use classification of POLSAR data. It is well known that every elliptical polarization has its orthogonal partner, uniquely defined as the antipodal point on the Poincaré sphere. Here we show that for scatterers, we can extend this idea so that every scattering matrix has a corresponding multi-dimensional orthogonal space [2]. We give a geometrical interpretation of this approach using a generalized Poincaré sphere representation. We then derive an algorithm for finding the peak signal in this ortho-space. We derive this optimum for both monostatic and bistatic radar systems, to illustrate how bistatic polarimetry offers great potential benefits in future POLSAR studies."
