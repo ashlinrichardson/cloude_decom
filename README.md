@@ -44,4 +44,4 @@ Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0A
 At your convenience, please be welcome to:
 * [submit a pull request](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request),
 * [open an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) on this repository,
-* or provide email feedback
+or provide email feedback
