@@ -16,7 +16,10 @@ The interactive version supports exploring fully-polarimetric SAR data quickly, 
 * Tested on **Ubuntu 20 LTS** OS. Windows, MacOS, other Linux to be supported imminently via revised compilation and/or binaries
 ### Building and running the interactive method, using the test data provided:
 ```
-git clone git@github.com:ashlinrichardson/cloude_decom.git        # 1) download the project..
+# 1) download the code:
+wget -O cloude_decom.zip https://github.com/ashlinrichardson/cloude_decom/archive/refs/heads/master.zip
+unzip cloude_decom.zip
+mv cloude_decom-master cloude_decom
 cd cloude_decom                                                   # 2) enter the project folder 
 python3 cpp/compile.py                                            # 3) build the project codes..
 cd T3                                                             # 4) enter the test data folder.. 
@@ -44,12 +47,12 @@ Notes:
 * required dependencies g++ and freeglut3-dev
 * binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 
-2) Alternate downloading method, please follow this instead of step 1) above if you're not already [connected to github by ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh):
+2) Alternate downloading method, you could use this instead of step "1)" above if you're already [connected to github by ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh):
+
 ```
-wget -O cloude_decom.zip https://github.com/ashlinrichardson/cloude_decom/archive/refs/heads/master.zip
-unzip cloude_decom.zip
-mv cloude_decom-master cloude_decom
+git clone git@github.com:ashlinrichardson/cloude_decom.git        # 1) download the project..
 ```
+
 and then proceed to "2) enter the project folder"
 
 ### Building and running the non-interactive version:
