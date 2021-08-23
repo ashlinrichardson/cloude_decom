@@ -11,16 +11,14 @@ High-performance interactive implementation of **Cloude Decomposition** [1] by [
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/03ddjowiCyI/0.jpg)](http://www.youtube.com/watch?v=03ddjowiCyI "Video Title")
 
 ## Usage
-### ubuntu 20 deps:
-```sudo apt install g++ freeglut3-dev```
-
+Tested on Ubuntu 20 LTS. Windows, MacOS, other Linux to be supported imminently
 ### Compile and run:
 **compile.py** installs binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 ```cd cpp
 python3 compile.py
 cd ..
 cd T3
-cloude_view
+cloude_view pauli.bin
 ```
 
 ### Acknowledgements
