@@ -14,11 +14,11 @@ High-performance interactive implementation of **Cloude Decomposition** [1] by [
 Tested on **Ubuntu 20 LTS** OS. Windows, MacOS, other Linux to be supported imminently
 ### Building and running the interactive code on the test data provided:
 ```
-git clone git@github.com:ashlinrichardson/cloude_decom.git  # download the code
-cd cloude_decom  # enter the code folder 
-python3 cpp/compile.py # build the code
-cd T3 # enter the test data folder 
-cloude_view pauli.bin # run the interactive program!
+git clone git@github.com:ashlinrichardson/cloude_decom.git        # download the project..
+cd cloude_decom                                                   # enter the project folder 
+python3 cpp/compile.py                                            # build the project codes..
+cd T3                                                             # enter the test data folder.. 
+cloude_view pauli.bin                                             # run the interactive program! 
 ```
 Notes:
 1) **compile.py** installs:
