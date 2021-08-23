@@ -26,7 +26,8 @@ Notes:
 * binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 
 2) Alternately, if you're not already [connected to github by ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh) please download the code using:
-```wget -O cloude_decom.zip https://github.com/ashlinrichardson/cloude_decom/archive/refs/heads/master.zip
+```
+wget -O cloude_decom.zip https://github.com/ashlinrichardson/cloude_decom/archive/refs/heads/master.zip
 unzip cloude_decom.zip
 ```
 
