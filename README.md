@@ -38,7 +38,7 @@ unzip cloude_decom.zip
 ### Running the method on other data
 
 ## Thanks
-Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and JAXA for providing ALOS-1 quad-pol data over San Fransisco, California.
+Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and JAXA for providing ALOS-1 quad-pol data over San Fransisco, California. Please [click here] to see other sample data generously provided by Dr. Pottier.
 
 # Contributing
 At your convenience, please be welcome to:
