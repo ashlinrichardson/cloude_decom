@@ -36,7 +36,7 @@ Notes:
 wget -O cloude_decom.zip https://github.com/ashlinrichardson/cloude_decom/archive/refs/heads/master.zip
 unzip cloude_decom.zip
 ```
-
+and then proceed to "2) enter the project folder"
 ### Building and running the non-interactive version:
 
 ### Changing the target window size
