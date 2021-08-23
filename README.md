@@ -33,6 +33,9 @@ wget -O cloude_decom.zip https://github.com/ashlinrichardson/cloude_decom/archiv
 unzip cloude_decom.zip
 ```
 and then proceed to "2) enter the project folder"
+
+![ALOS PALSAR-1 data over SanFransisco](https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png)
+
 ### Building and running the non-interactive version:
 ### Changing the target window size
 ### Running the method on other data
