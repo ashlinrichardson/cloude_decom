@@ -16,7 +16,7 @@ Interactive implementation of Cloude Decomposition [1] by Shane R Cloude
 ```sudo apt install g++ freeglut3-dev```
 
 ### Compile and run:
-Binaries are installed to /usr/bin/cloude_decom and /usr/bin/cloude_view
+**compile.py** installs binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 ```cd cpp
 python3 compile.py
 cd ..
