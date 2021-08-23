@@ -20,7 +20,9 @@ python3 cpp/compile.py
 cd T3
 cloude_view pauli.bin
 ```
-Note: **compile.py** installs binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
+Note: **compile.py** installs:
+* dependencies g++ and freeglut3-dev
+* binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 
 ### Acknowledgements
 Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and JAXA for providing ALOS-1 quad-pol data over San Fransisco, California.
