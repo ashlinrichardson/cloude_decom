@@ -12,7 +12,7 @@ High-performance interactive implementation of **Cloude Decomposition** [1] by [
 
 ## Running
 Tested on **Ubuntu 20 LTS** OS. Windows, MacOS, other Linux to be supported imminently via revised compilation and/or binaries
-### Building and running the interactive code on the test data provided:
+### Building and running the interactive method, using the test data provided:
 ```
 git clone git@github.com:ashlinrichardson/cloude_decom.git        # 1) download the project..
 cd cloude_decom                                                   # 2) enter the project folder 
@@ -34,6 +34,8 @@ unzip cloude_decom.zip
 ### Building and running the non-interactive version:
 
 ### Changing the target window size
+
+### Running the method on other data
 
 ## Thanks
 Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and JAXA for providing ALOS-1 quad-pol data over San Fransisco, California.
