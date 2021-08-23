@@ -28,11 +28,11 @@ If all goes well, you should see an interactive visualization of the test data (
 ### Using the mouse
 Holding down the left mouse button over the image, will restore the default visualization provided (e.g. the pauli encoding). Releasing the left mouse button will perform the decomposition and display the optimized radar cross section
 
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png" width="600">
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png" width="800">
 
 For example, selecting water demonstrates the ability to pinpoint ships: 
 
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="600">
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="800">
 
 
 Notes:
