@@ -1,4 +1,4 @@
-/* m3ta3: reimagination of a (late 2011, early 2012) personal, primordial visualization library that inspired further developments at UVic, CFS and elsewhere.. */
+/* based on m3ta3*/
 
 #include "image.h"
 void myImg::init(const char * filename, size_t nrow, size_t ncol, size_t nb){
