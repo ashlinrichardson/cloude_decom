@@ -1,5 +1,4 @@
 /* based on m3ta3*/
-
 #include "image.h"
 void myImg::init(const char * filename, size_t nrow, size_t ncol, size_t nb){
 	printf("myImg::init(%s) nrow %zu ncol %zu nb %zu\n", filename, nrow, ncol, nb);
