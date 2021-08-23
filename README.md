@@ -40,6 +40,6 @@ Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0A
 
 # Contributing
 At your convenience, please be welcome to:
-* submit a pull request,
-* open an issue,
+* [submit a pull request](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request),
+* [open an issue] on this repository (https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue),
 * or provide email feedback to Ashlin dot Richardson at gov dot bc dot ca
