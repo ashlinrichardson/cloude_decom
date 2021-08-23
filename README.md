@@ -35,6 +35,9 @@ For example, selecting water demonstrates the ability to pinpoint ships:
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="800">
 
+whereas cancelling an urban area highlights oceanographic and topographic features:
+
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_urban.png" width="800">
 
 Notes:
 1) **[compile.py](https://github.com/ashlinrichardson/cloude_decom/blob/master/cpp/compile.py)** installs, provided you enter your super-user password:
