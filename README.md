@@ -23,7 +23,7 @@ cd T3                                                             # 4) enter the
 cloude_view pauli.bin                                             # 5) run the interactive program! 
 ```
 Notes:
-1) **compile.py** installs, provided you enter your super-user password:
+1) **[compile.py](https://github.com/ashlinrichardson/cloude_decom/blob/master/cpp/compile.py)** installs, provided you enter your super-user password:
 * required dependencies g++ and freeglut3-dev
 * binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 
