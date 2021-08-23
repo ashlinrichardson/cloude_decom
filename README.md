@@ -26,12 +26,18 @@ cloude_view pauli.bin                                             # 5) run the i
 If all goes well, you should see an interactive visualization of the test data (as below). 
 
 ### Using the mouse
-Holding down the left mouse button over the image, will restore the default visualization provided (e.g. the pauli encoding). Releasing the left mouse button will perform the decomposition and display the optimized radar cross section
+* Holding down the left mouse button over the image, restores the default visualization used (e.g. the pauli encoding)
+* Releasing the left mouse button, runs the decomposition and displays the **optimized radar cross section** associated with the target area under the cursor, when the button was released
 
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png" width="600">
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png" width="800">
 
-For example, 
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="600">
+For example, selecting water demonstrates the ability to pinpoint ships: 
+
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="800">
+
+whereas cancelling an urban area highlights oceanographic and topographic features:
+
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_urban.png" width="800">
 
 Notes:
 1) **[compile.py](https://github.com/ashlinrichardson/cloude_decom/blob/master/cpp/compile.py)** installs, provided you enter your super-user password:
