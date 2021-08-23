@@ -28,10 +28,10 @@ If all goes well, you should see an interactive visualization of the test data (
 ### Using the mouse
 Holding down the left mouse button over the image, will restore the default visualization provided (e.g. the pauli encoding). Releasing the left mouse button will perform the decomposition and display the optimized radar cross section
 
-![ALOS PALSAR-1 data over SanFransisco](https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png)
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png" width="600">
 
 For example, 
-![optimal cross section cancelling water signature](https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png)
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="600">
 
 Notes:
 1) **[compile.py](https://github.com/ashlinrichardson/cloude_decom/blob/master/cpp/compile.py)** installs, provided you enter your super-user password:
