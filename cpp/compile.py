@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+'''tested on Ubuntu v. 20. Support to be added for: other linux, Mac OS, Windows'''
 import os
 import sys
 
