@@ -22,8 +22,13 @@ python3 cpp/compile.py                                            # 3) build the
 cd T3                                                             # 4) enter the test data folder.. 
 cloude_view pauli.bin                                             # 5) run the interactive program! 
 ```
+
+If all goes well, you should see an interactive visualization of the test data (as below). Holding down the left mouse button over the image, will restore the default visualization provided (e.g. the pauli encoding). Releasing the left mouse button will perform the decomposition and display the optimized radar cross section
+
+![ALOS PALSAR-1 data over SanFransisco](https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png)
+
 Notes:
-1) **compile.py** installs:
+1) **[compile.py](https://github.com/ashlinrichardson/cloude_decom/blob/master/cpp/compile.py)** installs, provided you enter your super-user password:
 * required dependencies g++ and freeglut3-dev
 * binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 
@@ -33,6 +38,7 @@ wget -O cloude_decom.zip https://github.com/ashlinrichardson/cloude_decom/archiv
 unzip cloude_decom.zip
 ```
 and then proceed to "2) enter the project folder"
+
 ### Building and running the non-interactive version:
 ### Changing the target window size
 ### Running the method on other data
