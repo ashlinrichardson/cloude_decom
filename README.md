@@ -11,7 +11,7 @@ High-performance interactive implementation of **Cloude Decomposition** [1] by [
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/03ddjowiCyI/0.jpg)](http://www.youtube.com/watch?v=03ddjowiCyI "Video Title")
 
 ## Running
-Tested on **Ubuntu 20 LTS** OS. Windows, MacOS, other Linux to be supported imminently
+Tested on **Ubuntu 20 LTS** OS. Windows, MacOS, other Linux to be supported imminently via revised compilation and/or binaries
 ### Building and running the interactive code on the test data provided:
 ```
 git clone git@github.com:ashlinrichardson/cloude_decom.git        # 1) download the project..
