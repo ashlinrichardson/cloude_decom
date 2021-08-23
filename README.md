@@ -13,7 +13,6 @@ High-performance interactive implementation of **Cloude Decomposition** [1] by [
 ## How to run
 Tested on **Ubuntu 20 LTS** OS. Windows, MacOS, other Linux to be supported imminently
 ### Building the programs and running the interactive version:
-Note: **compile.py** installs binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 ```
 git clone git@github.com:ashlinrichardson/cloude_decom.git
 cd cpp
@@ -22,6 +21,7 @@ cd ..
 cd T3
 cloude_view pauli.bin
 ```
+Note: **compile.py** installs binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 
 ### Acknowledgements
 Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and JAXA for providing ALOS-1 quad-pol data over San Fransisco, California.
