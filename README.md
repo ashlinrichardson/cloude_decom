@@ -53,7 +53,7 @@ Notes:
 git clone git@github.com:ashlinrichardson/cloude_decom.git        # 1) download the project..
 ```
 
-and then proceed to "2) enter the project folder"
+and then proceed to "2) enter the project folder". This approach would make sense if you're experienced with GitHub and considering making code revisions
 
 ### Building and running the non-interactive version:
 ### Changing the target window size
