@@ -55,7 +55,7 @@ and then proceed to "2) enter the project folder"
 ### Changing the target window size
 ### Running the method on other data
 ## Thanks
-Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and [JAXA](https://global.jaxa.jp/) for providing ALOS-1 quad-pol data over San Fransisco, California. Please [click here] to see other sample data generously provided by Dr. Pottier.
+Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and [JAXA](https://global.jaxa.jp/) for providing ALOS-1 quad-pol data over San Fransisco, California. Please [click here](https://ietr-lab.univ-rennes1.fr/polsarpro-bio/sample_datasets/) to see other sample data generously provided by Dr. Pottier.
 # Contributing
 At your convenience, please be welcome to:
 * [open an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) on this repository,
