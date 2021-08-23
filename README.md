@@ -22,7 +22,7 @@ cloude_view pauli.bin                                             # 5) run the i
 ```
 Notes:
 1) **compile.py** installs:
-* dependencies g++ and freeglut3-dev
+* required dependencies g++ and freeglut3-dev
 * binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 
 2) Alternate downloading method, please use if you're not already [connected to github by ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh):
@@ -37,3 +37,6 @@ unzip cloude_decom.zip
 
 ## Thanks
 Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and JAXA for providing ALOS-1 quad-pol data over San Fransisco, California.
+
+# Contributing
+Please feel welcome to submit a pull request, open an issue, or provide email feedback to Ashlin dot Richardson at gov dot bc dot ca
