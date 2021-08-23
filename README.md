@@ -12,7 +12,7 @@ High-performance interactive implementation of **Cloude Decomposition** [1] by [
 
 ## Running
 Tested on **Ubuntu 20 LTS** OS. Windows, MacOS, other Linux to be supported imminently
-### Building and running the interactive version on the provided test data:
+### Building and running the interactive code on the test data provided:
 ```
 git clone git@github.com:ashlinrichardson/cloude_decom.git
 cd cloude_decom
