@@ -48,6 +48,7 @@ Notes:
 ```
 wget -O cloude_decom.zip https://github.com/ashlinrichardson/cloude_decom/archive/refs/heads/master.zip
 unzip cloude_decom.zip
+mv cloude_decom-master cloude_decom
 ```
 and then proceed to "2) enter the project folder"
 
