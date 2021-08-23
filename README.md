@@ -15,9 +15,8 @@ Tested on **Ubuntu 20 LTS** OS. Windows, MacOS, other Linux to be supported immi
 ### Building the programs and running the interactive version:
 ```
 git clone git@github.com:ashlinrichardson/cloude_decom.git
-cd cpp
-python3 compile.py
-cd ..
+cd cloude_decom
+python3 cpp/compile.py
 cd T3
 cloude_view pauli.bin
 ```
