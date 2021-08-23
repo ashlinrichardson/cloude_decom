@@ -10,7 +10,7 @@ High-performance interactive implementation of **Cloude Decomposition** [1] by [
 ### Demo over forested area
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/03ddjowiCyI/0.jpg)](http://www.youtube.com/watch?v=03ddjowiCyI "Video Title")
 
-## Usage
+## How to run
 Tested on **Ubuntu 20 LTS** OS. Windows, MacOS, other Linux to be supported imminently
 ### Compile and run:
 **compile.py** installs binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
