@@ -28,8 +28,20 @@ python3 cpp/compile.py                                            # 3) build the
 cd T3                                                             # 4) enter the test data folder.. 
 cloude_view pauli.bin                                             # 5) run the interactive program! 
 ```
-
 If all goes well, you should see an interactive visualization of the test data (as below). 
+
+Notes:
+1) **[compile.py](https://github.com/ashlinrichardson/cloude_decom/blob/master/cpp/compile.py)** installs, provided you enter your super-user password:
+* required dependencies g++ and freeglut3-dev
+* binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
+
+2) Alternate downloading method, you could use this instead of step "1)" above if you're already [connected to github by ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh):
+
+```
+git clone git@github.com:ashlinrichardson/cloude_decom.git        # 1) download the project..
+```
+
+and then proceed to "2) enter the project folder". This approach would make sense if you're experienced with GitHub and considering making code revisions
 
 ### Using the mouse
 Assuming the mouse pointer is positioned somewhere over the image display:
@@ -50,18 +62,7 @@ whereas cancelling an urban area highlights oceanographic and topographic featur
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_urban.png" width="800">
 
-Notes:
-1) **[compile.py](https://github.com/ashlinrichardson/cloude_decom/blob/master/cpp/compile.py)** installs, provided you enter your super-user password:
-* required dependencies g++ and freeglut3-dev
-* binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 
-2) Alternate downloading method, you could use this instead of step "1)" above if you're already [connected to github by ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh):
-
-```
-git clone git@github.com:ashlinrichardson/cloude_decom.git        # 1) download the project..
-```
-
-and then proceed to "2) enter the project folder". This approach would make sense if you're experienced with GitHub and considering making code revisions
 
 ### Building and running the non-interactive version:
 ### Changing the target window size
