@@ -2,6 +2,7 @@
 '''tested on Ubuntu v. 20. Support to be added for: other linux, Mac OS, Windows'''
 import os
 import sys
+import platform
 
 def err(m):
     print("Error: " + m); sys.exit(1)
@@ -9,11 +10,18 @@ def err(m):
 def run(cmd):
     print(cmd); return os.system(cmd)
 
+''' detect operating system '''
+WIN = os.name == 'nt'
+MAC = platform.system() == 'Darwin'
+LNX = platform.system() == 'Linux'
+
 # ubuntu 20 dependencies
 if len(os.popen('g++ 2>&1').read().strip().split('fatal')) < 1:
-    run('sudo apt install g++')
+    if LNX:
+        run('sudo apt install g++')
 if not os.path.exists('/usr/include/GL/glut.h'):
-    run('sudo apt install freeglut3-dev')
+    if LNX:
+        run('sudo apt install freeglut3-dev')
 
 def build(n):
     run('rm -f cpp/' + n)

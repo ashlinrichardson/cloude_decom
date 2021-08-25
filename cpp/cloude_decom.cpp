@@ -25,7 +25,15 @@ C++ implementation 20210601 Ash Richardson, Senior Data Scientist, BC Wildfire S
 #include"matrix3.h"
 #include<pthread.h>
 #include<unistd.h>
-#include<sys/sysinfo.h>
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+  //define something for Windows (32-bit and 64-bit)
+#elif __APPLE__
+  // apple stuff
+#else 
+  // assume LINUX 
+  #include<sys/sysinfo.h>
+#endif
 
 #define str string
 #define eps DBL_EPSILON
