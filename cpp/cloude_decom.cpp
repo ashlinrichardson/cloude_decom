@@ -435,7 +435,7 @@ void decom(size_t i){
 }
 
 int main(int argc, char ** argv){
-  printf("cloude_decom()_______________________________**%d\n\n", argc);
+  printf("cloude_decom.cpp\n");
   if(argc < 2) err("cloude.exe [input T3 directory] # [null target row] [null target col] # null target window size");
   char * path = argv[1]; /* T3 matrix data path */
   int xp = -1; int yp = -1;
