@@ -605,8 +605,8 @@ str strip_leading_zeros(str s){
   return(ss);
 }
 
-vector<vector<str>> read_csv(str fn, vector<str> & hdr){
-  vector<vector<str>> output; // read lines from csv file
+vector< vector<str> > read_csv(str fn, vector<str> & hdr){
+  vector< vector<str> > output; // read lines from csv file
   ifstream ifs(fn); // stream to input file
   str token;
   size_t ci = 0;
@@ -638,7 +638,7 @@ size_t vix(vector<str> x, str a){
   err("should have checked for element before using vix");
 }
 
-size_t write_csv(str fn, vector<str> hdr, vector<vector<str>> lines){
+size_t write_csv(str fn, vector<str> hdr, vector< vector<str> > lines){
   cout << "+w " << fn << endl;
   size_t n = hdr.size();
   FILE * f = fopen(fn.c_str(), "wb");

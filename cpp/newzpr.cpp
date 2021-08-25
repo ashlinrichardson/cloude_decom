@@ -12,6 +12,7 @@
 #include<memory.h>
 #include<iostream>
 #include<math.h>
+#include<queue>
 #include<map>
 #include<set>
 #include"newzpr.h"
@@ -63,7 +64,7 @@ vector<float> spectra;
 
 int bands_per_frame; // bands per frame if known, should autodetect this
 
-extern zprManager * myZprManager = NULL;
+zprManager * myZprManager;
 
 void GLERROR(){
   cout << "GLERROR\n";

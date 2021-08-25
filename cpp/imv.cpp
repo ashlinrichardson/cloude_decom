@@ -12,6 +12,9 @@ extern size_t IMG_NC;
 extern size_t IMG_NB;
 extern string IMG_FN;
 extern string IMG_HFN;
+extern SA<float> * SCENE_DAT;
+extern SA<float> * SCENE_MYIMG;
+extern SA<float> * SCENE_GLIMG;
 
 int main(int argc, char ** argv){
   IMG_FN = string("stack.bin"); // default image filename to load

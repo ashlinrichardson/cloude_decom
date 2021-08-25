@@ -755,7 +755,7 @@ class myImg;
 class glImage: public glPlottable{
   public:
   myImg * image;
-  SA<float> * dat; // why to have myImg class, separate from glImage? Because we should put the htrim (histogram trim) scaling in glImage!
+  SA<float> * dat; // why to have myImg class, separate from glImage? We should put the htrim (histogram trim) scaling in glImage?
   SA<float> * class_label;
   int isClusteringImage;
   zprInstance *myParent;
