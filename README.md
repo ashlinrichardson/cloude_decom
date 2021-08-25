@@ -32,7 +32,7 @@ If all goes well, you should see an interactive visualization of the test data (
 
 Notes:
 1) **[compile.py](https://github.com/ashlinrichardson/cloude_decom/blob/master/cpp/compile.py)** installs, provided you enter your super-user password:
-* required dependencies g++ and freeglut3-dev
+* required dependencies g++ and freeglut3-dev (on ubuntu). Mac users need to install **xcode** "command line" development tools
 * binaries to **/usr/bin/cloude_decom** and **/usr/bin/cloude_view**
 
 2) Alternate downloading method, you could use this instead of step "1)" above if you're already [connected to github by ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh):
