@@ -446,12 +446,7 @@ int main(int argc, char ** argv){
     xp = atoi(argv[3]); //
     yp = atoi(argv[2]);
   }
-  /*
-  if(argc > 5){
-    xp2 = atoi(argv[5]);
-    yp2 = atoi(argv[4]);
-  }
-  */
+
   printf("target pixel (x,y): %d, %d\n", xp, yp);
   if(argc > 4){
     ws = atoi(argv[4]);
