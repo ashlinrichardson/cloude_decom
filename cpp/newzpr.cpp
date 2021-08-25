@@ -7,11 +7,16 @@
 * School of Computer Science and Information Technology
 * RMIT University
 * nigels@cs.rmit.edu.au */
-#include <math.h>
-#include "newzpr.h"
-#include <stdlib.h>
-#include <memory.h>
-#include <iostream>
+
+#include<stdlib.h>
+#include<memory.h>
+#include<iostream>
+#include<math.h>
+#include<map>
+#include<set>
+#include"newzpr.h"
+#include"image.h"
+#include"SA.h"
 
 /* use every 5000th pixel in histogram trimming operation, to speed this up */
 #define SCAN_INCREMENT 5000
