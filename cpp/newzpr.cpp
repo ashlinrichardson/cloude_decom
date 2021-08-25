@@ -85,14 +85,6 @@ void glImage::drawMeUnHide(){
   Update = false;
 }
 
-zprManager * zprManager::Instance(int argc, char *argv[]){
-  cout <<"Check for singleton instance..\n";
-  if(!myZprManager){
-    myZprManager = new zprManager(argc,argv);
-  }
-  return(myZprManager);
-}
-
 void zprManager::mark(){
   int i;
   for(i = 0; i < this->nextZprInstanceID; i++){

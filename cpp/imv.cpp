@@ -1,8 +1,9 @@
 /* simple one-to one image viewer */
 #include"util.h"
-#include"image.h"
+//#include"image.h"
 #include<fstream>
 #include"newzpr.h"
+#include"image.h"
 #include<iostream>
 #include<stdexcept>
 
@@ -13,8 +14,8 @@ extern size_t IMG_NB;
 extern string IMG_FN;
 extern string IMG_HFN;
 extern SA<float> * SCENE_DAT;
-// extern SA<float> * SCENE_MYIMG;
-// extern SA<float> * SCENE_GLIMG;
+extern myImg * SCENE_MYIMG;
+extern void * SCENE_GLIMG;
 
 int main(int argc, char ** argv){
   IMG_FN = string("stack.bin"); // default image filename to load
@@ -34,7 +35,9 @@ int main(int argc, char ** argv){
   IMG_NC = nc;
   IMG_NB = nb;
 
-  zprManager * myManager = zprManager::Instance(argc, argv); // window manager class
+  zprManager * myManager = new zprManager(argc, argv); // window manager class
+myZprManager = myManager;
+
   SA<float> dat(np * nb); // the image data..
   SA<float> bb(np); // whole image, one-band buffer
   SCENE_DAT = &dat;
@@ -49,11 +52,12 @@ int main(int argc, char ** argv){
   SCENE_MYIMG = &a;
   zprInstance * myZpr = myManager->newZprInstance(nr, nc, nb); // "Scene" / overview image WINDOW
   glImage * myImage = new glImage(myZpr, &a);
-  SCENE_GLIMG = (void*)(glImage*)myImage;
+  SCENE_GLIMG = (void*) myImage;
   myZpr->setTitle(string("Scene "));
 
   myImage->rebuffer(true, false, true);
 
+  printf("mainloop\n");
   glutMainLoop();
   return 0;
 }

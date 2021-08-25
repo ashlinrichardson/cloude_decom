@@ -8,21 +8,26 @@
 * RMIT University
 * nigels@cs.rmit.edu.au */
 #pragma once
-
 #ifndef NEWZPR_H
 #define NEWZPR_H
 
 #ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <GLUT/glut.h>
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glu.h>
+  #include <GLUT/glut.h>
 #else
-#ifdef _WIN32
-#include <windows.h>
+  #ifdef _WIN32
+    #include <windows.h>
+  #endif
+  #include <GL/gl.h>
+  #include <GL/glu.h>
+  #include <GL/glut.h>
 #endif
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
+
+#include "my_math.h"
+#include "SA.h"
+#include "image.h"
+#include"util.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <set>
@@ -31,13 +36,10 @@
 #include <map>
 #include <math.h>
 #include <vector>
-#include "my_math.h"
-#include "SA.h"
+
 #include "pthread.h"
 #include "time.h"
-#include "image.h"
 #include<queue>
-#include"util.h"
 
 using namespace std;
 
@@ -234,6 +236,14 @@ class zprManager{
 
   int nextZprInstanceID;
 
+zprManager * Instance(int argc, char *argv[]){
+  cout <<"Check for singleton instance..\n";
+  if(!myZprManager){
+    myZprManager = new zprManager(argc,argv);
+  }
+  return(myZprManager);
+}
+
   zprManager(int argc, char *argv[]){
     forceUpdate = false;
     cout <<"zprManager()\n";
@@ -263,7 +273,7 @@ class zprManager{
   }
 
   void mark();
-  static zprManager * Instance(int argc, char *argv[]);
+ // static zprManager * Instance(int argc, char *argv[]);
   zprInstance * newZprInstance();
   zprInstance * newZprInstance(int NROW, int NCOL, int NBAND);
 };
@@ -1014,4 +1024,3 @@ class glCurve: public glPlottable{
 *
 */
 
-#endif
