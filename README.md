@@ -20,7 +20,7 @@ The interactive version supports exploring fully-polarimetric SAR data quickly, 
 ### Building and running the interactive method, using the test data provided:
 ```
 # 1) download the code:
-wget -O cloude_decom.zip https://github.com/ashlinrichardson/cloude_decom/archive/refs/heads/master.zip
+curl -o cloude_decom.zip https://codeload.github.com/ashlinrichardson/cloude_decom/zip/refs/heads/master
 unzip cloude_decom.zip
 mv cloude_decom-master cloude_decom
 cd cloude_decom                                                   # 2) enter the project folder 
