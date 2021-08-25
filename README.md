@@ -33,11 +33,13 @@ Assuming the mouse pointer is positioned somewhere over the image display:
 * engaging it, restores the default visualization used (e.g. the pauli encoding)
 * **releasing it, runs the decomposition** and displays the **optimized radar cross section** associated with the target area under the cursor, when the button was released
 
-So it's necessary to engage and then release the left mouse button, to generate an output. Again the location where the mouse button is released, becomes the target area for processing. Shown sample ALOS PALSAR data over SanFransisco, California in pauli encoding **(r, g, b) = (T22, T33, T11)**:
+So it's necessary to engage and then release the left mouse button, to generate an output. Again the location where the mouse button is released, becomes the target area for processing
 
+### Sample output
+ALOS PALSAR data over SanFransisco, California in pauli encoding **(r, g, b) = (T22, T33, T11)**:
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png" width="800">
 
-For example, selecting water demonstrates the ability to pinpoint ships: 
+For example, triggering the processing by pointing at water, demonstrates (by "cancelling" water) the ability to pinpoint ships: 
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="800">
 
