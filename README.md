@@ -16,7 +16,7 @@ Inputs: A) fully-polarimetric SAR data in standard [PolSARPro](https://ietr-lab.
 ## Running
 The interactive version supports exploring fully-polarimetric SAR data quickly, by selecting a target location using the mouse, then viewing the resulting optimised radar cross section promptly
 
-* Tested on **Ubuntu 20 LTS** OS. Windows, MacOS, other Linux to be supported imminently via revised compilation and/or binaries
+* Tested on **Ubuntu 20 LTS** and MacOS. Windows to be supported soon
 ### Building and running the interactive method, using the test data provided:
 ```
 # 1) download the code:
