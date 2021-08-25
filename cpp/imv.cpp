@@ -1,9 +1,17 @@
 /* simple one-to one image viewer */
 #include"util.h"
+#include"image.h"
 #include<fstream>
 #include"newzpr.h"
 #include<iostream>
-#include <stdexcept>
+#include<stdexcept>
+
+extern int NWIN;
+extern size_t IMG_NR;
+extern size_t IMG_NC;
+extern size_t IMG_NB;
+extern string IMG_FN;
+extern string IMG_HFN;
 
 int main(int argc, char ** argv){
   IMG_FN = string("stack.bin"); // default image filename to load

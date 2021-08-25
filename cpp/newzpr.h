@@ -62,7 +62,6 @@ static clock_t start_time;
 static clock_t stop_time;
 #define SECONDS_PAUSE 0.4
 
-
 extern int NWIN;
 extern float MIN1;
 extern float MIN2;
