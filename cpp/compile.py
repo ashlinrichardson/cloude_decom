@@ -27,7 +27,7 @@ def build(n):
     run('rm -f cpp/' + n)
     run('cd cpp; ./make_' + n + '.sh')
     run('chmod 755 cpp/' + n)
-    run('sudo mv cpp/' + n + ' /usr/bin/' + n)
+    run('sudo mv cpp/' + n + ' /usr/local/bin/' + n)  # because /usr/bin has "integrity protection" on mac
 
 # build both programs
 for n in ['cloude_decom', 'cloude_view']:
