@@ -27,7 +27,7 @@ mv cloude_decom-master cloude_decom
 cd cloude_decom                                                   # 2) enter the project folder 
 python3 cpp/compile.py                                            # 3) build the project codes..
 cd T3                                                             # 4) enter the test data folder.. 
-cloude_view pauli.bin                                             # 5) run the interactive program! 
+cloude_view                                                       # 5) run the interactive program! 
 ```
 If all goes well, you should see an interactive visualization of the test data (as below). 
 
