@@ -60,7 +60,7 @@ int main(int argc, char ** argv){
 
   if(!exists(IMG_FN)) err("failed to open input file"); // check if input file exists
 
-  NWIN = 1;
+  NWIN = 3;
   if(argc > 2) NWIN = atoi(argv[2]); // analysis window size
   printf("window size: %d\n", NWIN);
   string hfn(getHeaderFileName(IMG_FN)); // this section: get image scale
