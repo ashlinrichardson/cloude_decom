@@ -35,7 +35,7 @@ int main(int argc, char ** argv){
   size_t nr, nc, nb, np;
       
   IMG_FN = string("stack.bin"); // default image filename to load
-  if(argc < 2) printf("imv.cpp: [infile] # [window size]\n");
+  if(argc < 2) printf("cloude_view [infile] # [window size] # e.g.:\ncloude_view\ncloude_view stack.bin\ncloude_view stack.bin 3 # for window size 3");
   else IMG_FN = string(argv[1]);
 
   if(IMG_FN == string("stack.bin") && !exists(IMG_FN)){
@@ -62,7 +62,7 @@ int main(int argc, char ** argv){
 
   NWIN = 1;
   if(argc > 2) NWIN = atoi(argv[2]); // analysis window size
-
+  printf("window size: %d\n", NWIN);
   string hfn(getHeaderFileName(IMG_FN)); // this section: get image scale
   parseHeaderFile(hfn, nr, nc, nb);
   np = nr * nc;
