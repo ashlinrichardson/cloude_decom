@@ -887,6 +887,10 @@ void zprInstance::zprMouse(int button, int state, int x, int y){
     zprPick(x, glutGet(GLUT_WINDOW_HEIGHT) - 1 - y, 3, 3);
     _pickme(0);
   }
+  else if(state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON){
+    printf("right mouse button: exit\n");
+    exit(0);
+  }
   else pick(-1);
 
   _mouseX = x;
