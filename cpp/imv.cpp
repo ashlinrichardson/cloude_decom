@@ -17,17 +17,53 @@ extern SA<float> * SCENE_DAT;
 extern myImg * SCENE_MYIMG;
 extern void * SCENE_GLIMG;
 
+void read_config(char * file_name, size_t * nrow, size_t * ncol){
+  /* based on PolSARPro by Eric POTTIER and Laurent FERRO-FAMIL */
+  int i;
+  size_t x;
+  char tmp[4096];
+  FILE * f = fopen(file_name, "rb");
+  for0(i, 2) x = fscanf(f, "%s\n", tmp);
+  *nrow = atoi(tmp); // number of rows
+  for0(i, 3) x = fscanf(f, "%s\n", tmp);
+  *ncol = atoi(tmp); // number of cols
+  fclose(f);
+  printf("nrow %d ncol %d\n", *nrow, *ncol);
+}
+
 int main(int argc, char ** argv){
+  size_t nr, nc, nb, np;
+      
   IMG_FN = string("stack.bin"); // default image filename to load
   if(argc < 2) printf("imv.cpp: [infile] # [window size]\n");
   else IMG_FN = string(argv[1]);
+
+  if(IMG_FN == string("stack.bin") && !exists(IMG_FN)){
+    if(!exists("T11.bin") || !exists("T22.bin") || !exists("T33.bin")){
+      err("T11.bin, T22.bin, T33.bin required for pauli visualization. Check a T3 dataset is in the present folder");
+    }
+    if(exists("T11.hdr")){
+      parseHeaderFile("T11.hdr", nr, nc, nb);
+    }
+    else if(exists("T11.bin.hdr")){
+      parseHeaderFile("T11.bin.hdr", nr, nc, nb);
+    }
+    else if(exists("config.txt")){
+      read_config("config.txt", &nr, &nc);
+    }
+    else{
+      err("expected header file at T11.hdr or T11.bin.hdr");
+    }
+    system("cat T22.bin T33.bin T11.bin > stack.bin");
+    writeHeader("stack.hdr", nr, nc, 3);
+  }
+
   if(!exists(IMG_FN)) err("failed to open input file"); // check if input file exists
 
   NWIN = 1;
   if(argc > 2) NWIN = atoi(argv[2]); // analysis window size
 
   string hfn(getHeaderFileName(IMG_FN)); // this section: get image scale
-  size_t nr, nc, nb, np;
   parseHeaderFile(hfn, nr, nc, nb);
   np = nr * nc;
   IMG_HFN = hfn;
