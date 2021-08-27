@@ -65,7 +65,7 @@ whereas cancelling an urban area highlights oceanographic and topographic featur
 
 
 ### Uninstalling
-From within the cloude_decom folder:
+At your terminal and from within the cloude_decom folder:
 ```
 python3 cpp/uninstall.py
 ```
