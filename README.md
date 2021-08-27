@@ -64,7 +64,11 @@ whereas cancelling an urban area highlights oceanographic and topographic featur
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_urban.png" width="800">
 
 
-
+### Uninstalling
+From within the cloude_decom folder:
+```
+python3 cpp/uninstall.py
+```
 ### Building and running the non-interactive version:
 ### Changing the target window size
 ### Running the method on other data
