@@ -46,10 +46,13 @@ and then proceed to "2) enter the project folder". This approach would make sens
 
 ### Using the mouse
 Assuming the mouse pointer is positioned somewhere over the image display:
-* engaging it, restores the default visualization used (e.g. the pauli encoding)
-* **releasing it, runs the decomposition** and displays the **optimized radar cross section** associated with the target area under the cursor, when the button was released
+* **depressing the left button**, restores the default visualization used (e.g. the pauli encoding)
+* **releasing the left button, runs the decomposition** and displays the **optimized radar cross section** associated with the target area under the cursor, when the button was released
 
 So it's necessary to engage and then release the left mouse button, to generate an output. Again the location where the mouse button is released, becomes the target area for processing
+
+### Closing the program
+Depressing the right mouse botton, or the "esc" key on the keyboard, both close the program 
 
 ### Sample output
 ALOS PALSAR data over SanFransisco, California in pauli encoding **(r, g, b) = (T22, T33, T11)**:
