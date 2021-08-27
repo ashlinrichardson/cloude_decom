@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-'''tested on Ubuntu v. 20. Support to be added for: other linux, Mac OS, Windows'''
+'''tested on Ubuntu v. 20 and MacOS. Support to be added for: Windows'''
 import os
 import sys
 import platform
@@ -10,20 +10,28 @@ def err(m):
 def run(cmd):
     print(cmd); return os.system(cmd)
 
+def exist(p): return os.path.exists(p)
+
+def no_cpp():  # returns True if g++ not available
+    return len(os.popen('g++ 2>&1').read().strip().split('no input')) < 1
+
 ''' detect operating system '''
 WIN = os.name == 'nt'
 MAC = platform.system() == 'Darwin'
 LNX = platform.system() == 'Linux'
 
-# ubuntu 20 dependencies
-if len(os.popen('g++ 2>&1').read().strip().split('fatal')) < 1:
-    if LNX:
+if LNX:  # ubuntu dependencies
+    if no_cpp():
         run('sudo apt install g++')
-if not os.path.exists('/usr/include/GL/glut.h'):
-    if LNX:
+    if not exist('/usr/include/GL/glut.h'):
         run('sudo apt install freeglut3-dev')
 
+if MAC and no_cpp():
+    err('please install xcode and try again.. (e.g google "how to install xcode on mac os"')
+
 def build(n):
+    if not exist('/usr/local/bin'):
+        run('sudo mkdir -p -m 775 /usr/local/bin')
     run('rm -f cpp/' + n)
     run('cd cpp; ./make_' + n + '.sh')
     run('chmod 755 cpp/' + n)
