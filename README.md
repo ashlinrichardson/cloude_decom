@@ -72,9 +72,15 @@ At your terminal and from within the cloude_decom folder:
 ```
 python3 cpp/uninstall.py
 ```
-### Building and running the non-interactive version:
 ### Changing the target window size
+Default target window size is 3. To run with a different window size, e.g. 5:
+```
+cd T3
+cloude_view stack.bin 5
+```
+### Building and running the non-interactive version:
 ### Running the method on other data
+### Running on T3 data produced by SNAP
 ## Thanks
 Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and [JAXA](https://global.jaxa.jp/) for providing ALOS-1 quad-pol data over San Fransisco, California. Please [click here](https://ietr-lab.univ-rennes1.fr/polsarpro-bio/sample_datasets/) to see other sample data generously provided by Dr. Pottier.
 # Contributing
