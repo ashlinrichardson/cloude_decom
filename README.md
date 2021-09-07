@@ -83,6 +83,13 @@ cloude_view stack.bin 5
 ### Running on T3 data produced by SNAP
 ## Thanks
 Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and [JAXA](https://global.jaxa.jp/) for providing ALOS-1 quad-pol data over San Fransisco, California. Please [click here](https://ietr-lab.univ-rennes1.fr/polsarpro-bio/sample_datasets/) to see other sample data generously provided by Dr. Pottier.
+
+Thanks to:
+* Hao Chen, Canadian Forest Service
+* Subhadip Dey, Indian Institute of Technology Bombay
+* Shane Cloude, AELc
+for initial beta testing
+
 # Contributing
 At your convenience, please be welcome to:
 * [open an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) on this repository,
