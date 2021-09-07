@@ -88,6 +88,7 @@ Thanks to:
 * Hao Chen, Canadian Forest Service
 * Subhadip Dey, Indian Institute of Technology Bombay
 * Shane Cloude, AELc
+
 for initial beta testing
 
 # Contributing
