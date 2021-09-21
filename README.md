@@ -7,7 +7,7 @@ Near-real-time interactive implementation of **Cloude Decomposition** [1] by [Sh
 ## Abstract
 "In this paper [1] we show how to develop the idea of orthogonality in radar polarimetry for enhanced target detection and land-use classification of POLSAR data. It is well known that every elliptical polarization has its orthogonal partner, uniquely defined as the antipodal point on the Poincaré sphere. Here we show that for scatterers, we can extend this idea so that every scattering matrix has a corresponding multi-dimensional orthogonal space [2]. We give a geometrical interpretation of this approach using a generalized Poincaré sphere representation. We then derive an algorithm for finding the peak signal in this ortho-space. We derive this optimum for both monostatic and bistatic radar systems, to illustrate how bistatic polarimetry offers great potential benefits in future POLSAR studies."
 ### Biblio
-[1] "Generalized Poincaré Orthogonality: A New Approach to POLSAR Data Analysis" SR Cloude, A Richardson, proceedings of The 7th Asia-Pacific Conference on Synthetic Aperture Radar (2021)
+[1] "Generalized Poincaré Orthogonality: A New Approach to POLSAR Data Analysis" SR Cloude, A Richardson, (https://arxiv.org/abs/2109.09093)[https://arxiv.org/abs/2109.09093]
 
 [2] "Target Detection Using Rank-1 Polarimetric Processing" SR Cloude, IEEE Geoscience and Remote Sensing Letters (2020)
 
