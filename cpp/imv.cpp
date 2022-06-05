@@ -44,9 +44,15 @@ int main(int argc, char ** argv){
     }
     if(exists("T11.hdr")){
       parseHeaderFile("T11.hdr", nr, nc, nb);
+      if(!exists("config.txt")){
+        write_config(str("config.txt"), nr, nc);
+      }
     }
     else if(exists("T11.bin.hdr")){
       parseHeaderFile("T11.bin.hdr", nr, nc, nb);
+      if(!exists("config.txt")){
+        write_config(str("config.txt"), nr, nc);
+      }
     }
     else if(exists("config.txt")){
       read_config("config.txt", &nr, &nc);
@@ -56,6 +62,21 @@ int main(int argc, char ** argv){
     }
     system("cat T22.bin T33.bin T11.bin > stack.bin");
     writeHeader("stack.hdr", nr, nc, 3);
+  }
+  else{
+    if(exists("T11.hdr")){
+      parseHeaderFile("T11.hdr", nr, nc, nb);
+      if(!exists("config.txt")){
+        write_config(str("config.txt"), nr, nc);
+      }
+    }
+    else if(exists("T11.bin.hdr")){
+      parseHeaderFile("T11.bin.hdr", nr, nc, nb);
+      if(!exists("config.txt")){
+        write_config(str("config.txt"), nr, nc);
+      }
+    }
+
   }
 
   if(!exists(IMG_FN)) err("failed to open input file"); // check if input file exists

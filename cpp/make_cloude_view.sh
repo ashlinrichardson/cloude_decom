@@ -1,3 +1,4 @@
+#!/bin/bash
 g++ 	-c -w  -O3  image.cpp
 g++ 	-c -w  -O3  my_math.cpp
 g++ 	-c -w  -O3  util.cpp

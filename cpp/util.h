@@ -173,4 +173,7 @@ inline void * alloc(size_t nb){
   memset(d, '\0', nb);
   return d;
 }
+
+void write_config(str fn, size_t nrow, size_t ncol);
+
 #endif

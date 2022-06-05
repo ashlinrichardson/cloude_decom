@@ -696,3 +696,18 @@ std::string exec(const char* cmd){
   pclose(pipe);
   return result;
 }
+
+void write_config(str fn, size_t nrow, size_t ncol){
+  FILE * f = fopen(fn.c_str(), "wb");
+  if(!f) err("failed to open file for writing");
+  fprintf(f, "Nrow\n");
+  fprintf(f, "%zu\n", nrow);
+  fprintf(f, "---------\n");
+  fprintf(f, "Ncol\n");
+  fprintf(f, "%zu\n", ncol);
+  fprintf(f, "---------\n");
+  fprintf(f, "PolarCase\nbistatic\n");
+  fprintf(f, "---------\n");
+  fprintf(f, "PolarType\nfull");
+  fclose(f);
+}
