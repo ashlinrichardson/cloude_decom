@@ -5,10 +5,10 @@ Near-real-time, interactive, self-contained, non-proprietary implementation of t
 
 Sample data included.
 ### Poincaré's radar: July 26, 2022 talk by Dr. Cloude (inspiration and background context)
-[![IMAGE ALT TEXT](https://i.ytimg.com/vi/fvjGcp0XKNA/hqdefault.jpg)](https://www.youtube.com/watch?v=fvjGcp0XKNA "Poincaré's radar"| width=300)
+[![IMAGE ALT TEXT](https://i.ytimg.com/vi/fvjGcp0XKNA/hqdefault.jpg)](https://www.youtube.com/watch?v=fvjGcp0XKNA|width=300)
 
 ### Cloude_decom demonstration video (over forested area)
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/03ddjowiCyI/0.jpg)](http://www.youtube.com/watch?v=03ddjowiCyI "Video Title" | width=300)
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/03ddjowiCyI/0.jpg)](http://www.youtube.com/watch?v=03ddjowiCyI|width=300)
 
 ## Abstract
 "In this paper [1] we show how to develop the idea of orthogonality in radar polarimetry for enhanced target detection and land-use classification of POLSAR data. It is well known that every elliptical polarization has its orthogonal partner, uniquely defined as the antipodal point on the Poincaré sphere. Here we show that for scatterers, we can extend this idea so that every scattering matrix has a corresponding multi-dimensional orthogonal space [2]. We give a geometrical interpretation of this approach using a generalized Poincaré sphere representation. We then derive an algorithm for finding the peak signal in this ortho-space. We derive this optimum for both monostatic and bistatic radar systems, to illustrate how bistatic polarimetry offers great potential benefits in future POLSAR studies."
