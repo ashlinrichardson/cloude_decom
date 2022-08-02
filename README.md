@@ -6,6 +6,7 @@ Near-real-time, interactive, self-contained, non-proprietary implementation of t
 Sample data included.
 ### Poincaré's radar: July 26, 2022 talk by Dr. Cloude
 A companion resource accompanying the article below [1]. 
+
 [![IMAGE ALT TEXT](https://i.ytimg.com/vi/fvjGcp0XKNA/hqdefault.jpg)](https://www.youtube.com/watch?v=fvjGcp0XKNA)
 
 ### Cloude_decom demonstration video (over forested area)
