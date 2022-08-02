@@ -4,7 +4,7 @@ Near-real-time, interactive, self-contained, non-proprietary implementation of t
 * inspiring new PolSAR applications.
 
 Sample data included.
-### Youtube video lecture by Dr. Cloude (inspiration and background context)
+### Poincaré's radar: Youtube video lecture by Dr. Cloude (inspiration and background context)
 [![IMAGE ALT TEXT](https://i.ytimg.com/vi/fvjGcp0XKNA/hqdefault.jpg)](https://www.youtube.com/watch?v=fvjGcp0XKNA "Poincaré's radar")
 
 ### Cloude_decom demonstration video (over forested area)
