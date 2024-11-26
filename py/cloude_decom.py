@@ -8,6 +8,8 @@ M_PI = math.pi
 eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
 
 
+t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
+
 def lamcloude(a, b, c, z1, z2, z3):
     p = 1./3.  # cf tra, z1p, z2p, z3p, fac0, fac1, fac2, fac3, s1, s2, deta, tr3;
     tra = (a + b + c) / 3.
