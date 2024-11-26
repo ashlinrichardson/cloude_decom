@@ -42,3 +42,14 @@ def lamcloude(cf a, cf b, cf c, cf z1, cf z2, cf z3):
     // normalised components as output
     v1, v2, v3 = v1 / n, v2 / n, v3 / n
     return [e1, e2, e3, v1, v2, v3]  #  double & e1, double & e2, double & e3, cf & v1, cf & v2, cf & v3
+
+
+def rank1_t3(double e1, cf v1, cf v2, cf v3):   #  generate T3 rank 1
+    t11c = e1 * v1 * conjugate(v1)
+    t12c = e1 * v1 * conjugate(v2)
+    t13c = e1 * v1 * conjugate(v3)
+    t22c = e1 * v2 * conjugate(v2)
+    t23c = e1 * v2 * conjugate(v3)
+    t33c = e1 * v3 * conjugate(v3)
+
+    return [t11c, t12c, t13c, t22c, t23c, t33c]
