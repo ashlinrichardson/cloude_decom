@@ -1,7 +1,8 @@
-from misc import read_config
+from misc import read_config, read_binary
 import numpy as np
 import cmath
 import math
+import os
 
 NROW, NCOL = None, None
 M_PI = math.pi
@@ -9,6 +10,19 @@ eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point nu
 
 
 t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
+
+def read_T3(d):
+    global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p 
+    sep = os.path.sep
+    t11_p = read_binary(d + sep + 'T11.bin')
+    t22_p = read_binary(d + sep + 'T22.bin')
+    t33_p = read_binary(d + sep + 'T33.bin')
+    t12_r_p = read_binary(d + sep + 'T12_real.bin')
+    t12_i_p = read_binary(d + sep + 'T12_imag.bin')
+    t13_r_p = read_binary(d + sep + 'T13_real.bin')
+    t13_i_p = read_binary(d + sep + 'T13_imag.bin')
+    t23_r_p = read_binary(d + sep + 'T23_real.bin')
+    t23_i_p = read_binary(d + sep + 'T23_imag.bin')
 
 def lamcloude(a, b, c, z1, z2, z3):
     p = 1./3.  # cf tra, z1p, z2p, z3p, fac0, fac1, fac2, fac3, s1, s2, deta, tr3;
@@ -167,5 +181,7 @@ x = read_config('../T3/config.txt')
 
 NROW = x['nrow']
 NCOL = x['ncol']
+
+read_T3('../T3/')
 
 
