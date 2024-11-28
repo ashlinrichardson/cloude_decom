@@ -51,56 +51,34 @@ vec3<cf> solve_cubic(cf a, cf b, cf c, cf d){
 }
 
 '''
+
+def solve_cubic(a, b, c, d):
+    _2t13 = math.pow(2., 0.3333333333333333)
+    _2t23 = math.pow(2., 0.6666666666666666)
+    sqrt3 = sqrt(3.)
+
+    t2 = 3.*a*c -b*b;
+    t1 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d
+    t0 = (t1 + math.pow( 4.*(t2*t2*t2) + (t1*t1) ,0.5))
+    t3 = math.pow(t0, 0.333333333333333333333333)
+
+    aX6 = 6.*a*t3
+    bX2 = -2.*b*t3
+    X2 = t3*t3
+
+    return vec3((bX2 + _2t23*X2 - 2.*_2t13*t2)/aX6 ,
+                (2.*bX2 + _2t13*(2.*(1. + J * sqrt3) * t2 + J * _2t13*(J + sqrt3)*X2 ))/(2.*aX6),
+                (2.*bX2 + _2t13*(2.*(1. - J * sqrt3) * t2 - _2t13*(1.+ J * sqrt3)*X2 ))/(2.*aX6))
+
 class vec3:
     def __init__(self, a, b, c):
         self.a = a
         self.b = b
         self.c = c
-
-    def solve_cubic():
-        a = self.a
-        b = self.b
-        c = self.c
-
-        _2t13 = math.pow(2., 0.3333333333333333)
-        _2t23 = math.pow(2., 0.6666666666666666)
-        sqrt3 = sqrt(3.)
-        
-        t2 = 3.*a*c -b*b;
-        t1 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d
-        t0 = (t1 + math.pow( 4.*(t2*t2*t2) + (t1*t1) ,0.5))
-        t3 = math.pow(t0, 0.333333333333333333333333) 
-        
-        aX6 = 6.*a*t3
-        bX2 = -2.*b*t3
-        X2 = t3*t3
-
-        return vec3((bX2 + _2t23*X2 - 2.*_2t13*t2)/aX6 ,
-                    (2.*bX2 + _2t13*(2.*(1. + J * sqrt3) * t2 + J * _2t13*(J + sqrt3)*X2 ))/(2.*aX6),
-                    (2.*bX2 + _2t13*(2.*(1. - J * sqrt3) * t2 - _2t13*(1.+ J * sqrt3)*X2 ))/(2.*aX6))
         
 
 '''
 
-
-vec3<cf> solve_characteristic(const herm3<cf> & A){
-
-  /*solve characteristic equation for the 3x3 conj symmetric matrix: [ a b c; b* d e; c* e* f ]*/
-  cf a(A.a); cf b(A.b); cf c(A.c);
-  cf d(A.d); cf e(A.e); cf f(A.f);
-
-  cf _A; cf _B; cf _C; cf _D;
-  cf lambda1; cf lambda2; cf lambda3;
-
-  _A = cf(-1.,0); //-1 + 0*I;
-  _B = (a + d + f);
-  _C = (-(a*d) - a*f - d*f + b*conj(b) + c*conj(c) + e*conj(e));
-  _D = d*(a*f - c*conj(c)) + e*(b*conj(c) - a*conj(e)) + conj(b)*(-(b*f) + c*conj(e));
-  vec3<cf> x(solve_cubic(_A, _B, _C, _D)) ;
-
-  //cout << "characteristic residual "<< residual(x, _A, _B, _C, _D) <<endl;
-  return x;
-}
 
 vec3<cf> eigv( herm3<cf> &A, cf & lambda){
   /*
@@ -194,6 +172,43 @@ class herm3:
         self.E = E
         self.F = F
 
+    def solve_characteristic(self):
+        a = self.A
+        b = self.B
+        c = self.C
+        d = self.D
+        e = self.E
+        f = self.F
+
+        _A = -1. + 0j
+        _B = a + d + f
+        _C = (-(a*d) - a*f - d*f + b*b.conjugate() + c*c.conjugate() + e*e.conjugate())
+        _D = d*(a*f - c*c.conjugate()) + e*(b*c.conjugate() - a*e.conjugate()) + b.conjugate()*(-(b*f) + c*e.conjugate());
+
+    
+
+'''
+vec3<cf> solve_characteristic(const herm3<cf> & A){
+
+  /*solve characteristic equation for the 3x3 conj symmetric matrix: [ a b c; b* d e; c* e* f ]*/
+  cf a(A.a); cf b(A.b); cf c(A.c);
+  cf d(A.d); cf e(A.e); cf f(A.f);
+
+  cf _A; cf _B; cf _C; cf _D;
+  cf lambda1; cf lambda2; cf lambda3;
+
+  _A = cf(-1.,0); //-1 + 0*I;
+  _B = (a + d + f);
+  _C = (-(a*d) - a*f - d*f + b*conj(b) + c*conj(c) + e*conj(e));
+  _D = d*(a*f - c*conj(c)) + e*(b*conj(c) - a*conj(e)) + conj(b)*(-(b*f) + c*conj(e));
+  vec3<cf> x(solve_cubic(_A, _B, _C, _D)) ;
+
+  //cout << "characteristic residual "<< residual(x, _A, _B, _C, _D) <<endl;
+  return x;
+}
+
+
+'''
 def read_T3(d):
     global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p 
     sep = os.path.sep
