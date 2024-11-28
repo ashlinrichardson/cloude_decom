@@ -69,7 +69,7 @@ class herm3:
         return solve_cubic(_A, _B, _C, _D)
 
         
-def eigv(A, lambda):  # herm3<cf> &A, cf & lambda){
+def eigv(A, _lambda):  # herm3<cf> &A, cf & lambda){
     '''
     >> syms a lambda b y c z d y e z
     >> solve( '(a-lambda)+b*y+c*z', 'conj(b) + y*(d-lambda) +e*z')
@@ -78,16 +78,11 @@ def eigv(A, lambda):  # herm3<cf> &A, cf & lambda){
     y: [1x1 sym]
     z: [1x1 sym]
     '''
-
     return vec3(1. + 0j, # cf(1.,0.),
-                -((A.a)*(A.e)-lambda*(A.e)-(A.c)* (A.b).conjugate() )/((A.b)*(A.e)-(A.d)*(A.c)+lambda*(A.c)),
-                (-(A.b)* (A.b).conjugate() -lambda*(A.a)+(A.d)*(A.a)-(A.d)*lambda+(lambda*lambda))/((A.b)*(A.e)-(A.d)*(A.c)+lambda*(A.c)))
+                -((A.a)*(A.e)-_lambda*(A.e)-(A.c)* (A.b).conjugate() )/((A.b)*(A.e)-(A.d)*(A.c)+_lambda*(A.c)),
+                (-(A.b)* (A.b).conjugate() -_lambda*(A.a)+(A.d)*(A.a)-(A.d)*_lambda+(_lambda*_lambda))/((A.b)*(A.e)-(A.d)*(A.c)+_lambda*(A.c)))
 
-    '''
-  /* x.a = cf(1.,0.);
-     x.b = -(a*e-lambda*e-c*conj(b))/(b*e-d*c+lambda*c);
-     x.c = (-b*conj(b)-lambda*a+d*a-d*lambda+lambda^2)/(b*e-d*c+lambda*c); */
-    '''
+
 
 
 def eig(A): #  L, E1, E2, E3): # herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<cf> &E2, vec3<cf> &E3){
