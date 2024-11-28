@@ -1,4 +1,4 @@
-from misc import read_config, read_binary, parfor
+from misc import read_config, read_binary, write_binary, parfor
 import numpy as np
 import cmath
 import math
@@ -479,3 +479,6 @@ for o in out_opt:
     c[o] += 1
 
 print(c)
+
+write_binary(out_opt, "opt.bin")
+
