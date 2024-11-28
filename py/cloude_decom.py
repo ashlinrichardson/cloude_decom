@@ -240,7 +240,7 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     global o3d2
     global o3d3
 
-    if True:
+    try:
         # // intermediary variables
         # double t11, t12_r, t12_i, t13_r, t13_i, t22, t23_r, t23_i, t33;
         # double e1, e2, e3, p;
@@ -279,6 +279,8 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         a = a + eps2 * F; #// %randn(sx,sy);
         b = b + eps2 * F; #// %randn(sx,sy);
         c = c + eps2 * F; #// %randn(sx,sy);
+
+        #  print(a,b,c,z1,z2,z3, "stuff")
     
         # //run lamcloude
         # cf v1, v2, v3;
@@ -360,7 +362,7 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         //out_ar[i] = (float) abs(ar);
         //out_br[i] = (float) abs(br);
         '''
-    else:
+    except:
         pass
         
 
@@ -463,7 +465,12 @@ o3d3 = E3.c # [2] #  at(E3, 2);
 
 # later generalize to i:
 
-parfor(decom, [i in range(npx)])
+# 
+for i in range(npx):
+    if i % 1000 == 0:
+        print(i)
+    decom(i)
+#  parfor(decom, [i in range(npx)])
 
 c = {}
 for o in out_opt:

@@ -81,7 +81,7 @@ def read_binary(fn):
     samples, lines, bands = x['ncol'], x['nrow'], x['nband']
     samples, lines, bands = int(samples), int(lines), int(bands)
     print("\tsamples", samples, "lines", lines, "bands", bands)
-    data = read_float(fn)
+    data = read_float(fn).tolist()
     return samples, lines, bands, data
 
 def parfor(my_function, my_inputs, n_thread=int(mp.cpu_count())):
