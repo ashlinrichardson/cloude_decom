@@ -373,13 +373,13 @@ def worker(task_queue, result_queue):
 
 def work_queue(job_count, num_workers):
     """ Function to manage parallel jobs with a read-only global variable and a results queue """
-    task_queue = multiprocessing.Queue()
-    result_queue = multiprocessing.Queue()
+    task_queue = mp.Queue()
+    result_queue = mp.Queue()
 
     # Create and start worker processes
     processes = []
     for _ in range(num_workers):
-        p = multiprocessing.Process(target=worker, args=(task_queue, result_queue))
+        p = mp.Process(target=worker, args=(task_queue, result_queue))
         p.start()
         processes.append(p)
 
@@ -520,7 +520,6 @@ num_workers = 16  # Number of worker processes (threads)
 results = work_queue(job_count, num_workers)
 
 for i in range(nrow * ncol):
-    print(results[i])
     out_opt[i] =  results[i][0] 
 
 
