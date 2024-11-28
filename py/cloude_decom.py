@@ -29,7 +29,7 @@ class vec3:
 def solve_cubic(a, b, c, d):
     _2t13 = math.pow(2., 0.3333333333333333)
     _2t23 = math.pow(2., 0.6666666666666666)
-    sqrt3 = sqrt(3.)
+    sqrt3 = math.sqrt(3.)
 
     t2 = 3.*a*c -b*b;
     t1 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d
