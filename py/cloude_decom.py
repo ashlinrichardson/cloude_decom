@@ -111,7 +111,7 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     
     # // rank 1 t3
     # cf t11c, t12c, t13c, t22c, t23c, t33c;
-    [e1, e2, e3, v1, v2, v3] = rank1_t3(e1, v1, v2, v3, t11c, t12c, t13c, t22c, t23c, t33c);
+    [e1, e2, e3, v1, v2, v3] = rank1_t3(e1, v1, v2, v3) #  a, z1, z2, b, z3, c) #t11c, t12c, t13c, t22c, t23c, t33c);
     
     # // generate alpha etc. eigenvector parameters
     alpha = math.acos(abs(v1));
