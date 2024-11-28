@@ -39,30 +39,52 @@ def solve_cubic(a, b, c, d):
                 (2.*bX2 + _2t13*(2.*(1. + J * sqrt3) * t2 + J * _2t13*(J + sqrt3)*X2 ))/(2.*aX6),
                 (2.*bX2 + _2t13*(2.*(1. - J * sqrt3) * t2 - _2t13*(1.+ J * sqrt3)*X2 ))/(2.*aX6))
 
+
+class herm3:
+    def __init__(self, A, B, C, D, E, F):
+        self.a = A
+        self.b = B
+        self.c = C
+        self.d = D
+        self.e = E
+        self.f = F
+
+    def solve_characteristic(self):
+        a = self.a
+        b = self.b
+        c = self.c
+        d = self.d
+        e = self.e
+        f = self.f
+
+        _A = -1. + 0j
+        _B = a + d + f
+        _C = (-(a*d) - a*f - d*f + b*b.conjugate() + c*c.conjugate() + e*e.conjugate())
+        _D = d*(a*f - c*c.conjugate()) + e*(b*c.conjugate() - a*e.conjugate()) + b.conjugate()*(-(b*f) + c*e.conjugate())
+        return solve_cubic(_A, _B, _C, _D)
+
         
+def eigv(A, lamda):  # herm3<cf> &A, cf & lambda){
+    '''
+    >> syms a lambda b y c z d y e z
+    >> solve( '(a-lambda)+b*y+c*z', 'conj(b) + y*(d-lambda) +e*z')
 
-'''
+    ans =
+    y: [1x1 sym]
+    z: [1x1 sym]
+    '''
 
+    return vec3(1. + 0j, # cf(1.,0.),
+                -((A.a)*(A.e)-lambda*(A.e)-(A.c)* (A.b).conjugate() )/((A.b)*(A.e)-(A.d)*(A.c)+lambda*(A.c)),
+                (-(A.b)* (A.b).conjugate() -lambda*(A.a)+(A.d)*(A.a)-(A.d)*lambda+(lambda*lambda))/((A.b)*(A.e)-(A.d)*(A.c)+lambda*(A.c)))
 
-vec3<cf> eigv( herm3<cf> &A, cf & lambda){
-  /*
-  >> syms a lambda b y c z d y e z
-  >> solve( '(a-lambda)+b*y+c*z', 'conj(b) + y*(d-lambda) +e*z')
-
-  ans =
-  y: [1x1 sym]
-  z: [1x1 sym]
-  >> */
-
-  return vec3<cf>(cf(1.,0.),
-  -((A.a)*(A.e)-lambda*(A.e)-(A.c)*conj((A.b)))/((A.b)*(A.e)-(A.d)*(A.c)+lambda*(A.c)),
-  (-(A.b)*conj((A.b))-lambda*(A.a)+(A.d)*(A.a)-(A.d)*lambda+(lambda*lambda))/((A.b)*(A.e)-(A.d)*(A.c)+lambda*(A.c)));
-
+    '''
   /* x.a = cf(1.,0.);
      x.b = -(a*e-lambda*e-c*conj(b))/(b*e-d*c+lambda*c);
      x.c = (-b*conj(b)-lambda*a+d*a-d*lambda+lambda^2)/(b*e-d*c+lambda*c); */
-}
+    '''
 
+'''
 TYPE eig(herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<cf> &E2, vec3<cf> &E3){
   vec3<cf> lambdas(solve_characteristic(A));
   vec3<cf> e1(eigv(A, lambdas.a));
@@ -127,28 +149,6 @@ TYPE eig(herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<cf> &E2, vec3<cf> &E3){
 }
 '''
 
-class herm3:
-    def __init__(self, A, B, C, D, E, F):
-        self.A = A
-        self.B = B
-        self.C = C
-        self.D = D
-        self.E = E
-        self.F = F
-
-    def solve_characteristic(self):
-        a = self.A
-        b = self.B
-        c = self.C
-        d = self.D
-        e = self.E
-        f = self.F
-
-        _A = -1. + 0j
-        _B = a + d + f
-        _C = (-(a*d) - a*f - d*f + b*b.conjugate() + c*c.conjugate() + e*e.conjugate())
-        _D = d*(a*f - c*c.conjugate()) + e*(b*c.conjugate() - a*e.conjugate()) + b.conjugate()*(-(b*f) + c*e.conjugate())
-        return solve_cubic(_A, _B, _C, _D)
 
 
 def read_T3(d):
