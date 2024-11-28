@@ -2,16 +2,49 @@ from misc import read_config, read_binary
 import numpy as np
 import cmath
 import math
+import sys
 import os
 
 NROW, NCOL = None, None
 M_PI = math.pi
 eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
 
-
 t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
 out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = None, None, None, None, None, None, None, None
 o2d1, o2d2, o2de, o3d1, o3d2, o3d3 = None, None, None, None, None, None 
+
+'''
+template<class T> struct vec3{
+  T a; T b; T c; /* representation of 3-d vector */
+
+  void operator = (const vec3<T> &A){
+    a = A.a; b = A.b; c = A.c;
+  }
+
+  vec3<T>(T A, T B, T C) : a(A), b(B), c(C){
+  }
+
+  vec3<T>(const complex<T> &A): a(A.a), b(A.b), c(A.c){
+  }
+
+  vec3<T>(): a(_zero), b(_zero),c(_zero){
+  }
+};
+'''
+class vec3:
+    def __init__(self, a, b, c):
+        self.a = a
+        self.b = b
+        self.c = c
+
+class herm3:
+    def __init__(self, A, B, C, D, E, F):
+        self.A = A
+        self.B = B
+        self.C = C
+        self.D = D
+        self.E = E
+        self.F = F
 
 def read_T3(d):
     global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p 
@@ -201,16 +234,16 @@ def decom(i):   # calculate decom for pixel at linear index "i"
 
 x = read_config('../T3/config.txt')
 
-NROW = x['nrow']
-NCOL = x['ncol']
-npx = NROW * NCOL
+nrow = x['nrow']
+ncol = x['ncol']
+npx = nrow * ncol
 
 read_T3('../T3/')
 
 # initialize output variables
 out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)] # None, None, None, None, None, None, None, None
 
-print("number of pixels", NROW * NCOL)
+print("number of pixels", nrow* ncol)
 
 '''SETUP BASIC DATA FOR THE PIXEL SELECTED.. NULL TARGET
 '''
@@ -253,16 +286,16 @@ if len(sys.argv) > 3:
   }
 }
 '''
-printf("N_USE: %f\n", n_use);
+# printf("N_USE: %f\n", n_use);
 t11 /= n_use; t22 /= n_use; t33 /= n_use;
 t12_r /= n_use; t12_i /= n_use;
 t13_r /= n_use; t13_i /= n_use;
 t23_r /= n_use; t23_i /= n_use;
 
 a = t11; b = t22; c = t33;
-z1 = t12_r + t12_i * J;
-z2 = t13_r + t13_i * J;
-z3 = t23_r + t23_i * J;
+z1 = t12_r + t12_i * 1j;
+z2 = t13_r + t13_i * 1j;
+z3 = t23_r + t23_i * 1j;
 
 # /* avoid 0 elements.. conditioning */
 eps2 = (a + b + c) * (1.0e-9) + eps;
@@ -274,11 +307,13 @@ a = a + eps2 * F;# // %randn(sx,sy);
 b = b + eps2 * F;# // %randn(sx,sy);
 c = c + eps2 * F;# // %randn(sx,sy);
 
-herm3<cf> T(a, z1, z2, b, z3, c);
+T = herm3(a, z1, z2, b, z3, c)
+# herm3<cf> T(a, z1, z2, b, z3, c);
 # cout << "T" << endl << T << endl;
 
-vec3<cf> L, E1, E2, E3;
-eig(T, L, E1, E2, E3);
+# vec3<cf> L, E1, E2, E3;
+# eig(T, L, E1, E2, E3);
+L, E1, E2, E3 = T.eig()
 # cout << "L" << endl << L << endl;
 
 # / dont forget to test eigs !!!!!!!
