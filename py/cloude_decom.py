@@ -5,39 +5,37 @@ import math
 import sys
 import os
 
-
-nrow, ncol = None, None
 M_PI = math.pi
+xp, yp = None, None
+nrow, ncol = None, None
 eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
-
-t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
+o2d1, o2d2, o2de, o3d1, o3d2, o3d3 = None, None, None, None, None, None
 out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = None, None, None, None, None, None, None, None
-o2d1, o2d2, o2de, o3d1, o3d2, o3d3 = None, None, None, None, None, None 
-
+t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
 
 class vec3:
     def __init__(self, a, b, c):
-        self.a = a
-        self.b = b
-        self.c = c
+        self.a, self.b, self.c = a, b, c
 
     def norm(self):
         A = self
         return math.sqrt(abs(A.a)*abs(A.a) + abs(A.b)*abs(A.b) + abs(A.c)*abs(A.c));
 
     def normalize(self):
-        norm = math.sqrt(abs(self.a)*abs(self.a)+abs(self.b)*abs(self.b)+abs(self.c)*abs(self.c)); # // give vector l2 length of 1
+        norm = self.norm()  # give vector l2 length of 1 
         self.a /= norm
         self.b /= norm
         self.c /= norm
 
     def __truediv__(self, a):  # define division by scalar ( X / a ) operator
         return vec3(self.a / a, self.b / a, self.c / a)
-
     
     def __sub__(self, b):
         a = self
         return vec3(a.a - b.b, a.b - b.b, a.c - b.c)
+    
+    def __str__(self):  # tostring()
+        return ' '.join([str(x) for x in [self.a, self.b, self.c]])
 
 
 def solve_cubic(a, b, c, d):
@@ -62,88 +60,57 @@ def solve_cubic(a, b, c, d):
 
 class herm3:
     def __init__(self, A, B, C, D, E, F):
-        self.a = A
-        self.b = B
-        self.c = C
-        self.d = D
-        self.e = E
-        self.f = F
+        self.a, self.b, self.c, self.d, self.e, self.f = A, B, C, D, E, F
 
     def solve_characteristic(self):
-        a = self.a
-        b = self.b
-        c = self.c
-        d = self.d
-        e = self.e
-        f = self.f
-
+        a, b, c, d, e, f = self.a, self.b, self.c, self.d, self.e, self.f
+        
         _A = -1. + 0j
         _B = a + d + f
         _C = (-(a*d) - a*f - d*f + b*b.conjugate() + c*c.conjugate() + e*e.conjugate())
         _D = d*(a*f - c*c.conjugate()) + e*(b*c.conjugate() - a*e.conjugate()) + b.conjugate()*(-(b*f) + c*e.conjugate())
         return solve_cubic(_A, _B, _C, _D)
 
-    '''
-        template<class T> vec3<T> operator*(const herm3<T> &A, const vec3<T> &B){
-            return vec3<T>(A.a*B.a + A.b*B.b + A.c*B.c,
-                           A.d*B.b + A.e*B.c + B.a*conj(A.b),
-                           A.f*B.c + B.a*conj(A.c) + B.b*conj(A.e));
-        }
-    '''
     def __mul__(self, other):
         if isinstance(other, vec3):
-            A = self
-            B = other
+            A, B = self, other
             return vec3(A.a*B.a + A.b*B.b + A.c*B.c,
-                           A.d*B.b + A.e*B.c + B.a* (A.b).conjugate(), 
-                           A.f*B.c + B.a*(A.c).conjugate() + B.b* (A.e).conjugate())
-            
+                        A.d*B.b + A.e*B.c + B.a* (A.b).conjugate(), 
+                        A.f*B.c + B.a*(A.c).conjugate() + B.b* (A.e).conjugate())
         else:
             err("herm3 * vec3 operation defined only")
-
+    
+    def __str__(self):
+        return( ' '.join([str(x) for x in [self.a, self.b, self.c]]) + '\n' +
+                ' '.join([str(x) for x in [0, self.d, self.e]]) + '\n' + 
+                ' '.join([str(x) for x in [0, 0, self.f]]))
         
 def eigv(A, _lambda):  # herm3<cf> &A, cf & lambda){
-    '''
-    >> syms a lambda b y c z d y e z
-    >> solve( '(a-lambda)+b*y+c*z', 'conj(b) + y*(d-lambda) +e*z')
-
-    ans =
-    y: [1x1 sym]
-    z: [1x1 sym]
-    '''
+    ''' syms a lambda b y c z d y e z
+        solve( '(a-lambda)+b*y+c*z', 'conj(b) + y*(d-lambda) +e*z')  '''
     return vec3(1. + 0j, # cf(1.,0.),
                 -((A.a)*(A.e)-_lambda*(A.e)-(A.c)* (A.b).conjugate() )/((A.b)*(A.e)-(A.d)*(A.c)+_lambda*(A.c)),
                 (-(A.b)* (A.b).conjugate() -_lambda*(A.a)+(A.d)*(A.a)-(A.d)*_lambda+(_lambda*_lambda))/((A.b)*(A.e)-(A.d)*(A.c)+_lambda*(A.c)))
 
 
-
-
 def eig(A): #  L, E1, E2, E3): # herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<cf> &E2, vec3<cf> &E3){
     lambdas = A.solve_characteristic()
-    e1 = eigv(A, lambdas.a)
-    e2 = eigv(A, lambdas.b)
-    e3 = eigv(A, lambdas.c)
-
-    l1 = lambdas.a
-    l2 = lambdas.b
-    l3 = lambdas.c  
+    
+    e1, e2, e3 = eigv(A, lambdas.a), eigv(A, lambdas.b), eigv(A, lambdas.c)
+    l1, l2, l3 = lambdas.a, lambdas.b, lambdas.c  
 
     e1.normalize()
     e2.normalize()
     e3.normalize()
 
-    X = [[abs(l1), e1],
-         [abs(l2), e2],
-         [abs(l3), e3]]
+    X = [[abs(l1), e1], [abs(l2), e2], [abs(l3), e3]]
     X.sort(reverse=True)  # sort eigenvectors by eigenvalue ( decreasing order )
 
     L = [X[i][0] for i in range(len(X))]
     L = vec3(L[0], L[1], L[2])
     E1, E2, E3 = X[0][1], X[1][1], X[2][1]
 
-    d1 = (A*E1)/(L.a) - E1;
-    d2 = (A*E2)/(L.b) - E2;
-    d3 = (A*E3)/(L.c) - E3;
+    d1, d2, d3 = (A*E1)/(L.a) - E1, (A*E2)/(L.b) - E2, (A*E3)/(L.c) - E3;
     diff = d1.norm() + d2.norm() + d3.norm() 
     return [L, E1, E2, E3]
 
@@ -165,7 +132,6 @@ def lamcloude(a, b, c, z1, z2, z3):
     p = 1./3.  # cf tra, z1p, z2p, z3p, fac0, fac1, fac2, fac3, s1, s2, deta, tr3;
     tra = (a + b + c) / 3.
     z1p, z2p, z3p = z1.conjugate(), z2.conjugate(), z3.conjugate() # conjugate(z1), conjugate(z2), conjugate(z3)
-
     fac0 = z1 * z1p + z2 * z2p + z3 * z3p
 
     s1 = a * b + a * c + b * c - fac0
@@ -208,12 +174,12 @@ def rank1_t3(e1, v1, v2, v3): # e e1, cf v1, cf v2, cf v3):   #  generate T3 ran
     t22c = e1 * v2 * (v2.conjugate()) # conjugate(v2)
     t23c = e1 * v2 * (v3.conjugate()) # conjugate(v3)
     t33c = e1 * v3 * (v3.conjugate()) # conjugate(v3)
-
     return [t11c, t12c, t13c, t22c, t23c, t33c]
 
 
 def decom(i):   # calculate decom for pixel at linear index "i"
-
+    global xp
+    global yp
     global t11_p
     global t22_p
     global t33_p
@@ -375,17 +341,9 @@ npx = nrow * ncol
 read_T3('../T3/')
 
 # initialize output variables
-out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)] # None, None, None, None, None, None, None, None
+out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
 
-print("number of pixels", nrow* ncol)
-
-'''SETUP BASIC DATA FOR THE PIXEL SELECTED.. NULL TARGET
-'''
-# t11, t22, t33, t12_r, t12_i, t13_r, t13_i, t23_r, t23_i;
-#  a, b, c, z1, z2, z3;
-
-xp = int(sys.argv[1])
-yp = int(sys.argv[2])
+xp, yp = int(sys.argv[2]), int(sys.argv[1])  # cloude_decom T3 313 798 # col/ row for test target
 
 if xp < 0 or xp > ncol:
     err("x coord out of bounds")
@@ -404,6 +362,12 @@ t13_r = t13_r_p[i]
 t13_i = t13_i_p[i]
 t23_r = t23_r_p[i]
 t23_i = t23_i_p[i]
+
+print("target info:")
+print("T11", t11)
+print("T22", t22)
+print("T33", t33)
+
 
 if len(sys.argv) > 3:
     pass
@@ -455,7 +419,9 @@ T = herm3(a, z1, z2, b, z3, c)
 # vec3<cf> L, E1, E2, E3;
 # eig(T, L, E1, E2, E3);
 L, E1, E2, E3 = eig(T)
-# cout << "L" << endl << L << endl;
+print("L", L)  # cout << "L" << endl << L << endl;
+print("E2", E2)
+print("E3", E3)
 
 # / dont forget to test eigs !!!!!!!
 o2d1 = E2.a # [0] # at(E2, 0);
@@ -474,8 +440,8 @@ o3d3 = E3.c # [2] #  at(E3, 2);
 
 # 
 for i in range(npx):
-    if i % 1000 == 0:
-        print(i)
+    #if i % 1000 == 0:
+    #    print(i)
     decom(i)
 #  parfor(decom, [i in range(npx)])
 '''
