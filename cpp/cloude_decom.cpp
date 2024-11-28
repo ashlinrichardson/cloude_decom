@@ -11,7 +11,7 @@ output:
   OPT.bin
 
 References
-[1] Shane R Cloude, Ashlin Richardson, Generalized Poincare Orthogonality: A New Approach to POLSAR Data Analysis, proc APSAR 2021
+[1] Shane R Cloude, Ashlin Richardson, Generalized Poincare Orthogonality: A New Approach to POLSAR Data Analysis, https://arxiv.org/pdf/2109.09093
 [2] Shane R Cloude, Target Detection Using Rank-1 Polarimetric Processing, IEEE GRSL (2020)
 
 C++ implementation 20210601 Ash Richardson, Senior Data Scientist, BC Wildfire Service */
