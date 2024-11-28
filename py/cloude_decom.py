@@ -290,23 +290,23 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     z2 = conjugate(o3d1)*v1 + conjugate(o3d2)*v2 + conjugate(o3d3)*v3;  #// oconj=o3d';'''
 
     #  find optimum weights
-    popt = cmath.phase(z2 * conjugate(z1)) * 180. / M_PI;
-    za = (z1*conjugate(z1) - z2*conjugate(z2)) + j * 2.*abs(z1)*abs(z2);
+    popt = cmath.phase(z2 * z1.conjugate()) * 180. / M_PI;
+    za = (z1*conjugate(z1) - z2*z2.conjugate()) + j * 2.*abs(z1)*abs(z2);
     aopt = cmath.phase(za) * 90. / M_PI;
     ar = aopt * M_PI / 180.;
     br = popt * M_PI / 180.;
     
     # // optimum weight vector
     w1 = math.cos(ar) * o2d1 + math.sin(ar) * exp(j * br) * o3d1;
-    w1 = conjugate(w1);
+    w1 = w1.conjugate() # 1conjugate(w1);
     w2 = math.cos(ar) * o2d2 + math.sin(ar) * exp(j * br) * o3d2;
-    w2 = conjugate(w2);
+    w2 = w2.conjugate() # conjugate(w2);
     w3 = math.cos(ar) * o2d3 + math.sin(ar) * exp(j * br) * o3d3;
-    w3 = conjugate(w3);
+    w3 = w3.conjugate() # conjugate(w3);
     
     # // find optimum subspace signal
     zopt = w1 * v1 + w2 * v2 + w3 * v3;
-    ip = abs(zopt * conjugate(zopt));
+    ip = abs(zopt * zopt.conjugate()) # conjugate(zopt));
     ip_eps = ip + eps;
     sopt = 10. * math.log(ip_eps) / math.log(10.); #// optimum normalised power
     
