@@ -107,7 +107,6 @@ def eig(A): #  L, E1, E2, E3): # herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<
     X = [[abs(l1), e1],
          [abs(l2), e2],
          [abs(l3), e3]]
-
     X.sort(reverse=True)  # sort eigenvectors by eigenvalue ( decreasing order )
 
     L = [X[i][0] for i in range(len(X))]
