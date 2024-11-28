@@ -1,4 +1,4 @@
-from misc import read_config, read_binary, write_binary, write_hdr, work_queue
+from misc import read_config, read_binary, write_binary, write_hdr
 import multiprocessing as mp
 import numpy as np
 import ctypes
@@ -361,7 +361,38 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     else:
         pass
 
+def work_queue(job_count, num_workers):
+    """ Function to manage parallel jobs with a read-only global variable and a shared result list """
+    task_queue = mp.Queue()
+    results = None 
 
+    # Use Manager to create a shared list (this can handle arbitrary types)
+    with mp.Manager() as manager:
+        result_list = manager.list([None] * job_count)  # Shared list initialized with None
+
+        # Create and start worker processes
+        processes = []
+        for _ in range(num_workers):
+            p = mp.Process(target=worker, args=(task_queue, result_list))
+            p.start()
+            processes.append(p)
+
+        # Add tasks to the task queue
+        for job in range(job_count):
+            task_queue.put(job)
+
+        # Add sentinel values (None) to stop the workers
+        for _ in range(num_workers):
+            task_queue.put(None)
+
+        # Wait for all processes to finish
+        for p in processes:
+            p.join()
+
+        # Return the result_list directly (no need to convert it to a regular list)
+        results = list(result_list)
+
+    return results
 
 def worker(task_queue, result_list):
     """ Worker function to process tasks and store results in the shared list """
