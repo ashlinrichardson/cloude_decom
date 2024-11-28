@@ -14,15 +14,15 @@ t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None
 def read_T3(d):
     global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p 
     sep = os.path.sep
-    t11_p = read_binary(d + sep + 'T11.bin')
-    t22_p = read_binary(d + sep + 'T22.bin')
-    t33_p = read_binary(d + sep + 'T33.bin')
-    t12_r_p = read_binary(d + sep + 'T12_real.bin')
-    t12_i_p = read_binary(d + sep + 'T12_imag.bin')
-    t13_r_p = read_binary(d + sep + 'T13_real.bin')
-    t13_i_p = read_binary(d + sep + 'T13_imag.bin')
-    t23_r_p = read_binary(d + sep + 'T23_real.bin')
-    t23_i_p = read_binary(d + sep + 'T23_imag.bin')
+    t11_p = read_binary(d + sep + 'T11.bin')[3]
+    t22_p = read_binary(d + sep + 'T22.bin')[3]
+    t33_p = read_binary(d + sep + 'T33.bin')[3]
+    t12_r_p = read_binary(d + sep + 'T12_real.bin')[3]
+    t12_i_p = read_binary(d + sep + 'T12_imag.bin')[3]
+    t13_r_p = read_binary(d + sep + 'T13_real.bin')[3]
+    t13_i_p = read_binary(d + sep + 'T13_imag.bin')[3]
+    t23_r_p = read_binary(d + sep + 'T23_real.bin')[3]
+    t23_i_p = read_binary(d + sep + 'T23_imag.bin')[3]
 
 def lamcloude(a, b, c, z1, z2, z3):
     p = 1./3.  # cf tra, z1p, z2p, z3p, fac0, fac1, fac2, fac3, s1, s2, deta, tr3;
@@ -80,6 +80,7 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     # double t11, t12_r, t12_i, t13_r, t13_i, t22, t23_r, t23_i, t33;
     # double e1, e2, e3, p;
     # cf a, b, c, z1, z2, z3;
+    global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p
     t11 = t11_p[i]
     t22 = t22_p[i]
     t33 = t33_p[i]
@@ -189,4 +190,5 @@ NCOL = x['ncol']
 
 read_T3('../T3/')
 
-decom(0)
+print("number of pixels", NROW * NCOL)
+decom(111)
