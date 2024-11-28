@@ -112,31 +112,38 @@ def write_binary(np_ndarray, fn): # write a numpy array to ENVI format type 4
     np_ndarray.tofile(of, '', '<f4')
     of.close()
 
+def work_queue(job_count, num_workers):
+    """ Function to manage parallel jobs with a read-only global variable and a shared result list """
+    task_queue = mp.Queue()
+    results = None 
 
-def parfor(my_function, my_inputs, n_thread=int(mp.cpu_count())):
-    if n_thread == 1 or single_thread:  # should default to old version if joblib not installed?
-        return [my_function(my_inputs[i]) for i in range(len(my_inputs))]
-    else:
-        n_thread = mp.cpu_count() if n_thread is None else n_thread
+    # Use Manager to create a shared list (this can handle arbitrary types)
+    with mp.Manager() as manager:
+        result_list = manager.list([None] * job_count)  # Shared list initialized with None
 
-        if my_inputs is None or type(my_inputs) == list and len(my_inputs) == 0:
-            return []
+        # Create and start worker processes
+        processes = []
+        for _ in range(num_workers):
+            p = mp.Process(target=worker, args=(task_queue, result_list))
+            p.start()
+            processes.append(p)
 
-        return Parallel(n_jobs=n_thread)(delayed(my_function)(input) for input in my_inputs)
+        # Add tasks to the task queue
+        for job in range(job_count):
+            task_queue.put(job)
 
-'''
-def parfor(my_function,  # function to run in parallel
-           my_inputs,  # inputs evaluated by worker pool
-           n_thread=mp.cpu_count()): # cpu threads to use
+        # Add sentinel values (None) to stop the workers
+        for _ in range(num_workers):
+            task_queue.put(None)
 
-    if n_thread == 1:  # don't use multiprocessing for 1-thread
-        return [my_function(my_inputs[i])
-                for i in range(len(my_inputs))]
-    else:
-        n_thread = (mp.cpu_count() if n_thread is None
-                    else n_thread)
-        return mp.Pool(n_thread).map(my_function, my_inputs)
-'''
+        # Wait for all processes to finish
+        for p in processes:
+            p.join()
+
+        # Return the result_list directly (no need to convert it to a regular list)
+        results = list(result_list)
+
+    return results
 
 if __name__ == '__main__':
     x = read_config('../T3/config.txt')
