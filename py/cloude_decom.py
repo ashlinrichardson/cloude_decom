@@ -65,12 +65,12 @@ def lamcloude(a, b, c, z1, z2, z3):
 
 
 def rank1_t3(e1, v1, v2, v3): # e e1, cf v1, cf v2, cf v3):   #  generate T3 rank 1
-    t11c = e1 * v1 * conjugate(v1)
-    t12c = e1 * v1 * conjugate(v2)
-    t13c = e1 * v1 * conjugate(v3)
-    t22c = e1 * v2 * conjugate(v2)
-    t23c = e1 * v2 * conjugate(v3)
-    t33c = e1 * v3 * conjugate(v3)
+    t11c = e1 * v1 * (v1.conjugate()) # conjugate(v1)
+    t12c = e1 * v1 * (v2.conjugate()) # conjugate(v2)
+    t13c = e1 * v1 * (v3.conjugate()) # conjugate(v3)
+    t22c = e1 * v2 * (v2.conjugate()) # conjugate(v2)
+    t23c = e1 * v2 * (v3.conjugate()) # conjugate(v3)
+    t33c = e1 * v3 * (v3.conjugate()) # conjugate(v3)
 
     return [t11c, t12c, t13c, t22c, t23c, t33c]
 
