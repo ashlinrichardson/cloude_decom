@@ -1,4 +1,4 @@
-from misc import read_config, read_binary, write_binary, parfor
+from misc import read_config, read_binary, write_binary, write_hdr
 import multiprocessing as mp
 import numpy as np
 import cmath
@@ -345,7 +345,7 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     
         # out_opt[i] =  opt;
         # out_v1[i] = sopt;
-        return [opt, sopt, out_r, out_g, out_b, out_e1, out_e2, out_e3]
+        return [i, opt, sopt, out_r, out_g, out_b, out_e1, out_e2, out_e3]
         '''
         //out_hv[i] = hv;
         //out_sm[i] = sm;
@@ -520,8 +520,8 @@ num_workers = 16  # Number of worker processes (threads)
 results = work_queue(job_count, num_workers)
 
 for i in range(nrow * ncol):
-    out_opt[i] =  results[i][0] 
-
+    job_i = results[i][0]
+    out_opt[job_i] =  results[i][1] 
 
 '''
 c = {}
@@ -534,5 +534,5 @@ print(c)
 '''
 print("+w opt.bin")
 write_binary(out_opt, "opt.bin")
-write_header("opt.hdr", ncol, nrow, 1, ["opt.bin"])
+write_hdr("opt.hdr", ncol, nrow, 1, ["opt.bin"])
 
