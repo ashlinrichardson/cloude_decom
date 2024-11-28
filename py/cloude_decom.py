@@ -382,7 +382,7 @@ T = herm3(a, z1, z2, b, z3, c)
 
 # vec3<cf> L, E1, E2, E3;
 # eig(T, L, E1, E2, E3);
-L, E1, E2, E3 = T.eig()
+L, E1, E2, E3 = eig(T)
 # cout << "L" << endl << L << endl;
 
 # / dont forget to test eigs !!!!!!!
