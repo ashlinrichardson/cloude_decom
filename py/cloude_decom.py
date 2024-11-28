@@ -433,4 +433,4 @@ o3d3 = E3.c # [2] #  at(E3, 2);
 
 # later generalize to i:
 
-decom(77)
+parfor(decom, [i in range(npx)])
