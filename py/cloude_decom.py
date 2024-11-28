@@ -10,8 +10,8 @@ eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point nu
 
 
 t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
-
 out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = None, None, None, None, None, None, None, None
+o2d1, o2d2, o2de, o3d1, o3d2, o3d3 = None, None, None, None, None, None 
 
 def read_T3(d):
     global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p 
@@ -147,9 +147,13 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     out_e3[i] = e3;
     
     #  // project data onto null channels // null_vecs=[o2d o3d];
-    z1 = conjugate(o2d1)*v1 + conjugate(o2d2)*v2 + conjugate(o2d3)*v3;  # // oconj=o2d';
-    z2 = conjugate(o3d1)*v1 + conjugate(o3d2)*v2 + conjugate(o3d3)*v3;  #// oconj=o3d';
+    z1 = o2d1.conjugate()*v1 + o2d2.conjugate()*v2 + o2d3.conjugate()*v3;  # // oconj=o2d';
+    z2 = o3d1.conjugate()*v1 + o3d2.conjugate()*v2 + o3d3.conjugate()*v3;  #// oconj=o3d';
     
+    #  // project data onto null channels // null_vecs=[o2d o3d];
+    '''z1 = conjugate(o2d1)*v1 + conjugate(o2d2)*v2 + conjugate(o2d3)*v3;  # // oconj=o2d';
+    z2 = conjugate(o3d1)*v1 + conjugate(o3d2)*v2 + conjugate(o3d3)*v3;  #// oconj=o3d';'''
+
     #  find optimum weights
     popt = cmath.phase(z2 * conjugate(z1)) * 180. / M_PI;
     za = (z1*conjugate(z1) - z2*conjugate(z2)) + j * 2.*abs(z1)*abs(z2);
@@ -199,11 +203,97 @@ x = read_config('../T3/config.txt')
 
 NROW = x['nrow']
 NCOL = x['ncol']
+npx = NROW * NCOL
 
 read_T3('../T3/')
 
 # initialize output variables
-out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)] # None, None, None, None, None, None, None, None
+out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)] # None, None, None, None, None, None, None, None
 
 print("number of pixels", NROW * NCOL)
+
+'''SETUP BASIC DATA FOR THE PIXEL SELECTED.. NULL TARGET
+'''
+# t11, t22, t33, t12_r, t12_i, t13_r, t13_i, t23_r, t23_i;
+#  a, b, c, z1, z2, z3;
+
+xp = int(sys.argv[1])
+yp = int(sys.argv[2])
+n_use = 1;
+i = yp * ncol + xp;
+t11 = t11_p[i]
+t22 = t22_p[i]
+t33 = t33_p[i]
+t12_r = t12_r_p[i]
+t12_i = t12_i_p[i]
+t13_r = t13_r_p[i]
+t13_i = t13_i_p[i]
+t23_r = t23_r_p[i]
+t23_i = t23_i_p[i]
+
+if len(sys.argv) > 3:
+    pass
+    '''(ws > 1){
+  for(int di = yp - dw; di <= yp + dw; di++){
+    if(di >=0 && di < nrow){
+      for(int dj = xp - dw; dj <= xp + dw; dj ++){
+        if(dj >=0 && dj < ncol){
+          int j = di * ncol + dj;
+
+          t11 += (double)t11_p[j]; t22 += (double)t22_p[j];
+          t33 += (double)t33_p[j];
+          t12_r += (double)t12_r_p[j]; t12_i += (double)t12_i_p[j];
+          t13_r += (double)t13_r_p[j]; t13_i += (double)t13_i_p[j];
+          t23_r += (double)t23_r_p[j]; t23_i += (double)t23_i_p[j];
+
+          n_use ++;
+        }
+      }
+    }
+  }
+}
+'''
+printf("N_USE: %f\n", n_use);
+t11 /= n_use; t22 /= n_use; t33 /= n_use;
+t12_r /= n_use; t12_i /= n_use;
+t13_r /= n_use; t13_i /= n_use;
+t23_r /= n_use; t23_i /= n_use;
+
+a = t11; b = t22; c = t33;
+z1 = t12_r + t12_i * J;
+z2 = t13_r + t13_i * J;
+z3 = t23_r + t23_i * J;
+
+# /* avoid 0 elements.. conditioning */
+eps2 = (a + b + c) * (1.0e-9) + eps;
+F = (float(nrow + ncol) / 2.) + 0j
+z1 = z1 + eps2 * F; # %randn(sx,sy);
+z2 = z2 + eps2 * F; #// %randn(sx,sy);
+z3 = z3 + eps2 * F; #// %randn(sx,sy);
+a = a + eps2 * F;# // %randn(sx,sy);
+b = b + eps2 * F;# // %randn(sx,sy);
+c = c + eps2 * F;# // %randn(sx,sy);
+
+herm3<cf> T(a, z1, z2, b, z3, c);
+cout << "T" << endl << T << endl;
+
+vec3<cf> L, E1, E2, E3;
+eig(T, L, E1, E2, E3);
+cout << "L" << endl << L << endl;
+
+// dont forget to test eigs !!!!!!!
+o2d1 = at(E2, 0);
+o2d2 = at(E2, 1);
+o2d3 = at(E2, 2);
+
+o3d1 = at(E3, 0);
+o3d2 = at(E3, 1);
+o3d3 = at(E3, 2);
+
+cout << "o2: " << o2d1 << o2d2 << o2d3 << endl;
+cout << "o3: " << o3d1 << o3d2 << o3d3 << endl;
+
+
+# later generalize to i:
+
 decom(111)
