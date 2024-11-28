@@ -11,6 +11,8 @@ eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point nu
 
 t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
 
+out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = None, None, None, None, None, None, None, None
+
 def read_T3(d):
     global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p 
     sep = os.path.sep
@@ -127,7 +129,7 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     # // generate alpha etc. eigenvector parameters
     alpha = math.acos(abs(v1));
     phi = cmath.phase(t12c);
-    theta = cmath.phase((t22c - t33c) + 2. * j * t23c.real) / 4.
+    theta = cmath.phase((t22c - t33c) + 2. * 1j * t23c.real) / 4.
     
     # // generate RGB colour composite from multiple eigenvector angles
     dn = alpha * 2. / M_PI # // alpha angle in red channel
@@ -199,6 +201,9 @@ NROW = x['nrow']
 NCOL = x['ncol']
 
 read_T3('../T3/')
+
+# initialize output variables
+out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = None, None, None, None, None, None, None, None
 
 print("number of pixels", NROW * NCOL)
 decom(111)
