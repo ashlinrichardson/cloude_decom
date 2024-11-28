@@ -52,6 +52,13 @@ vec3<cf> solve_cubic(cf a, cf b, cf c, cf d){
 
 '''
 
+class vec3:
+    def __init__(self, a, b, c):
+        self.a = a
+        self.b = b
+        self.c = c
+
+
 def solve_cubic(a, b, c, d):
     _2t13 = math.pow(2., 0.3333333333333333)
     _2t23 = math.pow(2., 0.6666666666666666)
@@ -70,11 +77,6 @@ def solve_cubic(a, b, c, d):
                 (2.*bX2 + _2t13*(2.*(1. + J * sqrt3) * t2 + J * _2t13*(J + sqrt3)*X2 ))/(2.*aX6),
                 (2.*bX2 + _2t13*(2.*(1. - J * sqrt3) * t2 - _2t13*(1.+ J * sqrt3)*X2 ))/(2.*aX6))
 
-class vec3:
-    def __init__(self, a, b, c):
-        self.a = a
-        self.b = b
-        self.c = c
         
 
 '''
