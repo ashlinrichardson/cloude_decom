@@ -30,12 +30,160 @@ template<class T> struct vec3{
   vec3<T>(): a(_zero), b(_zero),c(_zero){
   }
 };
+
+vec3<cf> solve_cubic(cf a, cf b, cf c, cf d){
+
+  /* add case to avoid div by 0 */
+  TYPE _2t13 = pow(2., 0.3333333333333333);
+  TYPE _2t23 = pow(2., 0.6666666666666666);
+  TYPE sqrt3 = sqrt(3.);
+
+  cf t2 = 3.*a*c -b*b;
+  cf t1 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d ;
+  cf t0 = (t1 + pow( 4.*(t2*t2*t2) + (t1*t1) ,0.5));
+
+  cf t3 = pow(t0 , 0.333333333333333333333333) ;
+
+  cf aX6 = (6.*a*t3); cf bX2 = -2.*b*t3; cf X2 = t3*t3;
+  return vec3<cf>((bX2 + _2t23*X2 - 2.*_2t13*t2)/aX6 ,
+                  (2.*bX2 + _2t13*(2.*(1. + J * sqrt3) * t2 + J * _2t13*(J + sqrt3)*X2 ))/(2.*aX6),
+                  (2.*bX2 + _2t13*(2.*(1. - J * sqrt3) * t2 - _2t13*(1.+ J * sqrt3)*X2 ))/(2.*aX6));
+}
+
 '''
 class vec3:
     def __init__(self, a, b, c):
         self.a = a
         self.b = b
         self.c = c
+
+    def solve_cubic():
+        a = self.a
+        b = self.b
+        c = self.c
+
+        _2t13 = math.pow(2., 0.3333333333333333)
+        _2t23 = math.pow(2., 0.6666666666666666)
+        sqrt3 = sqrt(3.)
+        
+        t2 = 3.*a*c -b*b;
+        t1 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d
+        t0 = (t1 + math.pow( 4.*(t2*t2*t2) + (t1*t1) ,0.5))
+        t3 = math.pow(t0, 0.333333333333333333333333) 
+        
+        aX6 = 6.*a*t3
+        bX2 = -2.*b*t3
+        X2 = t3*t3
+
+        return vec3((bX2 + _2t23*X2 - 2.*_2t13*t2)/aX6 ,
+                    (2.*bX2 + _2t13*(2.*(1. + J * sqrt3) * t2 + J * _2t13*(J + sqrt3)*X2 ))/(2.*aX6),
+                    (2.*bX2 + _2t13*(2.*(1. - J * sqrt3) * t2 - _2t13*(1.+ J * sqrt3)*X2 ))/(2.*aX6))
+        
+
+'''
+
+
+vec3<cf> solve_characteristic(const herm3<cf> & A){
+
+  /*solve characteristic equation for the 3x3 conj symmetric matrix: [ a b c; b* d e; c* e* f ]*/
+  cf a(A.a); cf b(A.b); cf c(A.c);
+  cf d(A.d); cf e(A.e); cf f(A.f);
+
+  cf _A; cf _B; cf _C; cf _D;
+  cf lambda1; cf lambda2; cf lambda3;
+
+  _A = cf(-1.,0); //-1 + 0*I;
+  _B = (a + d + f);
+  _C = (-(a*d) - a*f - d*f + b*conj(b) + c*conj(c) + e*conj(e));
+  _D = d*(a*f - c*conj(c)) + e*(b*conj(c) - a*conj(e)) + conj(b)*(-(b*f) + c*conj(e));
+  vec3<cf> x(solve_cubic(_A, _B, _C, _D)) ;
+
+  //cout << "characteristic residual "<< residual(x, _A, _B, _C, _D) <<endl;
+  return x;
+}
+
+vec3<cf> eigv( herm3<cf> &A, cf & lambda){
+  /*
+  >> syms a lambda b y c z d y e z
+  >> solve( '(a-lambda)+b*y+c*z', 'conj(b) + y*(d-lambda) +e*z')
+
+  ans =
+  y: [1x1 sym]
+  z: [1x1 sym]
+  >> */
+
+  return vec3<cf>(cf(1.,0.),
+  -((A.a)*(A.e)-lambda*(A.e)-(A.c)*conj((A.b)))/((A.b)*(A.e)-(A.d)*(A.c)+lambda*(A.c)),
+  (-(A.b)*conj((A.b))-lambda*(A.a)+(A.d)*(A.a)-(A.d)*lambda+(lambda*lambda))/((A.b)*(A.e)-(A.d)*(A.c)+lambda*(A.c)));
+
+  /* x.a = cf(1.,0.);
+     x.b = -(a*e-lambda*e-c*conj(b))/(b*e-d*c+lambda*c);
+     x.c = (-b*conj(b)-lambda*a+d*a-d*lambda+lambda^2)/(b*e-d*c+lambda*c); */
+}
+
+TYPE eig(herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<cf> &E2, vec3<cf> &E3){
+  vec3<cf> lambdas(solve_characteristic(A));
+  vec3<cf> e1(eigv(A, lambdas.a));
+  vec3<cf> e2(eigv(A, lambdas.b));
+  vec3<cf> e3(eigv(A, lambdas.c));
+
+  cf l1 = lambdas.a; cf l2 = lambdas.b; cf l3 = lambdas.c;
+  normalize(e1); normalize(e2); normalize(e3);
+
+  int tmpi;
+  double tmpf;
+
+  int ind[3] = {
+    0,
+    1,
+    2
+  };
+
+  double ABS[3] = {
+    abs(l1),
+    abs(l2),
+    abs(l3)
+  };
+
+  vec3<cf> * ptr[3] = {
+    &e1,
+    &e2,
+    &e3
+  };
+
+  int j,i;
+
+  for(j = 2; j > 0; j--){
+    for(i = 0; i < j; i++){
+      if(ABS[i] < ABS[i + 1]){
+        tmpi = ind[i];
+        ind[i] = ind[i + 1];
+        ind[i + 1] = tmpi;
+        tmpf = ABS[i];
+        ABS[i] = ABS[i + 1];
+        ABS[i + 1] = tmpf;
+      }
+    }
+  }
+
+  /* vec3<cf> d1 = (A*e1)/l1 - e1;
+     vec3<cf> d2 = (A*e2)/l2 - e2;
+     vec3<cf> d3 = (A*e3)/l3 - e3;*/
+
+  for(i = 0; i < 3; i++)
+      set(L, i, at(lambdas,ind[i]));
+
+  E1 = *(ptr[ind[0]]);
+  E2 = *(ptr[ind[1]]);
+  E3 = *(ptr[ind[2]]);
+  vec3<cf> d1 = (A*E1)/(L.a) - E1;
+  vec3<cf> d2 = (A*E2)/(L.b) - E2;
+  vec3<cf> d3 = (A*E3)/(L.c) - E3;
+  return norm(d1) + norm(d2) + norm(d3);
+  /* sort eigenvectors */
+  //return norm ( (A*e1)/l1 - e1) + norm( (A*e2)/l2 - e2) + norm( (A*e3)/l3 - e3)
+}
+'''
 
 class herm3:
     def __init__(self, A, B, C, D, E, F):
