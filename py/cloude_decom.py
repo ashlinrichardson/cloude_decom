@@ -478,7 +478,7 @@ for i in range(npx):
         print(i)
     decom(i)
 #  parfor(decom, [i in range(npx)])
-
+'''
 c = {}
 for o in out_opt:
     if o not in c:
@@ -486,6 +486,7 @@ for o in out_opt:
     c[o] += 1
 
 print(c)
-
+'''
+print("+w opt.bin")
 write_binary(out_opt, "opt.bin")
 
