@@ -13,44 +13,6 @@ t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None
 out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = None, None, None, None, None, None, None, None
 o2d1, o2d2, o2de, o3d1, o3d2, o3d3 = None, None, None, None, None, None 
 
-'''
-template<class T> struct vec3{
-  T a; T b; T c; /* representation of 3-d vector */
-
-  void operator = (const vec3<T> &A){
-    a = A.a; b = A.b; c = A.c;
-  }
-
-  vec3<T>(T A, T B, T C) : a(A), b(B), c(C){
-  }
-
-  vec3<T>(const complex<T> &A): a(A.a), b(A.b), c(A.c){
-  }
-
-  vec3<T>(): a(_zero), b(_zero),c(_zero){
-  }
-};
-
-vec3<cf> solve_cubic(cf a, cf b, cf c, cf d){
-
-  /* add case to avoid div by 0 */
-  TYPE _2t13 = pow(2., 0.3333333333333333);
-  TYPE _2t23 = pow(2., 0.6666666666666666);
-  TYPE sqrt3 = sqrt(3.);
-
-  cf t2 = 3.*a*c -b*b;
-  cf t1 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d ;
-  cf t0 = (t1 + pow( 4.*(t2*t2*t2) + (t1*t1) ,0.5));
-
-  cf t3 = pow(t0 , 0.333333333333333333333333) ;
-
-  cf aX6 = (6.*a*t3); cf bX2 = -2.*b*t3; cf X2 = t3*t3;
-  return vec3<cf>((bX2 + _2t23*X2 - 2.*_2t13*t2)/aX6 ,
-                  (2.*bX2 + _2t13*(2.*(1. + J * sqrt3) * t2 + J * _2t13*(J + sqrt3)*X2 ))/(2.*aX6),
-                  (2.*bX2 + _2t13*(2.*(1. - J * sqrt3) * t2 - _2t13*(1.+ J * sqrt3)*X2 ))/(2.*aX6));
-}
-
-'''
 
 class vec3:
     def __init__(self, a, b, c):
@@ -185,32 +147,10 @@ class herm3:
         _A = -1. + 0j
         _B = a + d + f
         _C = (-(a*d) - a*f - d*f + b*b.conjugate() + c*c.conjugate() + e*e.conjugate())
-        _D = d*(a*f - c*c.conjugate()) + e*(b*c.conjugate() - a*e.conjugate()) + b.conjugate()*(-(b*f) + c*e.conjugate());
-
-    
-
-'''
-vec3<cf> solve_characteristic(const herm3<cf> & A){
-
-  /*solve characteristic equation for the 3x3 conj symmetric matrix: [ a b c; b* d e; c* e* f ]*/
-  cf a(A.a); cf b(A.b); cf c(A.c);
-  cf d(A.d); cf e(A.e); cf f(A.f);
-
-  cf _A; cf _B; cf _C; cf _D;
-  cf lambda1; cf lambda2; cf lambda3;
-
-  _A = cf(-1.,0); //-1 + 0*I;
-  _B = (a + d + f);
-  _C = (-(a*d) - a*f - d*f + b*conj(b) + c*conj(c) + e*conj(e));
-  _D = d*(a*f - c*conj(c)) + e*(b*conj(c) - a*conj(e)) + conj(b)*(-(b*f) + c*conj(e));
-  vec3<cf> x(solve_cubic(_A, _B, _C, _D)) ;
-
-  //cout << "characteristic residual "<< residual(x, _A, _B, _C, _D) <<endl;
-  return x;
-}
+        _D = d*(a*f - c*c.conjugate()) + e*(b*c.conjugate() - a*e.conjugate()) + b.conjugate()*(-(b*f) + c*e.conjugate())
+        return solve_cubic(_A, _B, _C, _D)
 
 
-'''
 def read_T3(d):
     global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p 
     sep = os.path.sep
