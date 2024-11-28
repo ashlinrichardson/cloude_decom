@@ -291,17 +291,17 @@ def decom(i):   # calculate decom for pixel at linear index "i"
 
     #  find optimum weights
     popt = cmath.phase(z2 * z1.conjugate()) * 180. / M_PI;
-    za = (z1*conjugate(z1) - z2*z2.conjugate()) + j * 2.*abs(z1)*abs(z2);
+    za = (z1*z1.conjugate() - z2*z2.conjugate()) + 1j * 2.*abs(z1)*abs(z2);
     aopt = cmath.phase(za) * 90. / M_PI;
     ar = aopt * M_PI / 180.;
     br = popt * M_PI / 180.;
     
     # // optimum weight vector
-    w1 = math.cos(ar) * o2d1 + math.sin(ar) * exp(j * br) * o3d1;
+    w1 = math.cos(ar) * o2d1 + math.sin(ar) * cmath.exp(1j * br) * o3d1;
     w1 = w1.conjugate() # 1conjugate(w1);
-    w2 = math.cos(ar) * o2d2 + math.sin(ar) * exp(j * br) * o3d2;
+    w2 = math.cos(ar) * o2d2 + math.sin(ar) * cmath.exp(1j * br) * o3d2;
     w2 = w2.conjugate() # conjugate(w2);
-    w3 = math.cos(ar) * o2d3 + math.sin(ar) * exp(j * br) * o3d3;
+    w3 = math.cos(ar) * o2d3 + math.sin(ar) * cmath.exp(1j * br) * o3d3;
     w3 = w3.conjugate() # conjugate(w3);
     
     # // find optimum subspace signal
