@@ -55,6 +55,27 @@ def read_hdr(hdr):
                 bands = g
     return {'ncol': int(samples), 'nrow': int(lines), 'nband': int(bands)}
 
+def write_hdr(hfn, samples, lines, bands, band_names = None):
+    print('+w', hfn)
+    lines = ['ENVI',
+             'samples = ' + str(samples),
+             'lines = ' + str(lines),
+             'bands = ' + str(bands),
+             'header offset = 0',
+             'file type = ENVI Standard',
+             'data type = 4',
+             'interleave = bsq',
+             'byte order = 0']
+    if band_names is not None:
+        lines += ['']
+        bs1 = "band names = {" + band_names[0] + ','
+        lines += [bs1]
+        for i in range(1, len(band_names)):
+            bsi = (band_names[i] + ',')
+            lines += [bsi]
+        lines[-1] = lines[-1][:-1] + '}'
+    open(hfn, 'wb').write('\n'.join(lines).encode())
+
 
 def exist(f):
     return os.path.exists(f)
