@@ -1,9 +1,10 @@
-from misc import read_config, read_binary
+from misc import read_config, read_binary, parfor
 import numpy as np
 import cmath
 import math
 import sys
 import os
+
 
 nrow, ncol = None, None
 M_PI = math.pi
