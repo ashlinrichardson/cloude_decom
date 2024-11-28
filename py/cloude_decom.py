@@ -19,6 +19,11 @@ class vec3:
         self.a = a
         self.b = b
         self.c = c
+    def normalize(self):
+        norm = sqrt(abs(self.a)*abs(self.a)+abs(self.b)*abs(self.b)+abs(self.c)*abs(self.c)); # // give vector l2 length of 1
+        self.a /= norm
+        self.b /= norm
+        self.c /= norm
 
 
 def solve_cubic(a, b, c, d):
@@ -64,7 +69,7 @@ class herm3:
         return solve_cubic(_A, _B, _C, _D)
 
         
-def eigv(A, lamda):  # herm3<cf> &A, cf & lambda){
+def eigv(A, lambda):  # herm3<cf> &A, cf & lambda){
     '''
     >> syms a lambda b y c z d y e z
     >> solve( '(a-lambda)+b*y+c*z', 'conj(b) + y*(d-lambda) +e*z')
@@ -84,71 +89,36 @@ def eigv(A, lamda):  # herm3<cf> &A, cf & lambda){
      x.c = (-b*conj(b)-lambda*a+d*a-d*lambda+lambda^2)/(b*e-d*c+lambda*c); */
     '''
 
-'''
-TYPE eig(herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<cf> &E2, vec3<cf> &E3){
-  vec3<cf> lambdas(solve_characteristic(A));
-  vec3<cf> e1(eigv(A, lambdas.a));
-  vec3<cf> e2(eigv(A, lambdas.b));
-  vec3<cf> e3(eigv(A, lambdas.c));
 
-  cf l1 = lambdas.a; cf l2 = lambdas.b; cf l3 = lambdas.c;
-  normalize(e1); normalize(e2); normalize(e3);
+def eig(A): #  L, E1, E2, E3): # herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<cf> &E2, vec3<cf> &E3){
+    lambdas = A.solve_characteristic()
+    e1 = eigv(A, lambdas.a)
+    e2 = eigv(A, lambdas.b)
+    e3 = eigv(A, lambdas.c)
 
-  int tmpi;
-  double tmpf;
+    l1 = lambdas.a
+    l2 = lambdas.b
+    l3 = lambdas.c  
 
-  int ind[3] = {
-    0,
-    1,
-    2
-  };
+    e1.normalize()
+    e2.normalize()
+    e3.normalize()
 
-  double ABS[3] = {
-    abs(l1),
-    abs(l2),
-    abs(l3)
-  };
+    X = [[abs(l1), e1],
+         [abs(l2), e2],
+         [abs(l3), e3]]
 
-  vec3<cf> * ptr[3] = {
-    &e1,
-    &e2,
-    &e3
-  };
+    X.sort(reverse=True)  # sort eigenvectors by eigenvalue ( decreasing order )
 
-  int j,i;
+    L = [X[i][0] for i in range(len(X))]
+    L = vec3(L[0], L[1], L[2])
+    E1, E2, E3 = X[0][1], X[1][1], X[2][1]
 
-  for(j = 2; j > 0; j--){
-    for(i = 0; i < j; i++){
-      if(ABS[i] < ABS[i + 1]){
-        tmpi = ind[i];
-        ind[i] = ind[i + 1];
-        ind[i + 1] = tmpi;
-        tmpf = ABS[i];
-        ABS[i] = ABS[i + 1];
-        ABS[i + 1] = tmpf;
-      }
-    }
-  }
-
-  /* vec3<cf> d1 = (A*e1)/l1 - e1;
-     vec3<cf> d2 = (A*e2)/l2 - e2;
-     vec3<cf> d3 = (A*e3)/l3 - e3;*/
-
-  for(i = 0; i < 3; i++)
-      set(L, i, at(lambdas,ind[i]));
-
-  E1 = *(ptr[ind[0]]);
-  E2 = *(ptr[ind[1]]);
-  E3 = *(ptr[ind[2]]);
-  vec3<cf> d1 = (A*E1)/(L.a) - E1;
-  vec3<cf> d2 = (A*E2)/(L.b) - E2;
-  vec3<cf> d3 = (A*E3)/(L.c) - E3;
-  return norm(d1) + norm(d2) + norm(d3);
-  /* sort eigenvectors */
-  //return norm ( (A*e1)/l1 - e1) + norm( (A*e2)/l2 - e2) + norm( (A*e3)/l3 - e3)
-}
-'''
-
+    d1 = (A*E1)/(L.a) - E1;
+    d2 = (A*E2)/(L.b) - E2;
+    d3 = (A*E3)/(L.c) - E3;
+    diff = norm(d1) + norm(d2) + norm(d3);
+    return [L, E1, E2, E3]
 
 
 def read_T3(d):
