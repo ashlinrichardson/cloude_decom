@@ -1,8 +1,17 @@
 '''misc.py: helper functions for reading data binary files and headers
 '''
+import multiprocessing as mp
 import numpy as np
 import sys
 import os
+
+
+single_thread = False
+try:
+    from joblib import Parallel, delayed
+except:
+    single_thread = True
+single_thread = True
 
 def err(m):
     print('Error: ', m)
@@ -74,6 +83,17 @@ def read_binary(fn):
     print("\tsamples", samples, "lines", lines, "bands", bands)
     data = read_float(fn)
     return samples, lines, bands, data
+
+def parfor(my_function, my_inputs, n_thread=int(mp.cpu_count())):
+    if n_thread == 1 or single_thread:  # should default to old version if joblib not installed?
+        return [my_function(my_inputs[i]) for i in range(len(my_inputs))]
+    else:
+        n_thread = mp.cpu_count() if n_thread is None else n_thread
+
+        if my_inputs is None or type(my_inputs) == list and len(my_inputs) == 0:
+            return []
+
+        return Parallel(n_jobs=n_thread)(delayed(my_function)(input) for input in my_inputs)
 
 
 if __name__ == '__main__':
