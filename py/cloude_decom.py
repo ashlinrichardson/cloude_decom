@@ -27,7 +27,7 @@ def read_T3(d):
 def lamcloude(a, b, c, z1, z2, z3):
     p = 1./3.  # cf tra, z1p, z2p, z3p, fac0, fac1, fac2, fac3, s1, s2, deta, tr3;
     tra = (a + b + c) / 3.
-    z1p, z2p, z3p = conjugate(z1), conjugate(z2), conjugate(z3)
+    z1p, z2p, z3p = z1.conjugate(), z2.conjugate(), z3.conjugate() # conjugate(z1), conjugate(z2), conjugate(z3)
 
     fac0 = z1 * z1p + z2 * z2p + z3 * z3p
 
@@ -36,8 +36,8 @@ def lamcloude(a, b, c, z1, z2, z3):
     s2 = a * a - a * b + b * b - a * c - b * c + c * c + 3. * fac0
     fac1 = 27. * deta - 27. * s1 * tra + 54. * pow(tra, 3.)
     tr3 = fac1 + cmath.sqrt(pow(fac1, 2.) - 4. * pow(s2, 3.))
-    fac2 = 1. + j * sqrt(3.)
-    fac3 = 1. - j * sqrt(3.)
+    fac2 = 1. + (1j * math.sqrt(3.))
+    fac3 = 1. - (1j * math.sqrt(3.))
 
     e1 = (tra + pow(tr3, p) / (3. * pow(2., p)) + (s2 * pow(2., p) + eps) / (3. * pow(tr3, p) + eps)).real
     e2 = (tra - (fac2 * s2) / (3. * pow(tr3, p) * pow(2., 2. * p) + eps) - (fac3 * pow(tr3,p)) / (6.*pow(2., p) + eps)).real
@@ -57,7 +57,7 @@ def lamcloude(a, b, c, z1, z2, z3):
     v1 = 1.  # ones(size(v2))
 
     av1, av2, av3 = abs(v1), abs(v2), abs(v3)
-    n = sqrt(av1 * av1 + av2 * av2 + av3 * av3) + eps
+    n = math.sqrt(av1 * av1 + av2 * av2 + av3 * av3) + eps
 
     # normalised components as output
     v1, v2, v3 = v1 / n, v2 / n, v3 / n
@@ -86,9 +86,9 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     t23_r = t23_r_p[i]; t23_i = t23_i_p[i];
     
     a = t11; b = t22; c = t33;
-    z1 = t12_r + t12_i * j;
-    z2 = t13_r + t13_i * j;
-    z3 = t23_r + t23_i * j;
+    z1 = t12_r + t12_i * 1j;
+    z2 = t13_r + t13_i * 1j;
+    z3 = t23_r + t23_i * 1j;
     
     # /* avoid 0 elements.. conditioning */
     eps2 = (a + b + c) * (1.0e-9) + eps;
@@ -102,7 +102,7 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     
     # //run lamcloude
     # cf v1, v2, v3;
-    [e1, e2, e3, v1, v2, v3] = lamcloude(a, b, c, z1, z2, z3, e1, e2, e3, v1, v2, v3);
+    [e1, e2, e3, v1, v2, v3] = lamcloude(a, b, c, z1, z2, z3) #  e1, e2, e3, v1, v2, v3);
     
     # // rank 1 t3
     # cf t11c, t12c, t13c, t22c, t23c, t33c;
@@ -184,4 +184,4 @@ NCOL = x['ncol']
 
 read_T3('../T3/')
 
-
+decom(0)
