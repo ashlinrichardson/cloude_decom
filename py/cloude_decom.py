@@ -1,6 +1,7 @@
 from misc import read_config, read_binary, write_binary, write_hdr
 import multiprocessing as mp
 import numpy as np
+import ctypes
 import cmath
 import math
 import sys
@@ -359,46 +360,54 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         '''
     else:
         pass
- 
-def worker(task_queue, result_queue):
-    """ Worker function to process tasks and return results through the queue """
+
+
+
+def worker(task_queue, result_list):
+    """ Worker function to process tasks and store results in the shared list """
     while True:
         # Get the next job from the task queue
         job = task_queue.get()
         if job is None:  # Sentinel value to stop the worker
             break
         
-        # Put the result in the results queue to send back to the main process
-        result_queue.put(decom(job))
+        # Calculate the result (using decom function, which returns a float)
+        result = decom(job)
+
+        # Store result in the shared list at the job index
+        result_list[job] = result
+
 
 def work_queue(job_count, num_workers):
-    """ Function to manage parallel jobs with a read-only global variable and a results queue """
+    """ Function to manage parallel jobs with a read-only global variable and a shared result list """
     task_queue = mp.Queue()
-    result_queue = mp.Queue()
+    results = None 
 
-    # Create and start worker processes
-    processes = []
-    for _ in range(num_workers):
-        p = mp.Process(target=worker, args=(task_queue, result_queue))
-        p.start()
-        processes.append(p)
+    # Use Manager to create a shared list (this can handle arbitrary types)
+    with mp.Manager() as manager:
+        result_list = manager.list([None] * job_count)  # Shared list initialized with None
 
-    # Add tasks to the task queue
-    for job in range(job_count):
-        task_queue.put(job)
+        # Create and start worker processes
+        processes = []
+        for _ in range(num_workers):
+            p = mp.Process(target=worker, args=(task_queue, result_list))
+            p.start()
+            processes.append(p)
 
-    # Add sentinel values (None) to stop the workers
-    for _ in range(num_workers):
-        task_queue.put(None)
+        # Add tasks to the task queue
+        for job in range(job_count):
+            task_queue.put(job)
 
-    # Collect results from the result queue
-    results = []
-    for _ in range(job_count):
-        results.append(result_queue.get())
+        # Add sentinel values (None) to stop the workers
+        for _ in range(num_workers):
+            task_queue.put(None)
 
-    # Wait for all processes to finish
-    for p in processes:
-        p.join()
+        # Wait for all processes to finish
+        for p in processes:
+            p.join()
+
+        # Return the result_list directly (no need to convert it to a regular list)
+        results = list(result_list)
 
     return results
 
@@ -516,7 +525,7 @@ o3d3 = E3.c # [2] #  at(E3, 2);
 
 
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
-num_workers = 16  # Number of worker processes (threads)
+num_workers = 32  # Number of worker processes (threads)
 results = work_queue(job_count, num_workers)
 
 for i in range(nrow * ncol):
