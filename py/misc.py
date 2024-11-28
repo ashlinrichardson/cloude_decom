@@ -5,17 +5,18 @@ import numpy as np
 import sys
 import os
 
+def err(m):
+    print('Error: ', m)
+    sys.exit(1)
 
 single_thread = False
 try:
     from joblib import Parallel, delayed
 except:
+    print("please install joblib with:\n\tpython3 -m pip install joblib")
+    err("joblib library required")
     single_thread = True
 single_thread = True
-
-def err(m):
-    print('Error: ', m)
-    sys.exit(1)
 
 '''read PolSARPro config.txt file to get image dimensions!
 '''
@@ -90,6 +91,7 @@ def write_binary(np_ndarray, fn): # write a numpy array to ENVI format type 4
     np_ndarray.tofile(of, '', '<f4')
     of.close()
 
+
 def parfor(my_function, my_inputs, n_thread=int(mp.cpu_count())):
     if n_thread == 1 or single_thread:  # should default to old version if joblib not installed?
         return [my_function(my_inputs[i]) for i in range(len(my_inputs))]
@@ -101,6 +103,19 @@ def parfor(my_function, my_inputs, n_thread=int(mp.cpu_count())):
 
         return Parallel(n_jobs=n_thread)(delayed(my_function)(input) for input in my_inputs)
 
+'''
+def parfor(my_function,  # function to run in parallel
+           my_inputs,  # inputs evaluated by worker pool
+           n_thread=mp.cpu_count()): # cpu threads to use
+
+    if n_thread == 1:  # don't use multiprocessing for 1-thread
+        return [my_function(my_inputs[i])
+                for i in range(len(my_inputs))]
+    else:
+        n_thread = (mp.cpu_count() if n_thread is None
+                    else n_thread)
+        return mp.Pool(n_thread).map(my_function, my_inputs)
+'''
 
 if __name__ == '__main__':
     x = read_config('../T3/config.txt')
