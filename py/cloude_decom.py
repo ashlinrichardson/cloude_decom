@@ -275,13 +275,13 @@ b = b + eps2 * F;# // %randn(sx,sy);
 c = c + eps2 * F;# // %randn(sx,sy);
 
 herm3<cf> T(a, z1, z2, b, z3, c);
-cout << "T" << endl << T << endl;
+# cout << "T" << endl << T << endl;
 
 vec3<cf> L, E1, E2, E3;
 eig(T, L, E1, E2, E3);
-cout << "L" << endl << L << endl;
+# cout << "L" << endl << L << endl;
 
-// dont forget to test eigs !!!!!!!
+# / dont forget to test eigs !!!!!!!
 o2d1 = at(E2, 0);
 o2d2 = at(E2, 1);
 o2d3 = at(E2, 2);
@@ -290,8 +290,8 @@ o3d1 = at(E3, 0);
 o3d2 = at(E3, 1);
 o3d3 = at(E3, 2);
 
-cout << "o2: " << o2d1 << o2d2 << o2d3 << endl;
-cout << "o3: " << o3d1 << o3d2 << o3d3 << endl;
+# cout << "o2: " << o2d1 << o2d2 << o2d3 << endl;
+# cout << "o3: " << o3d1 << o3d2 << o3d3 << endl;
 
 
 # later generalize to i:
