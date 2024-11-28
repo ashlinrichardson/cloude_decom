@@ -359,7 +359,49 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         '''
     else:
         pass
+ 
+def worker(task_queue, result_queue):
+    """ Worker function to process tasks and return results through the queue """
+    while True:
+        # Get the next job from the task queue
+        job = task_queue.get()
+        if job is None:  # Sentinel value to stop the worker
+            break
         
+        # Put the result in the results queue to send back to the main process
+        result_queue.put(decom(job))
+
+def work_queue(job_count, num_workers):
+    """ Function to manage parallel jobs with a read-only global variable and a results queue """
+    task_queue = multiprocessing.Queue()
+    result_queue = multiprocessing.Queue()
+
+    # Create and start worker processes
+    processes = []
+    for _ in range(num_workers):
+        p = multiprocessing.Process(target=worker, args=(task_queue, result_queue))
+        p.start()
+        processes.append(p)
+
+    # Add tasks to the task queue
+    for job in range(job_count):
+        task_queue.put(job)
+
+    # Add sentinel values (None) to stop the workers
+    for _ in range(num_workers):
+        task_queue.put(None)
+
+    # Collect results from the result queue
+    results = []
+    for _ in range(job_count):
+        results.append(result_queue.get())
+
+    # Wait for all processes to finish
+    for p in processes:
+        p.join()
+
+    return results
+
 
 x = read_config('../T3/config.txt')
 nrow, ncol = x['nrow'], x['ncol']
@@ -469,8 +511,13 @@ o3d3 = E3.c # [2] #  at(E3, 2);
     #    print(i)
     decom(i)
 '''
-results = parfor(decom, range(nrow*ncol))
+# results = parfor(decom, range(nrow*ncol))
 # print("results", results)
+
+
+job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
+num_workers = 16  # Number of worker processes (threads)
+results = work_queue(job_count, num_workers)
 
 for i in range(nrow * ncol):
     print(results[i])
@@ -488,4 +535,5 @@ print(c)
 '''
 print("+w opt.bin")
 write_binary(out_opt, "opt.bin")
+write_header("opt.hdr", ncol, nrow, 1, ["opt.bin"])
 
