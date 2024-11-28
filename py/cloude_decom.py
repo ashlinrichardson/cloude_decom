@@ -386,6 +386,13 @@ print("number of pixels", nrow* ncol)
 
 xp = int(sys.argv[1])
 yp = int(sys.argv[2])
+
+if xp < 0 or xp > ncol:
+    err("x coord out of bounds")
+
+if yp < 0 or yp > nrow: 
+    err("y coord out of bounds")
+
 n_use = 1;
 i = yp * ncol + xp;
 t11 = t11_p[i]
