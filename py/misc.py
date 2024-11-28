@@ -84,6 +84,12 @@ def read_binary(fn):
     data = read_float(fn).tolist()
     return samples, lines, bands, data
 
+def write_binary(np_ndarray, fn): # write a numpy array to ENVI format type 4
+    of = wopen(fn)
+    np_ndarray = np_ndarray.astype(np.float32)
+    np_ndarray.tofile(of, '', '<f4')
+    of.close()
+
 def parfor(my_function, my_inputs, n_thread=int(mp.cpu_count())):
     if n_thread == 1 or single_thread:  # should default to old version if joblib not installed?
         return [my_function(my_inputs[i]) for i in range(len(my_inputs))]
