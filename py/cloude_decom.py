@@ -203,7 +203,7 @@ NCOL = x['ncol']
 read_T3('../T3/')
 
 # initialize output variables
-out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = None, None, None, None, None, None, None, None
+out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)], [math.nan for i in range(np)] # None, None, None, None, None, None, None, None
 
 print("number of pixels", NROW * NCOL)
 decom(111)
