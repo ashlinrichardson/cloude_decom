@@ -527,3 +527,5 @@ print("+w opt.bin")
 write_binary(out_opt, "opt.bin")
 write_hdr("opt.hdr", ncol, nrow, 1, ["opt.bin"])
 
+# test case: 
+# python3 cloude_decom.py  313 798
