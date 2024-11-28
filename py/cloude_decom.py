@@ -175,11 +175,23 @@ def rank1_t3(e1, v1, v2, v3): # e e1, cf v1, cf v2, cf v3):   #  generate T3 ran
     t23c = e1 * v2 * (v3.conjugate()) # conjugate(v3)
     t33c = e1 * v3 * (v3.conjugate()) # conjugate(v3)
     return [t11c, t12c, t13c, t22c, t23c, t33c]
+'''
+void rank1_t3(double e1, cf v1, cf v2, cf v3, cf & t11c, cf & t12c, cf & t13c, cf & t22c, cf & t23c, cf & t33c){ 
+    // generate T3 rank 1
+  t11c = e1 * v1 * conj(v1); t12c = e1 * v1 * conj(v2); t13c = e1 * v1 * conj(v3);
+  t22c = e1 * v2 * conj(v2); t23c = e1 * v2 * conj(v3);
+  t33c = e1 * v3 * conj(v3);
+}
+'''
+
 
 
 def decom(i):   # calculate decom for pixel at linear index "i"
     global xp
     global yp
+    global nrow
+    global ncol
+
     global t11_p
     global t22_p
     global t33_p
@@ -206,6 +218,9 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     global o3d2
     global o3d3
 
+    debug = (i == ncol * yp + xp)  # check if we're on target pixel
+
+
     try:
         # // intermediary variables
         # double t11, t12_r, t12_i, t13_r, t13_i, t22, t23_r, t23_i, t33;
@@ -220,6 +235,11 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         t13_i = t13_i_p[i]
         t23_r = t23_r_p[i]
         t23_i = t23_i_p[i]
+
+        if debug:
+            print("t11", t11)
+            print("t22", t22)
+            print("t33", t33)
     
         a = t11 + 0j
         b = t22 + 0j
@@ -251,11 +271,18 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         # //run lamcloude
         # cf v1, v2, v3;
         [e1, e2, e3, v1, v2, v3] = lamcloude(a, b, c, z1, z2, z3) #  e1, e2, e3, v1, v2, v3);
-    
+        if debug:
+            print("lamcloude")
+            print("e1", e1)
+            print("e2", e2)
+            print("e3", e3)
+            print("v1", v1)
+            print("v2", v2)
+            print("v3", v3)
+
         # // rank 1 t3
         # cf t11c, t12c, t13c, t22c, t23c, t33c;
-        [e1, e2, e3, v1, v2, v3] = rank1_t3(e1, v1, v2, v3) #  a, z1, z2, b, z3, c) #t11c, t12c, t13c, t22c, t23c, t33c);
-    
+        [t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3(e1, v1, v2, v3) #  a, z1, z2, b, z3, c) #t11c, t12c, t13c, t22c, t23c, t33c);
         # // generate alpha etc. eigenvector parameters
         alpha = math.acos(abs(v1));
         phi = cmath.phase(t12c);
