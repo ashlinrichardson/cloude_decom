@@ -361,52 +361,36 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     else:
         pass
 
-def work_queue(job_count, num_workers):
-    """ Function to manage parallel jobs with a read-only global variable and a shared result list """
-    task_queue = mp.Queue()
-    results = None 
 
-    # Use Manager to create a shared list (this can handle arbitrary types)
-    with mp.Manager() as manager:
-        result_list = manager.list([None] * job_count)  # Shared list initialized with None
-
-        # Create and start worker processes
-        processes = []
-        for _ in range(num_workers):
-            p = mp.Process(target=worker, args=(task_queue, result_list))
-            p.start()
-            processes.append(p)
-
-        # Add tasks to the task queue
-        for job in range(job_count):
-            task_queue.put(job)
-
-        # Add sentinel values (None) to stop the workers
-        for _ in range(num_workers):
-            task_queue.put(None)
-
-        # Wait for all processes to finish
-        for p in processes:
-            p.join()
-
-        # Return the result_list directly (no need to convert it to a regular list)
-        results = list(result_list)
-
-    return results
-
-def worker(task_queue, result_list):
-    """ Worker function to process tasks and store results in the shared list """
+def worker(task_queue, result_array, job_count, chunk_size):
+    """ Worker function to process tasks (one integer at a time) and store results in the shared array """
     while True:
-        # Get the next job from the task queue
-        job = task_queue.get()
-        if job is None:  # Sentinel value to stop the worker
-            break
-        
-        # Calculate the result (using decom function, which returns a float)
-        result = decom(job)
+        job = task_queue.get()  # get next job
+        if job is None:  # sentinel value to stop worker
+            break 
+        start_idx = job * chunk_size  # start index for results chunk (this job)
+        result_array[start_idx: start_idx + chunk_size] = decom(job)  # put the results at the appropriate location
 
-        # Store result in the shared list at the job index
-        result_list[job] = result
+def work_queue(job_count, num_workers, chunk_size):
+    task_queue = mp.Queue()  # task queue object
+    result_array = mp.Array('d', [math.nan] * (job_count * chunk_size))  # init array with null
+
+    processes = []
+    for _ in range(num_workers):  # start the workers
+        p = mp.Process(target=worker, args=(task_queue, result_array, job_count, chunk_size))
+        p.start()
+        processes.append(p)
+
+    for job in range(job_count):  # add jobs to task queue
+        task_queue.put(job)
+
+    for _ in range(num_workers):  # add sentinel values to stop the workers
+        task_queue.put(None)
+
+    for p in processes:  # wait to finish
+        p.join()
+
+    return result_array  # return list(result_array)  # convert to regular list 
 
 
 x = read_config('../T3/config.txt')
@@ -523,11 +507,12 @@ o3d3 = E3.c # [2] #  at(E3, 2);
 
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
 num_workers = 32  # Number of worker processes (threads)
-results = work_queue(job_count, num_workers)
+chunk_size = 9  # number of elements returned by decom() function
+results = work_queue(job_count, num_workers, chunk_size)
 
 for i in range(nrow * ncol):
-    job_i = results[i][0]
-    out_opt[job_i] =  results[i][1] 
+    job_i = int(results[i* chunk_size])
+    out_opt[job_i] =  results[i * chunk_size + 1]
 
 '''
 c = {}
