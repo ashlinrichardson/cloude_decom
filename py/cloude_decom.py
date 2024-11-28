@@ -5,7 +5,7 @@ import math
 import sys
 import os
 
-NROW, NCOL = None, None
+nrow, ncol = None, None
 M_PI = math.pi
 eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
 
@@ -19,11 +19,24 @@ class vec3:
         self.a = a
         self.b = b
         self.c = c
+
+    def norm(self):
+        A = self
+        return math.sqrt(abs(A.a)*abs(A.a) + abs(A.b)*abs(A.b) + abs(A.c)*abs(A.c));
+
     def normalize(self):
-        norm = sqrt(abs(self.a)*abs(self.a)+abs(self.b)*abs(self.b)+abs(self.c)*abs(self.c)); # // give vector l2 length of 1
+        norm = math.sqrt(abs(self.a)*abs(self.a)+abs(self.b)*abs(self.b)+abs(self.c)*abs(self.c)); # // give vector l2 length of 1
         self.a /= norm
         self.b /= norm
         self.c /= norm
+
+    def __truediv__(self, a):  # define division by scalar ( X / a ) operator
+        return vec3(self.a / a, self.b / a, self.c / a)
+
+    
+    def __sub__(self, b):
+        a = self
+        return vec3(a.a - b.b, a.b - b.b, a.c - b.c)
 
 
 def solve_cubic(a, b, c, d):
@@ -33,16 +46,18 @@ def solve_cubic(a, b, c, d):
 
     t2 = 3.*a*c -b*b;
     t1 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d
-    t0 = (t1 + math.pow( 4.*(t2*t2*t2) + (t1*t1) ,0.5))
-    t3 = math.pow(t0, 0.333333333333333333333333)
+
+    print("t1, t2", t1, t2)
+    t0 = (t1 +  (4.*(t2*t2*t2) + (t1*t1)) ** 0.5) #  ,0.5))
+    t3 = t0 ** 0.333333333333333333333333
 
     aX6 = 6.*a*t3
     bX2 = -2.*b*t3
     X2 = t3*t3
 
     return vec3((bX2 + _2t23*X2 - 2.*_2t13*t2)/aX6 ,
-                (2.*bX2 + _2t13*(2.*(1. + J * sqrt3) * t2 + J * _2t13*(J + sqrt3)*X2 ))/(2.*aX6),
-                (2.*bX2 + _2t13*(2.*(1. - J * sqrt3) * t2 - _2t13*(1.+ J * sqrt3)*X2 ))/(2.*aX6))
+                (2.*bX2 + _2t13*(2.*(1. + 1j * sqrt3) * t2 + 1j * _2t13*(1j + sqrt3)*X2 ))/(2.*aX6),
+                (2.*bX2 + _2t13*(2.*(1. - 1j * sqrt3) * t2 - _2t13*(1.+ 1j * sqrt3)*X2 ))/(2.*aX6))
 
 
 class herm3:
@@ -67,6 +82,24 @@ class herm3:
         _C = (-(a*d) - a*f - d*f + b*b.conjugate() + c*c.conjugate() + e*e.conjugate())
         _D = d*(a*f - c*c.conjugate()) + e*(b*c.conjugate() - a*e.conjugate()) + b.conjugate()*(-(b*f) + c*e.conjugate())
         return solve_cubic(_A, _B, _C, _D)
+
+    '''
+        template<class T> vec3<T> operator*(const herm3<T> &A, const vec3<T> &B){
+            return vec3<T>(A.a*B.a + A.b*B.b + A.c*B.c,
+                           A.d*B.b + A.e*B.c + B.a*conj(A.b),
+                           A.f*B.c + B.a*conj(A.c) + B.b*conj(A.e));
+        }
+    '''
+    def __mul__(self, other):
+        if isinstance(other, vec3):
+            A = self
+            B = other
+            return vec3(A.a*B.a + A.b*B.b + A.c*B.c,
+                           A.d*B.b + A.e*B.c + B.a* (A.b).conjugate(), 
+                           A.f*B.c + B.a*(A.c).conjugate() + B.b* (A.e).conjugate())
+            
+        else:
+            err("herm3 * vec3 operation defined only")
 
         
 def eigv(A, _lambda):  # herm3<cf> &A, cf & lambda){
@@ -111,7 +144,7 @@ def eig(A): #  L, E1, E2, E3): # herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<
     d1 = (A*E1)/(L.a) - E1;
     d2 = (A*E2)/(L.b) - E2;
     d3 = (A*E3)/(L.c) - E3;
-    diff = norm(d1) + norm(d2) + norm(d3);
+    diff = d1.norm() + d2.norm() + d3.norm() 
     return [L, E1, E2, E3]
 
 
@@ -212,7 +245,7 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     
     # /* avoid 0 elements.. conditioning */
     eps2 = (a + b + c) * (1.0e-9) + eps;
-    F = ((float(NROW) + float(NCOL)) / 2.);
+    F = ((float(nrow) + float(ncol)) / 2.);
     z1 = z1 + eps2 * F; # // %randn(sx,sy);
     z2 = z2 + eps2 * F; # // %randn(sx,sy);
     z3 = z3 + eps2 * F; #// %randn(sx,sy);
@@ -386,13 +419,13 @@ L, E1, E2, E3 = eig(T)
 # cout << "L" << endl << L << endl;
 
 # / dont forget to test eigs !!!!!!!
-o2d1 = at(E2, 0);
-o2d2 = at(E2, 1);
-o2d3 = at(E2, 2);
+o2d1 = E2.a # [0] # at(E2, 0);
+o2d2 = E2.b # [1] # at(E2, 1);
+o2d3 = E2.c # [2] #at(E2, 2);
 
-o3d1 = at(E3, 0);
-o3d2 = at(E3, 1);
-o3d3 = at(E3, 2);
+o3d1 = E3.a # [0] # at(E3, 0);
+o3d2 = E3.b # [1] # at(E3, 1);
+o3d3 = E3.c # [2] #  at(E3, 2);
 
 # cout << "o2: " << o2d1 << o2d2 << o2d3 << endl;
 # cout << "o3: " << o3d1 << o3d2 << o3d3 << endl;
@@ -400,4 +433,4 @@ o3d3 = at(E3, 2);
 
 # later generalize to i:
 
-decom(111)
+decom(77)
