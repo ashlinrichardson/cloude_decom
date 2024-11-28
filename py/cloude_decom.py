@@ -172,8 +172,10 @@ def lamcloude(a, b, c, z1, z2, z3):
     s1 = a * b + a * c + b * c - fac0
     deta = a * b * c - c * z1 * z1p - b * z2 * z2p + z1 * z2p * z3 + z1p * z2 * z3p - a * z3 * z3p
     s2 = a * a - a * b + b * b - a * c - b * c + c * c + 3. * fac0
-    fac1 = 27. * deta - 27. * s1 * tra + 54. * pow(tra, 3.)
-    tr3 = fac1 + cmath.sqrt(pow(fac1, 2.) - 4. * pow(s2, 3.))
+    fac1 = 27. * deta - 27. * s1 * tra + 54. * (tra ** 3.) # pow(tra, 3.)
+    print("fac1", fac1)
+    print("s2", s2)
+    tr3 = fac1 + cmath.sqrt( (fac1 ** 2.)- 4. * (s2 ** 3.))  #pow(s2, 3.))
     fac2 = 1. + (1j * math.sqrt(3.))
     fac3 = 1. - (1j * math.sqrt(3.))
 
@@ -214,126 +216,130 @@ def rank1_t3(e1, v1, v2, v3): # e e1, cf v1, cf v2, cf v3):   #  generate T3 ran
 
 
 def decom(i):   # calculate decom for pixel at linear index "i"
-    # // intermediary variables
-    # double t11, t12_r, t12_i, t13_r, t13_i, t22, t23_r, t23_i, t33;
-    # double e1, e2, e3, p;
-    # cf a, b, c, z1, z2, z3;
-    global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p
-    t11 = t11_p[i]
-    t22 = t22_p[i]
-    t33 = t33_p[i]
-    t12_r = t12_r_p[i]
-    t12_i = t12_i_p[i]
-    t13_r = t13_r_p[i]
-    t13_i = t13_i_p[i]
-    t23_r = t23_r_p[i]
-    t23_i = t23_i_p[i]
+    if True:
+        # // intermediary variables
+        # double t11, t12_r, t12_i, t13_r, t13_i, t22, t23_r, t23_i, t33;
+        # double e1, e2, e3, p;
+        # cf a, b, c, z1, z2, z3;
+        global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p
+        t11 = t11_p[i]
+        t22 = t22_p[i]
+        t33 = t33_p[i]
+        t12_r = t12_r_p[i]
+        t12_i = t12_i_p[i]
+        t13_r = t13_r_p[i]
+        t13_i = t13_i_p[i]
+        t23_r = t23_r_p[i]
+        t23_i = t23_i_p[i]
     
-    a = t11 + 0j
-    b = t22 + 0j
-    c = t33 + 0j
-    z1 = t12_r + t12_i * 1j;
-    z2 = t13_r + t13_i * 1j;
-    z3 = t23_r + t23_i * 1j;
+        a = t11 + 0j
+        b = t22 + 0j
+        c = t33 + 0j
+        z1 = t12_r + t12_i * 1j;
+        z2 = t13_r + t13_i * 1j;
+        z3 = t23_r + t23_i * 1j;
     
-    # aliases
-    t12c = z1;
-    t13c = z2;
-    t23c = z3;
-    t11c = a
-    t22c = b
-    t33c = c
+        # aliases
+        t12c = z1;
+        t13c = z2;
+        t23c = z3;
+        t11c = a
+        t22c = b
+        t33c = c
     
-    # /* avoid 0 elements.. conditioning */
-    eps2 = (a + b + c) * (1.0e-9) + eps;
-    F = ((float(nrow) + float(ncol)) / 2.);
-    z1 = z1 + eps2 * F; # // %randn(sx,sy);
-    z2 = z2 + eps2 * F; # // %randn(sx,sy);
-    z3 = z3 + eps2 * F; #// %randn(sx,sy);
-    a = a + eps2 * F; #// %randn(sx,sy);
-    b = b + eps2 * F; #// %randn(sx,sy);
-    c = c + eps2 * F; #// %randn(sx,sy);
+        # /* avoid 0 elements.. conditioning */
+        eps2 = (a + b + c) * (1.0e-9) + eps;
+        F = ((float(nrow) + float(ncol)) / 2.);
+        z1 = z1 + eps2 * F; # // %randn(sx,sy);
+        z2 = z2 + eps2 * F; # // %randn(sx,sy);
+        z3 = z3 + eps2 * F; #// %randn(sx,sy);
+        a = a + eps2 * F; #// %randn(sx,sy);
+        b = b + eps2 * F; #// %randn(sx,sy);
+        c = c + eps2 * F; #// %randn(sx,sy);
     
-    # //run lamcloude
-    # cf v1, v2, v3;
-    [e1, e2, e3, v1, v2, v3] = lamcloude(a, b, c, z1, z2, z3) #  e1, e2, e3, v1, v2, v3);
+        # //run lamcloude
+        # cf v1, v2, v3;
+        [e1, e2, e3, v1, v2, v3] = lamcloude(a, b, c, z1, z2, z3) #  e1, e2, e3, v1, v2, v3);
     
-    # // rank 1 t3
-    # cf t11c, t12c, t13c, t22c, t23c, t33c;
-    [e1, e2, e3, v1, v2, v3] = rank1_t3(e1, v1, v2, v3) #  a, z1, z2, b, z3, c) #t11c, t12c, t13c, t22c, t23c, t33c);
+        # // rank 1 t3
+        # cf t11c, t12c, t13c, t22c, t23c, t33c;
+        [e1, e2, e3, v1, v2, v3] = rank1_t3(e1, v1, v2, v3) #  a, z1, z2, b, z3, c) #t11c, t12c, t13c, t22c, t23c, t33c);
     
-    # // generate alpha etc. eigenvector parameters
-    alpha = math.acos(abs(v1));
-    phi = cmath.phase(t12c);
-    theta = cmath.phase((t22c - t33c) + 2. * 1j * t23c.real) / 4.
+        # // generate alpha etc. eigenvector parameters
+        alpha = math.acos(abs(v1));
+        phi = cmath.phase(t12c);
+        theta = cmath.phase((t22c - t33c) + 2. * 1j * t23c.real) / 4.
     
-    # // generate RGB colour composite from multiple eigenvector angles
-    dn = alpha * 2. / M_PI # // alpha angle in red channel
-    theta2 = theta + (theta > M_PI / 4.) * (M_PI / 4. - theta)
-    theta2 = theta2 + (theta2 < -M_PI / 4.) * (-M_PI / 4. - theta2)
-    vn = (theta2 + M_PI / 4.) * 2. / M_PI   # // az slope is green
-    sn = abs(phi) / M_PI  # // mag of Pauli phase is blue (180 is Bragg)
+        # // generate RGB colour composite from multiple eigenvector angles
+        dn = alpha * 2. / M_PI # // alpha angle in red channel
+        theta2 = theta + (theta > M_PI / 4.) * (M_PI / 4. - theta)
+        theta2 = theta2 + (theta2 < -M_PI / 4.) * (-M_PI / 4. - theta2)
+        vn = (theta2 + M_PI / 4.) * 2. / M_PI   # // az slope is green
+        sn = abs(phi) / M_PI  # // mag of Pauli phase is blue (180 is Bragg)
     
-    out_r[i] = dn;
-    out_g[i] = vn;
-    out_b[i] = sn;
+        out_r[i] = dn;
+        out_g[i] = vn;
+        out_b[i] = sn;
     
-    out_e1[i] = e1;
-    out_e2[i] = e2;
-    out_e3[i] = e3;
+        out_e1[i] = e1;
+        out_e2[i] = e2;
+        out_e3[i] = e3;
     
-    #  // project data onto null channels // null_vecs=[o2d o3d];
-    z1 = o2d1.conjugate()*v1 + o2d2.conjugate()*v2 + o2d3.conjugate()*v3;  # // oconj=o2d';
-    z2 = o3d1.conjugate()*v1 + o3d2.conjugate()*v2 + o3d3.conjugate()*v3;  #// oconj=o3d';
+        #  // project data onto null channels // null_vecs=[o2d o3d];
+        z1 = o2d1.conjugate()*v1 + o2d2.conjugate()*v2 + o2d3.conjugate()*v3;  # // oconj=o2d';
+        z2 = o3d1.conjugate()*v1 + o3d2.conjugate()*v2 + o3d3.conjugate()*v3;  #// oconj=o3d';
     
-    #  // project data onto null channels // null_vecs=[o2d o3d];
-    '''z1 = conjugate(o2d1)*v1 + conjugate(o2d2)*v2 + conjugate(o2d3)*v3;  # // oconj=o2d';
-    z2 = conjugate(o3d1)*v1 + conjugate(o3d2)*v2 + conjugate(o3d3)*v3;  #// oconj=o3d';'''
-
-    #  find optimum weights
-    popt = cmath.phase(z2 * z1.conjugate()) * 180. / M_PI;
-    za = (z1*z1.conjugate() - z2*z2.conjugate()) + 1j * 2.*abs(z1)*abs(z2);
-    aopt = cmath.phase(za) * 90. / M_PI;
-    ar = aopt * M_PI / 180.;
-    br = popt * M_PI / 180.;
+        #  // project data onto null channels // null_vecs=[o2d o3d];
+        '''z1 = conjugate(o2d1)*v1 + conjugate(o2d2)*v2 + conjugate(o2d3)*v3;  # // oconj=o2d';
+        z2 = conjugate(o3d1)*v1 + conjugate(o3d2)*v2 + conjugate(o3d3)*v3;  #// oconj=o3d';'''
     
-    # // optimum weight vector
-    w1 = math.cos(ar) * o2d1 + math.sin(ar) * cmath.exp(1j * br) * o3d1;
-    w1 = w1.conjugate() # 1conjugate(w1);
-    w2 = math.cos(ar) * o2d2 + math.sin(ar) * cmath.exp(1j * br) * o3d2;
-    w2 = w2.conjugate() # conjugate(w2);
-    w3 = math.cos(ar) * o2d3 + math.sin(ar) * cmath.exp(1j * br) * o3d3;
-    w3 = w3.conjugate() # conjugate(w3);
+        #  find optimum weights
+        popt = cmath.phase(z2 * z1.conjugate()) * 180. / M_PI;
+        za = (z1*z1.conjugate() - z2*z2.conjugate()) + 1j * 2.*abs(z1)*abs(z2);
+        aopt = cmath.phase(za) * 90. / M_PI;
+        ar = aopt * M_PI / 180.;
+        br = popt * M_PI / 180.;
     
-    # // find optimum subspace signal
-    zopt = w1 * v1 + w2 * v2 + w3 * v3;
-    ip = abs(zopt * zopt.conjugate()) # conjugate(zopt));
-    ip_eps = ip + eps;
-    sopt = 10. * math.log(ip_eps) / math.log(10.); #// optimum normalised power
+        # // optimum weight vector
+        w1 = math.cos(ar) * o2d1 + math.sin(ar) * cmath.exp(1j * br) * o3d1;
+        w1 = w1.conjugate() # 1conjugate(w1);
+        w2 = math.cos(ar) * o2d2 + math.sin(ar) * cmath.exp(1j * br) * o3d2;
+        w2 = w2.conjugate() # conjugate(w2);
+        w3 = math.cos(ar) * o2d3 + math.sin(ar) * cmath.exp(1j * br) * o3d3;
+        w3 = w3.conjugate() # conjugate(w3);
     
-    sp = t11c + t22c + t33c; # //span power
-    abs_sp = abs(sp);
-    pwr = 10. * math.log(abs(sp)) / math.log(10.); # //span channel
+        # // find optimum subspace signal
+        zopt = w1 * v1 + w2 * v2 + w3 * v3;
+        ip = abs(zopt * zopt.conjugate()) # conjugate(zopt));
+        ip_eps = ip + eps;
+        sopt = 10. * math.log(ip_eps) / math.log(10.); #// optimum normalised power
     
-    sm = math.fabs(t33);
-    hv = 10. * math.log(sm) / math.log(10.); # log10(sm);
-    sm2 = sopt + pwr;
+        sp = t11c + t22c + t33c; # //span power
+        abs_sp = abs(sp);
+        pwr = 10. * math.log(abs(sp)) / math.log(10.); # //span channel
     
-    opt = pow(10., sm2 / 10.); #// linear opt channel
+        sm = math.fabs(t33);
+        hv = 10. * math.log(sm) / math.log(10.); # log10(sm);
+        sm2 = sopt + pwr;
     
-    out_opt[i] =  opt;
-    out_v1[i] = sopt;
-    '''
-    //out_hv[i] = hv;
-    //out_sm[i] = sm;
+        opt = pow(10., sm2 / 10.); #// linear opt channel
     
-    //out_pwr[i] = (float)pwr;
-    //out_sopt[i] = (float)sopt;
-    //out_abs_sp[i] = (float)abs_sp;
+        out_opt[i] =  opt;
+        out_v1[i] = sopt;
+        '''
+        //out_hv[i] = hv;
+        //out_sm[i] = sm;
     
-    //out_ar[i] = (float) abs(ar);
-    //out_br[i] = (float) abs(br);
-    '''
+        //out_pwr[i] = (float)pwr;
+        //out_sopt[i] = (float)sopt;
+        //out_abs_sp[i] = (float)abs_sp;
+    
+        //out_ar[i] = (float) abs(ar);
+        //out_br[i] = (float) abs(br);
+        '''
+    else:
+        pass
+        
 
 x = read_config('../T3/config.txt')
 
@@ -435,3 +441,11 @@ o3d3 = E3.c # [2] #  at(E3, 2);
 # later generalize to i:
 
 parfor(decom, [i in range(npx)])
+
+c = {}
+for o in out_opt:
+    if o not in c:
+        c[o] = 0
+    c[o] += 1
+
+print(c)
