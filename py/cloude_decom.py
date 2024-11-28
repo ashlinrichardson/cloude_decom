@@ -80,10 +80,15 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     # double t11, t12_r, t12_i, t13_r, t13_i, t22, t23_r, t23_i, t33;
     # double e1, e2, e3, p;
     # cf a, b, c, z1, z2, z3;
-    t11 = t11_p[i]; t22 = t22_p[i]; t33 = t33_p[i];
-    t12_r = t12_r_p[i]; t12_i = t12_i_p[i];
-    t13_r = t13_r_p[i]; t13_i = t13_i_p[i];
-    t23_r = t23_r_p[i]; t23_i = t23_i_p[i];
+    t11 = t11_p[i]
+    t22 = t22_p[i]
+    t33 = t33_p[i]
+    t12_r = t12_r_p[i]
+    t12_i = t12_i_p[i]
+    t13_r = t13_r_p[i]
+    t13_i = t13_i_p[i]
+    t23_r = t23_r_p[i]
+    t23_i = t23_i_p[i]
     
     a = t11; b = t22; c = t33;
     z1 = t12_r + t12_i * 1j;
