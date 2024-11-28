@@ -91,10 +91,20 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     t23_r = t23_r_p[i]
     t23_i = t23_i_p[i]
     
-    a = t11; b = t22; c = t33;
+    a = t11 + 0j
+    b = t22 + 0j
+    c = t33 + 0j
     z1 = t12_r + t12_i * 1j;
     z2 = t13_r + t13_i * 1j;
     z3 = t23_r + t23_i * 1j;
+    
+    # aliases
+    t12c = z1;
+    t13c = z2;
+    t23c = z3;
+    t11c = a
+    t22c = b
+    t33c = c
     
     # /* avoid 0 elements.. conditioning */
     eps2 = (a + b + c) * (1.0e-9) + eps;
