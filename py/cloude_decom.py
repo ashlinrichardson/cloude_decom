@@ -1,9 +1,12 @@
 from misc import read_config, read_binary, write_binary, parfor
+import multiprocessing as mp
 import numpy as np
 import cmath
 import math
 import sys
 import os
+
+lock = mp.Lock()
 
 M_PI = math.pi
 xp, yp = None, None
@@ -39,19 +42,13 @@ class vec3:
 
 
 def solve_cubic(a, b, c, d):
-    _2t13 = math.pow(2., 0.3333333333333333)
-    _2t23 = math.pow(2., 0.6666666666666666)
-    sqrt3 = math.sqrt(3.)
-
-    t2 = 3.*a*c -b*b;
-    t1 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d
-
+    _2t13, _2t23, sqrt3 = 2. ** 0.3333333333333333, 2. ** 0.6666666666666666, math.sqrt(3.)
+    
+    t1, t2 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d, 3.*a*c -b*b
     t0 = (t1 +  (4.*(t2*t2*t2) + (t1*t1)) ** 0.5) #  ,0.5))
     t3 = t0 ** 0.333333333333333333333333
-
-    aX6 = 6.*a*t3
-    bX2 = -2.*b*t3
-    X2 = t3*t3
+    aX6, bX2 = 6. * a * t3, -2. * b * t3
+    X2 = t3 * t3
 
     return vec3((bX2 + _2t23*X2 - 2.*_2t13*t2)/aX6 ,
                 (2.*bX2 + _2t13*(2.*(1. + 1j * sqrt3) * t2 + 1j * _2t13*(1j + sqrt3)*X2 ))/(2.*aX6),
@@ -187,6 +184,10 @@ void rank1_t3(double e1, cf v1, cf v2, cf v3, cf & t11c, cf & t12c, cf & t13c, c
 
 
 def decom(i):   # calculate decom for pixel at linear index "i"
+    if i % 10000 == 0:
+            print(i, 100. * (i + 1) / (nrow * ncol))
+
+    '''
     global xp
     global yp
     global nrow
@@ -217,11 +218,11 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     global o3d1
     global o3d2
     global o3d3
-
+    '''
     debug = (i == ncol * yp + xp)  # check if we're on target pixel
 
 
-    try:
+    if True:
         # // intermediary variables
         # double t11, t12_r, t12_i, t13_r, t13_i, t22, t23_r, t23_i, t33;
         # double e1, e2, e3, p;
@@ -295,13 +296,13 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         vn = (theta2 + M_PI / 4.) * 2. / M_PI   # // az slope is green
         sn = abs(phi) / M_PI  # // mag of Pauli phase is blue (180 is Bragg)
     
-        out_r[i] = dn;
-        out_g[i] = vn;
-        out_b[i] = sn;
+        out_r = dn;
+        out_g = vn;
+        out_b = sn;
     
-        out_e1[i] = e1;
-        out_e2[i] = e2;
-        out_e3[i] = e3;
+        out_e1 = e1;
+        out_e2 = e2;
+        out_e3 = e3;
     
         #  // project data onto null channels // null_vecs=[o2d o3d];
         z1 = o2d1.conjugate()*v1 + o2d2.conjugate()*v2 + o2d3.conjugate()*v3;  # // oconj=o2d';
@@ -342,8 +343,9 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     
         opt = pow(10., sm2 / 10.); #// linear opt channel
     
-        out_opt[i] =  opt;
-        out_v1[i] = sopt;
+        # out_opt[i] =  opt;
+        # out_v1[i] = sopt;
+        return [opt, sopt, out_r, out_g, out_b, out_e1, out_e2, out_e3]
         '''
         //out_hv[i] = hv;
         //out_sm[i] = sm;
@@ -355,17 +357,14 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         //out_ar[i] = (float) abs(ar);
         //out_br[i] = (float) abs(br);
         '''
-    except:
+    else:
         pass
         
 
 x = read_config('../T3/config.txt')
-
-nrow = x['nrow']
-ncol = x['ncol']
+nrow, ncol = x['nrow'], x['ncol']
 npx = nrow * ncol
-
-read_T3('../T3/')
+read_T3('../T3/')  # load the T3 matrix data
 
 # initialize output variables
 out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
@@ -465,12 +464,19 @@ o3d3 = E3.c # [2] #  at(E3, 2);
 
 # later generalize to i:
 
-# 
-for i in range(npx):
+'''for i in range(npx):
     #if i % 1000 == 0:
     #    print(i)
     decom(i)
-#  parfor(decom, [i in range(npx)])
+'''
+results = parfor(decom, range(nrow*ncol))
+# print("results", results)
+
+for i in range(nrow * ncol):
+    print(results[i])
+    out_opt[i] =  results[i][0] 
+
+
 '''
 c = {}
 for o in out_opt:
