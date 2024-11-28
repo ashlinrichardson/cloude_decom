@@ -48,7 +48,6 @@ def solve_cubic(a, b, c, d):
     t2 = 3.*a*c -b*b;
     t1 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d
 
-    print("t1, t2", t1, t2)
     t0 = (t1 +  (4.*(t2*t2*t2) + (t1*t1)) ** 0.5) #  ,0.5))
     t3 = t0 ** 0.333333333333333333333333
 
@@ -173,8 +172,6 @@ def lamcloude(a, b, c, z1, z2, z3):
     deta = a * b * c - c * z1 * z1p - b * z2 * z2p + z1 * z2p * z3 + z1p * z2 * z3p - a * z3 * z3p
     s2 = a * a - a * b + b * b - a * c - b * c + c * c + 3. * fac0
     fac1 = 27. * deta - 27. * s1 * tra + 54. * (tra ** 3.) # pow(tra, 3.)
-    print("fac1", fac1)
-    print("s2", s2)
     tr3 = fac1 + cmath.sqrt( (fac1 ** 2.)- 4. * (s2 ** 3.))  #pow(s2, 3.))
     fac2 = 1. + (1j * math.sqrt(3.))
     fac3 = 1. - (1j * math.sqrt(3.))
@@ -216,12 +213,38 @@ def rank1_t3(e1, v1, v2, v3): # e e1, cf v1, cf v2, cf v3):   #  generate T3 ran
 
 
 def decom(i):   # calculate decom for pixel at linear index "i"
+
+    global t11_p
+    global t22_p
+    global t33_p
+    global t12_r_p 
+    global t12_i_p
+    global t13_r_p
+    global t13_i_p
+    global t23_r_p  
+    global t23_i_p
+
+    global out_r
+    global out_g
+    global out_b
+    global out_e1
+    global out_e2
+    global out_e3
+    global out_opt 
+    global out_v1
+    
+    global o2d1
+    global o2d2
+    global o2de 
+    global o3d1
+    global o3d2
+    global o3d3
+
     if True:
         # // intermediary variables
         # double t11, t12_r, t12_i, t13_r, t13_i, t22, t23_r, t23_i, t33;
         # double e1, e2, e3, p;
         # cf a, b, c, z1, z2, z3;
-        global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p
         t11 = t11_p[i]
         t22 = t22_p[i]
         t33 = t33_p[i]
