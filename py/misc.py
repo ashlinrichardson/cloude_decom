@@ -39,7 +39,7 @@ def read_config(cfg_file):
 '''
 def read_hdr(hdr):
     samples, lines, bands = 0, 0, 0
-    print('+r', hdr)
+    # print('+r', hdr)
     for line in [x.strip() for x in open(hdr).readlines()]:
         # print(line)
         line = line.strip()
