@@ -12,7 +12,7 @@ xp, yp = None, None
 nrow, ncol = None, None
 eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
 o2d1, o2d2, o2de, o3d1, o3d2, o3d3 = None, None, None, None, None, None
-out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = None, None, None, None, None, None, None, None
+out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = None, None, None, None, None, None, None, None, None
 t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
 
 class vec3:
@@ -329,7 +329,7 @@ npx = nrow * ncol
 read_T3('../T3/')  # load the T3 matrix data
 
 # initialize output variables
-out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
+out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
 
 xp, yp = int(sys.argv[2]), int(sys.argv[1])  # cloude_decom T3 313 798 # col/ row for test target
 
@@ -443,19 +443,23 @@ results = work_queue(job_count, num_workers, chunk_size)
 for i in range(nrow * ncol):
     job_i = int(results[i* chunk_size])
     out_opt[job_i] =  results[i * chunk_size + 1]
+    out_sopt[job_i] = results[i + chunk_size + 2]
+    out_r[job_i] = results[i + chunk_size + 3]
+    out_g[job_i] = results[i + chunk_size + 4]
+    out_b[job_i] = results[i + chunk_size + 5]
+
 
 '''
-c = {}
-for o in out_opt:
-    if o not in c:
-        c[o] = 0
-    c[o] += 1
-
-print(c)
+[i, opt, sopt, out_r, out_g, out_b, out_e1, out_e2, out_e3]
 '''
 print("+w opt.bin")
-write_binary(out_opt, "opt.bin")
-write_hdr("opt.hdr", ncol, nrow, 1, ["opt.bin"])
+write_binary(out_opt, "opt.bin"); write_hdr("opt.hdr", ncol, nrow, 1, ["opt.bin"])
+write_binary(out_sopt, "sopt.bin"); write_hdr("sopt.hdr", ncol, nrow, 1, ["sopt.bin"])
+write_binary(out_r, "r.bin"); write_hdr("r.hdr", ncol, nrow, 1, ["r.bin"])
+write_binary(out_g, "g.bin"); write_hdr("g.hdr", ncol, nrow, 1, ["g.bin"])
+write_binary(out_b, "b.bin"); write_hdr("b.hdr", ncol, nrow, 1, ["b.bin"])
+
+
 
 # test case: 
 # python3 cloude_decom.py  313 798
