@@ -1,4 +1,5 @@
 from misc import read_config, read_binary, write_binary, write_hdr
+import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
 import cProfile
@@ -365,6 +366,18 @@ print("T11", t11)
 print("T22", t22)
 print("T33", t33)
 
+r_reshape = np.array(t22_p).reshape((nrow, ncol))
+g_reshape = np.array(t33_p).reshape((nrow, ncol))
+b_reshape = np.array(t11_p).reshape((nrow, ncol))
+
+rgb = np.zeros((nrow, ncol, 3))
+rgb[:, :, 0] = r_reshape
+rgb[:, :, 1] = g_reshape
+rgb[:, :, 2] = b_reshape
+plt.figure()
+plt.imshow(rgb)
+plt.show()
+
 if len(sys.argv) > 3:
     pass
     '''(ws > 1){
@@ -426,7 +439,7 @@ o3d3 = E3.c
 o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = o2d1.conjugate(), o2d2.conjugate(), o2d3.conjugate(), o3d1.conjugate(), o3d2.conjugate(), o3d3.conjugate()
 
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
-num_workers = 32  # Number of worker processes (threads)
+num_workers = mp.n_cpu() * 4  # Number of worker processes (threads)
 chunk_size = 9  # number of elements returned by decom() function
 
 #cProfile.run('for i in range(12345): decom(i)')
