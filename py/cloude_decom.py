@@ -7,8 +7,6 @@ import math
 import sys
 import os
 
-lock = mp.Lock()
-
 M_PI = math.pi
 xp, yp = None, None
 nrow, ncol = None, None
@@ -22,21 +20,17 @@ class vec3:
         self.a, self.b, self.c = a, b, c
 
     def norm(self):
-        A = self
-        return math.sqrt(abs(A.a)*abs(A.a) + abs(A.b)*abs(A.b) + abs(A.c)*abs(A.c));
+        return math.sqrt(abs(self.a)*abs(self.a) + abs(self.b)*abs(self.b) + abs(self.c)*abs(self.c));
 
     def normalize(self):
         norm = self.norm()  # give vector l2 length of 1 
-        self.a /= norm
-        self.b /= norm
-        self.c /= norm
+        self.a, self.b, self.c = self.a / norm, self.b / norm, self.c / norm
 
     def __truediv__(self, a):  # define division by scalar ( X / a ) operator
         return vec3(self.a / a, self.b / a, self.c / a)
     
     def __sub__(self, b):
-        a = self
-        return vec3(a.a - b.b, a.b - b.b, a.c - b.c)
+        return vec3(self.a - b.b, self.b - b.b, self.c - b.c)
     
     def __str__(self):  # tostring()
         return ' '.join([str(x) for x in [self.a, self.b, self.c]])
@@ -48,10 +42,9 @@ def solve_cubic(a, b, c, d):
     t1, t2 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d, 3.*a*c -b*b
     t0 = (t1 +  (4.*(t2*t2*t2) + (t1*t1)) ** 0.5) #  ,0.5))
     t3 = t0 ** 0.333333333333333333333333
-    aX6, bX2 = 6. * a * t3, -2. * b * t3
-    X2 = t3 * t3
+    aX6, bX2, X2 = 6. * a * t3, -2. * b * t3, t3 * t3
 
-    return vec3((bX2 + _2t23*X2 - 2.*_2t13*t2)/aX6 ,
+    return vec3((bX2 + _2t23*X2 - 2.*_2t13*t2)/aX6,
                 (2.*bX2 + _2t13*(2.*(1. + 1j * sqrt3) * t2 + 1j * _2t13*(1j + sqrt3)*X2 ))/(2.*aX6),
                 (2.*bX2 + _2t13*(2.*(1. - 1j * sqrt3) * t2 - _2t13*(1.+ 1j * sqrt3)*X2 ))/(2.*aX6))
 
@@ -62,9 +55,7 @@ class herm3:
 
     def solve_characteristic(self):
         a, b, c, d, e, f = self.a, self.b, self.c, self.d, self.e, self.f
-        
-        _A = -1. + 0j
-        _B = a + d + f
+        _A, _B = -1. + 0j, a + d + f
         _C = (-(a*d) - a*f - d*f + b*b.conjugate() + c*c.conjugate() + e*e.conjugate())
         _D = d*(a*f - c*c.conjugate()) + e*(b*c.conjugate() - a*e.conjugate()) + b.conjugate()*(-(b*f) + c*e.conjugate())
         return solve_cubic(_A, _B, _C, _D)
@@ -93,7 +84,6 @@ def eigv(A, _lambda):  # herm3<cf> &A, cf & lambda){
 
 def eig(A): #  L, E1, E2, E3): # herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<cf> &E2, vec3<cf> &E3){
     lambdas = A.solve_characteristic()
-    
     e1, e2, e3 = eigv(A, lambdas.a), eigv(A, lambdas.b), eigv(A, lambdas.c)
     l1, l2, l3 = lambdas.a, lambdas.b, lambdas.c  
 
@@ -145,89 +135,41 @@ def lamcloude(a, b, c, z1, z2, z3):
     e3 = (tra - (fac3 * s2) / (3. * pow(2., 2.*p) * pow(tr3, p) + eps) - (fac2 * pow(tr3,p)) / (6.*pow(2., p) + eps)).real
     
     if(e1 < e3):  # sort the eigenvalues
-        tmp = e1; e1 = e3; e3 = tmp   #  swp(&e1, &e3); // sort eigenvalues
+        tmp = e1; e1 = e3; e3 = tmp  
     if(e1 < e2):
-        tmp = e1; e1 = e2; d2 = tmp   # swp(&e1, &e2);
+        tmp = e1; e1 = e2; d2 = tmp 
     if(e2 < e3):
-        tmp = e2; e2 = e3; e3 = tmp   # swp(&e2, &e3);
+        tmp = e2; e2 = e3; e3 = tmp 
     if(e1 < e3 or e1 < e2 or e2 < e3):
         print("Warning: not sorted (%e, %e, %e)\n", e1, e2, e3);
 
     v2 = ((a - e1) * z3 - z1p * z2) / ((b - e1) * z2 - z3 * z1 + eps)  # dominant eigenvector
     v3 = (e1 - a - z1 * v2) / (z2 + eps)
-    v1 = 1.  # ones(size(v2))
+    v1 = 1.
 
     av1, av2, av3 = abs(v1), abs(v2), abs(v3)
     n = math.sqrt(av1 * av1 + av2 * av2 + av3 * av3) + eps
 
-    # normalised components as output
-    v1, v2, v3 = v1 / n, v2 / n, v3 / n
-    return [e1, e2, e3, v1, v2, v3]  #  double & e1, double & e2, double & e3, cf & v1, cf & v2, cf & v3
+    v1, v2, v3 = v1 / n, v2 / n, v3 / n  # normalised components as output
+    return [e1, e2, e3, v1, v2, v3] 
 
 
-def rank1_t3(e1, v1, v2, v3): # e e1, cf v1, cf v2, cf v3):   #  generate T3 rank 1
-    t11c = e1 * v1 * (v1.conjugate()) # conjugate(v1)
-    t12c = e1 * v1 * (v2.conjugate()) # conjugate(v2)
-    t13c = e1 * v1 * (v3.conjugate()) # conjugate(v3)
-    t22c = e1 * v2 * (v2.conjugate()) # conjugate(v2)
-    t23c = e1 * v2 * (v3.conjugate()) # conjugate(v3)
-    t33c = e1 * v3 * (v3.conjugate()) # conjugate(v3)
+def rank1_t3(e1, v1, v2, v3):  #  generate T3 rank 1
+    t11c = e1 * v1 * (v1.conjugate())
+    t12c = e1 * v1 * (v2.conjugate())
+    t13c = e1 * v1 * (v3.conjugate())
+    t22c = e1 * v2 * (v2.conjugate())
+    t23c = e1 * v2 * (v3.conjugate())
+    t33c = e1 * v3 * (v3.conjugate())
     return [t11c, t12c, t13c, t22c, t23c, t33c]
-'''
-void rank1_t3(double e1, cf v1, cf v2, cf v3, cf & t11c, cf & t12c, cf & t13c, cf & t22c, cf & t23c, cf & t33c){ 
-    // generate T3 rank 1
-  t11c = e1 * v1 * conj(v1); t12c = e1 * v1 * conj(v2); t13c = e1 * v1 * conj(v3);
-  t22c = e1 * v2 * conj(v2); t23c = e1 * v2 * conj(v3);
-  t33c = e1 * v3 * conj(v3);
-}
-'''
-
 
 
 def decom(i):   # calculate decom for pixel at linear index "i"
     if i % 10000 == 0:
             print(i, 100. * (i + 1) / (nrow * ncol))
-
-    '''
-    global xp
-    global yp
-    global nrow
-    global ncol
-
-    global t11_p
-    global t22_p
-    global t33_p
-    global t12_r_p 
-    global t12_i_p
-    global t13_r_p
-    global t13_i_p
-    global t23_r_p  
-    global t23_i_p
-
-    global out_r
-    global out_g
-    global out_b
-    global out_e1
-    global out_e2
-    global out_e3
-    global out_opt 
-    global out_v1
-    
-    global o2d1
-    global o2d2
-    global o2de 
-    global o3d1
-    global o3d2
-    global o3d3
-    '''
     debug = (i == ncol * yp + xp)  # check if we're on target pixel
 
-
     if True:
-        # // intermediary variables
-        # double t11, t12_r, t12_i, t13_r, t13_i, t22, t23_r, t23_i, t33;
-        # double e1, e2, e3, p;
-        # cf a, b, c, z1, z2, z3;
         t11 = t11_p[i]
         t22 = t22_p[i]
         t33 = t33_p[i]
@@ -246,14 +188,14 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         a = t11 + 0j
         b = t22 + 0j
         c = t33 + 0j
-        z1 = t12_r + t12_i * 1j;
-        z2 = t13_r + t13_i * 1j;
-        z3 = t23_r + t23_i * 1j;
+        z1 = t12_r + t12_i * 1j
+        z2 = t13_r + t13_i * 1j
+        z3 = t23_r + t23_i * 1j
     
         # aliases
-        t12c = z1;
-        t13c = z2;
-        t23c = z3;
+        t12c = z1
+        t13c = z2
+        t23c = z3
         t11c = a
         t22c = b
         t33c = c
@@ -261,17 +203,13 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         # /* avoid 0 elements.. conditioning */
         eps2 = (a + b + c) * (1.0e-9) + eps;
         F = ((float(nrow) + float(ncol)) / 2.);
-        z1 = z1 + eps2 * F; # // %randn(sx,sy);
-        z2 = z2 + eps2 * F; # // %randn(sx,sy);
-        z3 = z3 + eps2 * F; #// %randn(sx,sy);
-        a = a + eps2 * F; #// %randn(sx,sy);
-        b = b + eps2 * F; #// %randn(sx,sy);
-        c = c + eps2 * F; #// %randn(sx,sy);
+        z1 = z1 + eps2 * F
+        z2 = z2 + eps2 * F 
+        z3 = z3 + eps2 * F
+        a = a + eps2 * F
+        b = b + eps2 * F
+        c = c + eps2 * F
 
-        #  print(a,b,c,z1,z2,z3, "stuff")
-    
-        # //run lamcloude
-        # cf v1, v2, v3;
         [e1, e2, e3, v1, v2, v3] = lamcloude(a, b, c, z1, z2, z3) #  e1, e2, e3, v1, v2, v3);
         if debug:
             print("lamcloude")
@@ -283,8 +221,8 @@ def decom(i):   # calculate decom for pixel at linear index "i"
             print("v3", v3)
 
         # // rank 1 t3
-        # cf t11c, t12c, t13c, t22c, t23c, t33c;
-        [t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3(e1, v1, v2, v3) #  a, z1, z2, b, z3, c) #t11c, t12c, t13c, t22c, t23c, t33c);
+        [t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3(e1, v1, v2, v3)
+
         # // generate alpha etc. eigenvector parameters
         alpha = math.acos(abs(v1));
         phi = cmath.phase(t12c);
@@ -297,50 +235,42 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         vn = (theta2 + M_PI / 4.) * 2. / M_PI   # // az slope is green
         sn = abs(phi) / M_PI  # // mag of Pauli phase is blue (180 is Bragg)
     
-        out_r = dn;
-        out_g = vn;
-        out_b = sn;
-    
-        out_e1 = e1;
-        out_e2 = e2;
-        out_e3 = e3;
-    
-        #  // project data onto null channels // null_vecs=[o2d o3d];
-        z1 = o2d1.conjugate()*v1 + o2d2.conjugate()*v2 + o2d3.conjugate()*v3;  # // oconj=o2d';
-        z2 = o3d1.conjugate()*v1 + o3d2.conjugate()*v2 + o3d3.conjugate()*v3;  #// oconj=o3d';
+        out_r = dn
+        out_g = vn
+        out_b = sn
+        out_e1 = e1
+        out_e2 = e2
+        out_e3 = e3
     
         #  // project data onto null channels // null_vecs=[o2d o3d];
-        '''z1 = conjugate(o2d1)*v1 + conjugate(o2d2)*v2 + conjugate(o2d3)*v3;  # // oconj=o2d';
-        z2 = conjugate(o3d1)*v1 + conjugate(o3d2)*v2 + conjugate(o3d3)*v3;  #// oconj=o3d';'''
+        z1 = o2d1.conjugate()*v1 + o2d2.conjugate()*v2 + o2d3.conjugate()*v3  # // oconj=o2d';
+        z2 = o3d1.conjugate()*v1 + o3d2.conjugate()*v2 + o3d3.conjugate()*v3  #// oconj=o3d';
     
         #  find optimum weights
-        popt = cmath.phase(z2 * z1.conjugate()) * 180. / M_PI;
-        za = (z1*z1.conjugate() - z2*z2.conjugate()) + 1j * 2.*abs(z1)*abs(z2);
-        aopt = cmath.phase(za) * 90. / M_PI;
-        ar = aopt * M_PI / 180.;
-        br = popt * M_PI / 180.;
+        popt = cmath.phase(z2 * z1.conjugate()) * 180. / M_PI
+        za = (z1*z1.conjugate() - z2*z2.conjugate()) + 1j * 2.*abs(z1)*abs(z2)
+        aopt = cmath.phase(za) * 90. / M_PI
+        ar = aopt * M_PI / 180.
+        br = popt * M_PI / 180.
     
         # // optimum weight vector
-        w1 = math.cos(ar) * o2d1 + math.sin(ar) * cmath.exp(1j * br) * o3d1;
-        w1 = w1.conjugate() # 1conjugate(w1);
-        w2 = math.cos(ar) * o2d2 + math.sin(ar) * cmath.exp(1j * br) * o3d2;
-        w2 = w2.conjugate() # conjugate(w2);
-        w3 = math.cos(ar) * o2d3 + math.sin(ar) * cmath.exp(1j * br) * o3d3;
-        w3 = w3.conjugate() # conjugate(w3);
+        w1 = (math.cos(ar) * o2d1 + math.sin(ar) * cmath.exp(1j * br) * o3d1).conjugate()
+        w2 = (math.cos(ar) * o2d2 + math.sin(ar) * cmath.exp(1j * br) * o3d2).conjugate()
+        w3 = (math.cos(ar) * o2d3 + math.sin(ar) * cmath.exp(1j * br) * o3d3).conjugate()
     
-        # // find optimum subspace signal
-        zopt = w1 * v1 + w2 * v2 + w3 * v3;
-        ip = abs(zopt * zopt.conjugate()) # conjugate(zopt));
+        # find optimum subspace signal
+        zopt = w1 * v1 + w2 * v2 + w3 * v3
+        ip = abs(zopt * zopt.conjugate()) 
         ip_eps = ip + eps;
-        sopt = 10. * math.log(ip_eps) / math.log(10.); #// optimum normalised power
+        sopt = 10. * math.log(ip_eps) / math.log(10.); # optimum normalised power
     
-        sp = t11c + t22c + t33c; # //span power
-        abs_sp = abs(sp);
-        pwr = 10. * math.log(abs(sp)) / math.log(10.); # //span channel
+        sp = t11c + t22c + t33c  # span power
+        abs_sp = abs(sp)
+        pwr = 10. * math.log(abs(sp)) / math.log(10.)  # span channel
     
-        sm = math.fabs(t33);
-        hv = 10. * math.log(sm) / math.log(10.); # log10(sm);
-        sm2 = sopt + pwr;
+        sm = math.fabs(t33)
+        hv = 10. * math.log(sm) / math.log(10.)
+        sm2 = sopt + pwr
     
         opt = pow(10., sm2 / 10.); #// linear opt channel
     
@@ -450,25 +380,25 @@ if len(sys.argv) > 3:
 }
 '''
 # printf("N_USE: %f\n", n_use);
-t11 /= n_use; t22 /= n_use; t33 /= n_use;
-t12_r /= n_use; t12_i /= n_use;
-t13_r /= n_use; t13_i /= n_use;
-t23_r /= n_use; t23_i /= n_use;
+t11 /= n_use; t22 /= n_use; t33 /= n_use
+t12_r /= n_use; t12_i /= n_use
+t13_r /= n_use; t13_i /= n_use
+t23_r /= n_use; t23_i /= n_use
 
-a = t11; b = t22; c = t33;
-z1 = t12_r + t12_i * 1j;
-z2 = t13_r + t13_i * 1j;
-z3 = t23_r + t23_i * 1j;
+a = t11; b = t22; c = t33
+z1 = t12_r + t12_i * 1j
+z2 = t13_r + t13_i * 1j
+z3 = t23_r + t23_i * 1j
 
 # /* avoid 0 elements.. conditioning */
-eps2 = (a + b + c) * (1.0e-9) + eps;
+eps2 = (a + b + c) * (1.0e-9) + eps
 F = (float(nrow + ncol) / 2.) + 0j
-z1 = z1 + eps2 * F; # %randn(sx,sy);
-z2 = z2 + eps2 * F; #// %randn(sx,sy);
-z3 = z3 + eps2 * F; #// %randn(sx,sy);
-a = a + eps2 * F;# // %randn(sx,sy);
-b = b + eps2 * F;# // %randn(sx,sy);
-c = c + eps2 * F;# // %randn(sx,sy);
+z1 = z1 + eps2 * F   # %randn(sx,sy);
+z2 = z2 + eps2 * F   # %randn(sx,sy);
+z3 = z3 + eps2 * F   # %randn(sx,sy);
+a = a + eps2 * F   # %randn(sx,sy);
+b = b + eps2 * F   # %randn(sx,sy);
+c = c + eps2 * F   # %randn(sx,sy);
 
 T = herm3(a, z1, z2, b, z3, c)
 # herm3<cf> T(a, z1, z2, b, z3, c);
