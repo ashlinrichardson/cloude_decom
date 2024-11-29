@@ -139,7 +139,7 @@ def lamcloude(a, b, c, z1, z2, z3):
     if(e1 < e2):
         tmp = e1; e1 = e2; d2 = tmp 
     if(e2 < e3):
-        tmp = e2; e2 = e3; e3 = tmp 
+        tmp = e2; e2 = e3; e3 = tmp
     if(e1 < e3 or e1 < e2 or e2 < e3):
         print("Warning: not sorted (%e, %e, %e)\n", e1, e2, e3);
 
@@ -155,12 +155,12 @@ def lamcloude(a, b, c, z1, z2, z3):
 
 
 def rank1_t3(e1, v1, v2, v3):  #  generate T3 rank 1
-    t11c = e1 * v1 * (v1.conjugate())
-    t12c = e1 * v1 * (v2.conjugate())
-    t13c = e1 * v1 * (v3.conjugate())
-    t22c = e1 * v2 * (v2.conjugate())
-    t23c = e1 * v2 * (v3.conjugate())
-    t33c = e1 * v3 * (v3.conjugate())
+    t11c = e1 * v1 * v1.conjugate()
+    t12c = e1 * v1 * v2.conjugate()
+    t13c = e1 * v1 * v3.conjugate()
+    t22c = e1 * v2 * v2.conjugate()
+    t23c = e1 * v2 * v3.conjugate()
+    t33c = e1 * v3 * v3.conjugate()
     return [t11c, t12c, t13c, t22c, t23c, t33c]
 
 
@@ -201,8 +201,8 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         t33c = c
     
         # /* avoid 0 elements.. conditioning */
-        eps2 = (a + b + c) * (1.0e-9) + eps;
-        F = ((float(nrow) + float(ncol)) / 2.);
+        eps2 = (a + b + c) * (1.0e-9) + eps
+        F = (float(nrow) + float(ncol)) / 2.
         z1 = z1 + eps2 * F
         z2 = z2 + eps2 * F 
         z3 = z3 + eps2 * F
@@ -390,12 +390,12 @@ z3 = t23_r + t23_i * 1j
 # /* avoid 0 elements.. conditioning */
 eps2 = (a + b + c) * (1.0e-9) + eps
 F = (float(nrow + ncol) / 2.) + 0j
-z1 = z1 + eps2 * F   # %randn(sx,sy);
-z2 = z2 + eps2 * F   # %randn(sx,sy);
-z3 = z3 + eps2 * F   # %randn(sx,sy);
-a = a + eps2 * F   # %randn(sx,sy);
-b = b + eps2 * F   # %randn(sx,sy);
-c = c + eps2 * F   # %randn(sx,sy);
+z1 = z1 + eps2 * F
+z2 = z2 + eps2 * F  
+z3 = z3 + eps2 * F  
+a = a + eps2 * F  
+b = b + eps2 * F 
+c = c + eps2 * F 
 
 T = herm3(a, z1, z2, b, z3, c)
 
@@ -425,7 +425,6 @@ for i in range(nrow * ncol):
     out_g[job_i] = results[i * chunk_size + 4]
     out_b[job_i] = results[i * chunk_size + 5]
 
-
 '''
 [i, opt, sopt, out_r, out_g, out_b, out_e1, out_e2, out_e3]
 '''
@@ -435,8 +434,6 @@ write_binary(out_sopt, "sopt.bin"); write_hdr("sopt.hdr", ncol, nrow, 1, ["sopt.
 write_binary(out_r, "r.bin"); write_hdr("r.hdr", ncol, nrow, 1, ["r.bin"])
 write_binary(out_g, "g.bin"); write_hdr("g.hdr", ncol, nrow, 1, ["g.bin"])
 write_binary(out_b, "b.bin"); write_hdr("b.hdr", ncol, nrow, 1, ["b.bin"])
-
-
 
 # test case: 
 # python3 cloude_decom.py  313 798
