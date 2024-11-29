@@ -376,6 +376,7 @@ rgb[:, :, 1] = g_reshape
 rgb[:, :, 2] = b_reshape
 plt.figure()
 plt.imshow(rgb)
+plt.tight_layout()
 plt.show()
 
 if len(sys.argv) > 3:
@@ -439,7 +440,7 @@ o3d3 = E3.c
 o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = o2d1.conjugate(), o2d2.conjugate(), o2d3.conjugate(), o3d1.conjugate(), o3d2.conjugate(), o3d3.conjugate()
 
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
-num_workers = mp.n_cpu() * 4  # Number of worker processes (threads)
+num_workers = mp.cpu_count() * 4  # Number of worker processes (threads)
 chunk_size = 9  # number of elements returned by decom() function
 
 #cProfile.run('for i in range(12345): decom(i)')
