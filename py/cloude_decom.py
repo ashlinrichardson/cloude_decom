@@ -1,6 +1,7 @@
 from misc import read_config, read_binary, write_binary, write_hdr
 import multiprocessing as mp
 import numpy as np
+import cProfile
 import ctypes
 import cmath
 import math
@@ -11,7 +12,10 @@ M_PI = math.pi
 xp, yp = None, None
 nrow, ncol = None, None
 eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
+F = None
 o2d1, o2d2, o2de, o3d1, o3d2, o3d3 = None, None, None, None, None, None
+o2d1c, o2d2c, o2dec, o3d1c, o3d2c, o3d3c = None, None, None, None, None, None
+
 out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = None, None, None, None, None, None, None, None, None
 t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
 
@@ -40,7 +44,7 @@ def solve_cubic(a, b, c, d):
     _2t13, _2t23, sqrt3 = 2. ** 0.3333333333333333, 2. ** 0.6666666666666666, math.sqrt(3.)
     
     t1, t2 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d, 3.*a*c -b*b
-    t0 = (t1 +  (4.*(t2*t2*t2) + (t1*t1)) ** 0.5) #  ,0.5))
+    t0 = (t1 +  (4.*(t2*t2*t2) + (t1*t1)) ** 0.5)
     t3 = t0 ** 0.333333333333333333333333
     aX6, bX2, X2 = 6. * a * t3, -2. * b * t3, t3 * t3
 
@@ -56,8 +60,11 @@ class herm3:
     def solve_characteristic(self):
         a, b, c, d, e, f = self.a, self.b, self.c, self.d, self.e, self.f
         _A, _B = -1. + 0j, a + d + f
-        _C = (-(a*d) - a*f - d*f + b*b.conjugate() + c*c.conjugate() + e*e.conjugate())
-        _D = d*(a*f - c*c.conjugate()) + e*(b*c.conjugate() - a*e.conjugate()) + b.conjugate()*(-(b*f) + c*e.conjugate())
+        cc = self.c.conjugate()
+        bc = self.b.conjugate()
+        ec = self.e.conjugate()
+        _C = (-(a*d) - a*f - d*f + b* bc + c* cc + e* ec)
+        _D = d*(a*f - c* cc) + e*(b* cc - a* ec) + bc *(-(b*f) + c* ec)
         return solve_cubic(_A, _B, _C, _D)
 
     def __mul__(self, other):
@@ -77,9 +84,10 @@ class herm3:
 def eigv(A, _lambda):  # herm3<cf> &A, cf & lambda){
     ''' syms a lambda b y c z d y e z
         solve( '(a-lambda)+b*y+c*z', 'conj(b) + y*(d-lambda) +e*z')  '''
+    Abc = (A.b).conjugate()
     return vec3(1. + 0j, # cf(1.,0.),
-                -((A.a)*(A.e)-_lambda*(A.e)-(A.c)* (A.b).conjugate() )/((A.b)*(A.e)-(A.d)*(A.c)+_lambda*(A.c)),
-                (-(A.b)* (A.b).conjugate() -_lambda*(A.a)+(A.d)*(A.a)-(A.d)*_lambda+(_lambda*_lambda))/((A.b)*(A.e)-(A.d)*(A.c)+_lambda*(A.c)))
+                -((A.a)*(A.e)-_lambda*(A.e)-(A.c)* Abc )/((A.b)*(A.e)-(A.d)*(A.c)+_lambda*(A.c)),
+                (-(A.b)* Abc -_lambda*(A.a)+(A.d)*(A.a)-(A.d)*_lambda+(_lambda*_lambda))/((A.b)*(A.e)-(A.d)*(A.c)+_lambda*(A.c)))
 
 
 def eig(A): #  L, E1, E2, E3): # herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<cf> &E2, vec3<cf> &E3){
@@ -127,8 +135,9 @@ def lamcloude(a, b, c, z1, z2, z3):
     s2 = a * a - a * b + b * b - a * c - b * c + c * c + 3. * fac0
     fac1 = 27. * deta - 27. * s1 * tra + 54. * (tra ** 3.)
     tr3 = fac1 + cmath.sqrt( (fac1 ** 2.)- 4. * (s2 ** 3.))
-    fac2 = 1. + (1j * math.sqrt(3.))
-    fac3 = 1. - (1j * math.sqrt(3.))
+    j1s3 = 1j * math.sqrt(3.)
+    fac2 = 1. + j1s3
+    fac3 = 1. - j1s3
 
     ptr3p = tr3 ** p
     p2p = 2. ** p
@@ -203,7 +212,7 @@ def decom(i):   # calculate decom for pixel at linear index "i"
     
         # /* avoid 0 elements.. conditioning */
         eps2 = (a + b + c) * (1.0e-9) + eps
-        F = (float(nrow) + float(ncol)) / 2.
+
         z1 = z1 + eps2 * F
         z2 = z2 + eps2 * F 
         z3 = z3 + eps2 * F
@@ -244,8 +253,8 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         out_e3 = e3
     
         # project data onto null channels // null_vecs=[o2d o3d];
-        z1 = o2d1.conjugate()*v1 + o2d2.conjugate()*v2 + o2d3.conjugate()*v3
-        z2 = o3d1.conjugate()*v1 + o3d2.conjugate()*v2 + o3d3.conjugate()*v3
+        z1 = o2d1c*v1 + o2d2c*v2 + o2d3c*v3
+        z2 = o3d1c*v1 + o3d2c*v2 + o3d3c*v3
     
         # find optimum weights
         popt = cmath.phase(z2 * z1.conjugate()) * 180. / M_PI
@@ -324,6 +333,7 @@ def work_queue(job_count, num_workers, chunk_size):
 
 x = read_config('../T3/config.txt')
 nrow, ncol = x['nrow'], x['ncol']
+F = (float(nrow) + float(ncol)) / 2.
 npx = nrow * ncol
 read_T3('../T3/')  # load the T3 matrix data
 
@@ -413,9 +423,15 @@ o3d1 = E3.a
 o3d2 = E3.b
 o3d3 = E3.c
 
+o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = o2d1.conjugate(), o2d2.conjugate(), o2d3.conjugate(), o3d1.conjugate(), o3d2.conjugate(), o3d3.conjugate()
+
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
 num_workers = 32  # Number of worker processes (threads)
 chunk_size = 9  # number of elements returned by decom() function
+
+#cProfile.run('for i in range(12345): decom(i)')
+# sys.exit(1)
+
 results = work_queue(job_count, num_workers, chunk_size)
 
 for i in range(nrow * ncol):
