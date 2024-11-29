@@ -210,7 +210,7 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         b = b + eps2 * F
         c = c + eps2 * F
 
-        [e1, e2, e3, v1, v2, v3] = lamcloude(a, b, c, z1, z2, z3) #  e1, e2, e3, v1, v2, v3);
+        [e1, e2, e3, v1, v2, v3] = lamcloude(a, b, c, z1, z2, z3)
         if debug:
             print("lamcloude")
             print("e1", e1)
@@ -220,20 +220,20 @@ def decom(i):   # calculate decom for pixel at linear index "i"
             print("v2", v2)
             print("v3", v3)
 
-        # // rank 1 t3
+        # rank 1 t3
         [t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3(e1, v1, v2, v3)
 
-        # // generate alpha etc. eigenvector parameters
+        # generate alpha etc. eigenvector parameters
         alpha = math.acos(abs(v1));
         phi = cmath.phase(t12c);
         theta = cmath.phase((t22c - t33c) + 2. * 1j * t23c.real) / 4.
     
-        # // generate RGB colour composite from multiple eigenvector angles
-        dn = alpha * 2. / M_PI # // alpha angle in red channel
+        # generate RGB colour composite from multiple eigenvector angles
+        dn = alpha * 2. / M_PI # alpha angle in red channel
         theta2 = theta + (theta > M_PI / 4.) * (M_PI / 4. - theta)
         theta2 = theta2 + (theta2 < -M_PI / 4.) * (-M_PI / 4. - theta2)
-        vn = (theta2 + M_PI / 4.) * 2. / M_PI   # // az slope is green
-        sn = abs(phi) / M_PI  # // mag of Pauli phase is blue (180 is Bragg)
+        vn = (theta2 + M_PI / 4.) * 2. / M_PI   # az slope is green
+        sn = abs(phi) / M_PI  # mag of Pauli phase is blue (180 is Bragg)
     
         out_r = dn
         out_g = vn
@@ -242,18 +242,18 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         out_e2 = e2
         out_e3 = e3
     
-        #  // project data onto null channels // null_vecs=[o2d o3d];
-        z1 = o2d1.conjugate()*v1 + o2d2.conjugate()*v2 + o2d3.conjugate()*v3  # // oconj=o2d';
-        z2 = o3d1.conjugate()*v1 + o3d2.conjugate()*v2 + o3d3.conjugate()*v3  #// oconj=o3d';
+        # project data onto null channels // null_vecs=[o2d o3d];
+        z1 = o2d1.conjugate()*v1 + o2d2.conjugate()*v2 + o2d3.conjugate()*v3
+        z2 = o3d1.conjugate()*v1 + o3d2.conjugate()*v2 + o3d3.conjugate()*v3
     
-        #  find optimum weights
+        # find optimum weights
         popt = cmath.phase(z2 * z1.conjugate()) * 180. / M_PI
-        za = (z1*z1.conjugate() - z2*z2.conjugate()) + 1j * 2.*abs(z1)*abs(z2)
+        za = (z1*z1.conjugate() - z2*z2.conjugate()) + 1j * 2. * abs(z1) * abs(z2)
         aopt = cmath.phase(za) * 90. / M_PI
         ar = aopt * M_PI / 180.
         br = popt * M_PI / 180.
     
-        # // optimum weight vector
+        # optimum weight vector
         w1 = (math.cos(ar) * o2d1 + math.sin(ar) * cmath.exp(1j * br) * o3d1).conjugate()
         w2 = (math.cos(ar) * o2d2 + math.sin(ar) * cmath.exp(1j * br) * o3d2).conjugate()
         w3 = (math.cos(ar) * o2d3 + math.sin(ar) * cmath.exp(1j * br) * o3d3).conjugate()
@@ -272,19 +272,17 @@ def decom(i):   # calculate decom for pixel at linear index "i"
         hv = 10. * math.log(sm) / math.log(10.)
         sm2 = sopt + pwr
     
-        opt = pow(10., sm2 / 10.); #// linear opt channel
+        opt = pow(10., sm2 / 10.)  # linear opt channel
     
-        # out_opt[i] =  opt;
-        # out_v1[i] = sopt;
         return [i, opt, sopt, out_r, out_g, out_b, out_e1, out_e2, out_e3]
         '''
+        # out_opt[i] =  opt;
+        # out_v1[i] = sopt;
         //out_hv[i] = hv;
         //out_sm[i] = sm;
-    
         //out_pwr[i] = (float)pwr;
         //out_sopt[i] = (float)sopt;
         //out_abs_sp[i] = (float)abs_sp;
-    
         //out_ar[i] = (float) abs(ar);
         //out_br[i] = (float) abs(br);
         '''
@@ -356,7 +354,6 @@ print("T11", t11)
 print("T22", t22)
 print("T33", t33)
 
-
 if len(sys.argv) > 3:
     pass
     '''(ws > 1){
@@ -401,39 +398,19 @@ b = b + eps2 * F   # %randn(sx,sy);
 c = c + eps2 * F   # %randn(sx,sy);
 
 T = herm3(a, z1, z2, b, z3, c)
-# herm3<cf> T(a, z1, z2, b, z3, c);
-# cout << "T" << endl << T << endl;
 
-# vec3<cf> L, E1, E2, E3;
-# eig(T, L, E1, E2, E3);
 L, E1, E2, E3 = eig(T)
-print("L", L)  # cout << "L" << endl << L << endl;
+print("L", L)  
 print("E2", E2)
 print("E3", E3)
 
-# / dont forget to test eigs !!!!!!!
-o2d1 = E2.a # [0] # at(E2, 0);
-o2d2 = E2.b # [1] # at(E2, 1);
-o2d3 = E2.c # [2] #at(E2, 2);
+o2d1 = E2.a 
+o2d2 = E2.b 
+o2d3 = E2.c
 
-o3d1 = E3.a # [0] # at(E3, 0);
-o3d2 = E3.b # [1] # at(E3, 1);
-o3d3 = E3.c # [2] #  at(E3, 2);
-
-# cout << "o2: " << o2d1 << o2d2 << o2d3 << endl;
-# cout << "o3: " << o3d1 << o3d2 << o3d3 << endl;
-
-
-# later generalize to i:
-
-'''for i in range(npx):
-    #if i % 1000 == 0:
-    #    print(i)
-    decom(i)
-'''
-# results = parfor(decom, range(nrow*ncol))
-# print("results", results)
-
+o3d1 = E3.a 
+o3d2 = E3.b
+o3d3 = E3.c
 
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
 num_workers = 32  # Number of worker processes (threads)
@@ -443,10 +420,10 @@ results = work_queue(job_count, num_workers, chunk_size)
 for i in range(nrow * ncol):
     job_i = int(results[i* chunk_size])
     out_opt[job_i] =  results[i * chunk_size + 1]
-    out_sopt[job_i] = results[i + chunk_size + 2]
-    out_r[job_i] = results[i + chunk_size + 3]
-    out_g[job_i] = results[i + chunk_size + 4]
-    out_b[job_i] = results[i + chunk_size + 5]
+    out_sopt[job_i] = results[i * chunk_size + 2]
+    out_r[job_i] = results[i * chunk_size + 3]
+    out_g[job_i] = results[i * chunk_size + 4]
+    out_b[job_i] = results[i * chunk_size + 5]
 
 
 '''
