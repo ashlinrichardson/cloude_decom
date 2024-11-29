@@ -117,22 +117,25 @@ def read_T3(d):
     t23_i_p = read_binary(d + sep + 'T23_imag.bin')[3]
 
 def lamcloude(a, b, c, z1, z2, z3):
-    p = 1./3.  # cf tra, z1p, z2p, z3p, fac0, fac1, fac2, fac3, s1, s2, deta, tr3;
+    p = 1./3.
     tra = (a + b + c) / 3.
-    z1p, z2p, z3p = z1.conjugate(), z2.conjugate(), z3.conjugate() # conjugate(z1), conjugate(z2), conjugate(z3)
+    z1p, z2p, z3p = z1.conjugate(), z2.conjugate(), z3.conjugate()
     fac0 = z1 * z1p + z2 * z2p + z3 * z3p
 
     s1 = a * b + a * c + b * c - fac0
     deta = a * b * c - c * z1 * z1p - b * z2 * z2p + z1 * z2p * z3 + z1p * z2 * z3p - a * z3 * z3p
     s2 = a * a - a * b + b * b - a * c - b * c + c * c + 3. * fac0
-    fac1 = 27. * deta - 27. * s1 * tra + 54. * (tra ** 3.) # pow(tra, 3.)
-    tr3 = fac1 + cmath.sqrt( (fac1 ** 2.)- 4. * (s2 ** 3.))  #pow(s2, 3.))
+    fac1 = 27. * deta - 27. * s1 * tra + 54. * (tra ** 3.)
+    tr3 = fac1 + cmath.sqrt( (fac1 ** 2.)- 4. * (s2 ** 3.))
     fac2 = 1. + (1j * math.sqrt(3.))
     fac3 = 1. - (1j * math.sqrt(3.))
 
-    e1 = (tra + pow(tr3, p) / (3. * pow(2., p)) + (s2 * pow(2., p) + eps) / (3. * pow(tr3, p) + eps)).real
-    e2 = (tra - (fac2 * s2) / (3. * pow(tr3, p) * pow(2., 2. * p) + eps) - (fac3 * pow(tr3,p)) / (6.*pow(2., p) + eps)).real
-    e3 = (tra - (fac3 * s2) / (3. * pow(2., 2.*p) * pow(tr3, p) + eps) - (fac2 * pow(tr3,p)) / (6.*pow(2., p) + eps)).real
+    ptr3p = tr3 ** p
+    p2p = 2. ** p
+    p22p = 2. ** ( 2 * p ) 
+    e1 = (tra + ptr3p / (3. * p2p) + (s2 * p2p + eps) / (3. * ptr3p + eps)).real
+    e2 = (tra - (fac2 * s2) / (3. * ptr3p * p22p + eps) - (fac3 * ptr3p) / (6. * p2p + eps)).real
+    e3 = (tra - (fac3 * s2) / (3. * p22p * ptr3p + eps) - (fac2 * ptr3p) / (6. * p2p + eps)).real
     
     if(e1 < e3):  # sort the eigenvalues
         tmp = e1; e1 = e3; e3 = tmp  
@@ -155,13 +158,11 @@ def lamcloude(a, b, c, z1, z2, z3):
 
 
 def rank1_t3(e1, v1, v2, v3):  #  generate T3 rank 1
-    t11c = e1 * v1 * v1.conjugate()
-    t12c = e1 * v1 * v2.conjugate()
-    t13c = e1 * v1 * v3.conjugate()
-    t22c = e1 * v2 * v2.conjugate()
-    t23c = e1 * v2 * v3.conjugate()
-    t33c = e1 * v3 * v3.conjugate()
-    return [t11c, t12c, t13c, t22c, t23c, t33c]
+    e1v1 = e1 * v1
+    e1v2 = e1 * v2
+    v2c = v2.conjugate()
+    v3c = v3.conjugate()
+    return [ e1v1 * v1.conjugate(), e1v1 * v2c, e1v1 * v3c, e1v2 * v2c, e1v2 * v3c, e1 * v3 * v3c]
 
 
 def decom(i):   # calculate decom for pixel at linear index "i"
