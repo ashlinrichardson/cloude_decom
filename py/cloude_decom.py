@@ -338,7 +338,7 @@ if yp < 0 or yp > nrow:
     err("y coord out of bounds")
 
 n_use = 1;
-i = yp * ncol + xp;
+i = yp * ncol + xp
 t11 = t11_p[i]
 t22 = t22_p[i]
 t33 = t33_p[i]
