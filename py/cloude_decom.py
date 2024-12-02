@@ -5,6 +5,7 @@ import numpy as np
 import cProfile
 import ctypes
 import cmath
+import copy
 import math
 import sys
 import os
@@ -19,6 +20,9 @@ o2d1c, o2d2c, o2dec, o3d1c, o3d2c, o3d3c = None, None, None, None, None, None
 
 out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = None, None, None, None, None, None, None, None, None
 t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
+
+t11c, t22c, t33c, t12c, t13c, t23c = None, None, None, None, None, None
+v1_v, v2_v, v3_v, e1_v, e2_v, e3_v = None, None, None, None, None, None
 
 class vec3:
     def __init__(self, a, b, c):
@@ -166,6 +170,24 @@ def lamcloude(a, b, c, z1, z2, z3):
     v1, v2, v3 = v1 / n, v2 / n, v3 / n  # normalised components as output
     return [e1, e2, e3, v1, v2, v3] 
 
+def lamcloude_vectorised(a, b, c, z1, z2, z3):
+    e1 = np.array( [math.nan + 0j for i in range(npx)] )
+    e2 = copy.deepcopy(e1)
+    e3 = copy.deepcopy(e1)
+    v1 = copy.deepcopy(e1)
+    v2 = copy.deepcopy(e1)
+    v3 = copy.deepcopy(e1)
+
+    for i in range(npx):
+        X = lamcloude(a[i], b[i], c[i], z1[i], z2[i], z3[i])
+        e1[i] = X[0]
+        e2[i] = X[1]
+        e3[i] = X[2]
+        v1[i] = X[3]
+        v2[i] = X[4]
+        v3[i] = X[5]
+    return [e1, e2, e3, v1, v2, v3]
+
 
 def rank1_t3(e1, v1, v2, v3):  #  generate T3 rank 1
     e1v1 = e1 * v1
@@ -174,118 +196,88 @@ def rank1_t3(e1, v1, v2, v3):  #  generate T3 rank 1
     v3c = v3.conjugate()
     return [ e1v1 * v1.conjugate(), e1v1 * v2c, e1v1 * v3c, e1v2 * v2c, e1v2 * v3c, e1 * v3 * v3c]
 
+def rank1_t3_vectorised(e1, v1, v2, v3):  #  generate T3 rank 1
+    e1v1 = e1 * v1
+    e1v2 = e1 * v2
+    v2c = np.conjugate(v2) # v2.conjugate()
+    v3c = np.conjugate(v3) # v3.conjugate()
+    return [ e1v1 * np.conjugate(v1), # v1.conjugate(),
+             e1v1 * v2c, 
+             e1v1 * v3c, 
+             e1v2 * v2c, 
+             e1v2 * v3c, 
+             e1 * v3 * v3c]
 
-def decom(i):   # calculate decom for pixel at linear index "i"
-    if i % 10000 == 0:
+
+def decom():   # calculate decom for pixel at linear index "i"
+    global o2d1
+    global o2d2
+    global o2d3
+    global o3d1
+    global o3d2
+    global o3d3
+    global o2d1c
+    global o2d2c
+    global o2d3c
+    global o3d1c
+    global o3d2c
+    global o3d3c 
+    print("decom..")
+    '''if i % 10000 == 0:
             print(i, 100. * (i + 1) / (nrow * ncol))
-    debug = (i == ncol * yp + xp)  # check if we're on target pixel
-
+    #debug = (i == ncol * yp + xp)  # check if we're on target pixel
+    '''
     if True:
-        t11 = t11_p[i]
-        t22 = t22_p[i]
-        t33 = t33_p[i]
-        t12_r = t12_r_p[i]
-        t12_i = t12_i_p[i]
-        t13_r = t13_r_p[i]
-        t13_i = t13_i_p[i]
-        t23_r = t23_r_p[i]
-        t23_i = t23_i_p[i]
-
-        if debug:
-            print("t11", t11)
-            print("t22", t22)
-            print("t33", t33)
-    
-        a = t11 + 0j
-        b = t22 + 0j
-        c = t33 + 0j
-        z1 = t12_r + t12_i * 1j
-        z2 = t13_r + t13_i * 1j
-        z3 = t23_r + t23_i * 1j
-    
-        # aliases
-        t12c = z1
-        t13c = z2
-        t23c = z3
-        t11c = a
-        t22c = b
-        t33c = c
-    
-        # /* avoid 0 elements.. conditioning */
-        eps2 = (a + b + c) * (1.0e-9) + eps
-
-        z1 = z1 + eps2 * F
-        z2 = z2 + eps2 * F 
-        z3 = z3 + eps2 * F
-        a = a + eps2 * F
-        b = b + eps2 * F
-        c = c + eps2 * F
-
-        [e1, e2, e3, v1, v2, v3] = lamcloude(a, b, c, z1, z2, z3)
-        if debug:
-            print("lamcloude")
-            print("e1", e1)
-            print("e2", e2)
-            print("e3", e3)
-            print("v1", v1)
-            print("v2", v2)
-            print("v3", v3)
-
-        # rank 1 t3
-        [t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3(e1, v1, v2, v3)
-
-        # generate alpha etc. eigenvector parameters
-        alpha = math.acos(abs(v1));
-        phi = cmath.phase(t12c);
-        theta = cmath.phase((t22c - t33c) + 2. * 1j * t23c.real) / 4.
-    
-        # generate RGB colour composite from multiple eigenvector angles
-        dn = alpha * 2. / M_PI # alpha angle in red channel
-        theta2 = theta + (theta > M_PI / 4.) * (M_PI / 4. - theta)
-        theta2 = theta2 + (theta2 < -M_PI / 4.) * (-M_PI / 4. - theta2)
-        vn = (theta2 + M_PI / 4.) * 2. / M_PI   # az slope is green
-        sn = abs(phi) / M_PI  # mag of Pauli phase is blue (180 is Bragg)
-    
-        out_r = dn
-        out_g = vn
-        out_b = sn
-        out_e1 = e1
-        out_e2 = e2
-        out_e3 = e3
+        ''' # aliases
+t12c = z1
+t13c = z2
+t23c = z3
+t11c = a
+t22c = b
+t33c = c
+        '''
     
         # project data onto null channels // null_vecs=[o2d o3d];
-        z1 = o2d1c*v1 + o2d2c*v2 + o2d3c*v3
-        z2 = o3d1c*v1 + o3d2c*v2 + o3d3c*v3
+        z1 = o2d1c*v1_v + o2d2c*v2_v + o2d3c*v3_v
+        z2 = o3d1c*v1_v + o3d2c*v2_v + o3d3c*v3_v
     
         # find optimum weights
-        popt = cmath.phase(z2 * z1.conjugate()) * 180. / M_PI
-        za = (z1*z1.conjugate() - z2*z2.conjugate()) + 1j * 2. * abs(z1) * abs(z2)
-        aopt = cmath.phase(za) * 90. / M_PI
+        popt = np.angle(t13c * np.conjugate(t12c)) * 180. / M_PI   # cmath.phase(z2 * z1.conjugate()) * 180. / M_PI
+        za = (t12c * np.conjugate(t12c) - t13c * np.conjugate(t13c)) + 1j * 2. * np.abs(t12c) * np.abs( t13c) #  abs(z1) * abs(z2)
+        aopt = np.angle(za) * 90. / M_PI # cmath.phase(za) * 90. / M_PI
         ar = aopt * M_PI / 180.
         br = popt * M_PI / 180.
-    
+
+        print("ar", ar)
+        print("br", br)
+        print(o2d1)
+        print(o3d1)
         # optimum weight vector
-        w1 = (math.cos(ar) * o2d1 + math.sin(ar) * cmath.exp(1j * br) * o3d1).conjugate()
-        w2 = (math.cos(ar) * o2d2 + math.sin(ar) * cmath.exp(1j * br) * o3d2).conjugate()
-        w3 = (math.cos(ar) * o2d3 + math.sin(ar) * cmath.exp(1j * br) * o3d3).conjugate()
+        w1 = np.conjugate(np.cos(ar) * o2d1 + np.sin(ar) * np.exp(1j * br) * o3d1) # .conjugate()
+        w2 = np.conjugate(np.cos(ar) * o2d2 + np.sin(ar) * np.exp(1j * br) * o3d2) # .conjugate()
+        w3 = np.conjugate(np.cos(ar) * o2d3 + np.sin(ar) * np.exp(1j * br) * o3d3) # .conjugate()
     
         # find optimum subspace signal
-        zopt = w1 * v1 + w2 * v2 + w3 * v3
-        ip = abs(zopt * zopt.conjugate()) 
+        zopt = w1 * v1_v + w2 * v2_v + w3 * v3_v
+        ip = np.abs(zopt * np.conjugate(zopt)) #  zopt.conjugate()) 
         ip_eps = ip + eps;
-        sopt = 10. * math.log(ip_eps) / math.log(10.); # optimum normalised power
+        sopt = 10. * np.log(ip_eps) / math.log(10.); # optimum normalised power
     
         sp = t11c + t22c + t33c  # span power
-        abs_sp = abs(sp)
-        pwr = 10. * math.log(abs(sp)) / math.log(10.)  # span channel
+        abs_sp = np.abs(sp)
+        pwr = 10. * np.log(np.abs(sp)) / math.log(10.)  # span channel
     
-        sm = math.fabs(t33)
-        hv = 10. * math.log(sm) / math.log(10.)
+        sm = np.abs(t33c) #  math.fabs(t33)
+        hv = 10. * np.log(sm) / math.log(10.)
         sm2 = sopt + pwr
     
-        opt = pow(10., sm2 / 10.)  # linear opt channel
+        opt = 10. ** ( sm2 / 10.) # pow(10., sm2 / 10.)  # linear opt channel
     
-        return [i, opt, sopt, out_r, out_g, out_b, out_e1, out_e2, out_e3]
+
+        print("+w opt.bin")
+        write_binary(opt.tolist(), "opt.bin"); write_hdr("opt.hdr", ncol, nrow, 1, ["opt.bin"])
+
+        return [ opt, hv, pwr, sopt, aopt, popt] #out_r, out_g, out_b, out_e1, out_e2, out_e3]
         '''
         # out_opt[i] =  opt;
         # out_v1[i] = sopt;
@@ -312,7 +304,7 @@ def worker(task_queue, result_array, job_count, chunk_size):
 
 def work_queue(job_count, num_workers, chunk_size):
     task_queue = mp.Queue()  # task queue object
-    result_array = mp.Array('d', [math.nan] * (job_count * chunk_size))  # init array with null
+    result_array = mp.Array('d', [math.nan + 0j] * (job_count * chunk_size))  # init array with null
 
     processes = []
     for _ in range(num_workers):  # start the workers
@@ -349,8 +341,116 @@ if xp < 0 or xp > ncol:
 if yp < 0 or yp > nrow: 
     err("y coord out of bounds")
 
-n_use = 1;
-i = yp * ncol + xp
+
+
+
+if False:
+    r_reshape = np.array(t22_p).reshape((nrow, ncol))
+    g_reshape = np.array(t33_p).reshape((nrow, ncol))
+    b_reshape = np.array(t11_p).reshape((nrow, ncol))
+    rgb = np.zeros((nrow, ncol, 3))
+    rgb[:, :, 0] = r_reshape
+    rgb[:, :, 1] = g_reshape
+    rgb[:, :, 2] = b_reshape
+    plt.figure()
+    plt.imshow(rgb)
+    plt.tight_layout()
+    plt.show()
+
+def nullspace_vectors(xp, yp):
+    n_use = 1;
+    i = yp * ncol + xp
+    t11 = t11_p[i]
+    t22 = t22_p[i]
+    t33 = t33_p[i]
+    t12_r = t12_r_p[i]
+    t12_i = t12_i_p[i]
+    t13_r = t13_r_p[i]
+    t13_i = t13_i_p[i]
+    t23_r = t23_r_p[i]
+    t23_i = t23_i_p[i]
+    
+    print("target info:")
+    print("T11", t11)
+    print("T22", t22)
+    print("T33", t33)
+    
+    if len(sys.argv) > 3:
+        pass
+        '''(ws > 1){
+      for(int di = yp - dw; di <= yp + dw; di++){
+        if(di >=0 && di < nrow){
+          for(int dj = xp - dw; dj <= xp + dw; dj ++){
+            if(dj >=0 && dj < ncol){
+              int j = di * ncol + dj;
+    
+              t11 += (double)t11_p[j]; t22 += (double)t22_p[j];
+              t33 += (double)t33_p[j];
+              t12_r += (double)t12_r_p[j]; t12_i += (double)t12_i_p[j];
+              t13_r += (double)t13_r_p[j]; t13_i += (double)t13_i_p[j];
+              t23_r += (double)t23_r_p[j]; t23_i += (double)t23_i_p[j];
+    
+              n_use ++;
+            }
+          }
+        }
+      }
+    }
+    '''
+    # printf("N_USE: %f\n", n_use);
+    t11 /= n_use; t22 /= n_use; t33 /= n_use
+    t12_r /= n_use; t12_i /= n_use
+    t13_r /= n_use; t13_i /= n_use
+    t23_r /= n_use; t23_i /= n_use
+    
+    a = t11; b = t22; c = t33
+    z1 = t12_r + t12_i * 1j
+    z2 = t13_r + t13_i * 1j
+    z3 = t23_r + t23_i * 1j
+    
+    # /* avoid 0 elements.. conditioning */
+    eps2 = (a + b + c) * (1.0e-9) + eps
+    F = (float(nrow + ncol) / 2.) + 0j
+    z1 = z1 + eps2 * F
+    z2 = z2 + eps2 * F
+    z3 = z3 + eps2 * F
+    a = a + eps2 * F
+    b = b + eps2 * F
+    c = c + eps2 * F
+    
+    T = herm3(a, z1, z2, b, z3, c)
+    
+    L, E1, E2, E3 = eig(T)
+    print("L", L)
+    print("E2", E2)
+    print("E3", E3)
+    
+    o2d1 = E2.a
+    o2d2 = E2.b
+    o2d3 = E2.c
+    
+    o3d1 = E3.a
+    o3d2 = E3.b
+    o3d3 = E3.c
+    
+    o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = o2d1.conjugate(), o2d2.conjugate(), o2d3.conjugate(), o3d1.conjugate(), o3d2.conjugate(), o3d3.conjugate()
+    
+    return [o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c]
+
+print("null vectors..")
+o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = nullspace_vectors(xp, yp)
+
+print(o2d1c)
+print(o2d2c) 
+print(o2d3c) 
+print(o3d1c)
+print(o3d2c)
+print(o3d3c)
+
+
+
+# need to vectorize this part
+'''
 t11 = t11_p[i]
 t22 = t22_p[i]
 t33 = t33_p[i]
@@ -361,110 +461,131 @@ t13_i = t13_i_p[i]
 t23_r = t23_r_p[i]
 t23_i = t23_i_p[i]
 
-print("target info:")
-print("T11", t11)
-print("T22", t22)
-print("T33", t33)
-
-r_reshape = np.array(t22_p).reshape((nrow, ncol))
-g_reshape = np.array(t33_p).reshape((nrow, ncol))
-b_reshape = np.array(t11_p).reshape((nrow, ncol))
-
-rgb = np.zeros((nrow, ncol, 3))
-rgb[:, :, 0] = r_reshape
-rgb[:, :, 1] = g_reshape
-rgb[:, :, 2] = b_reshape
-plt.figure()
-plt.imshow(rgb)
-plt.tight_layout()
-plt.show()
-
-if len(sys.argv) > 3:
-    pass
-    '''(ws > 1){
-  for(int di = yp - dw; di <= yp + dw; di++){
-    if(di >=0 && di < nrow){
-      for(int dj = xp - dw; dj <= xp + dw; dj ++){
-        if(dj >=0 && dj < ncol){
-          int j = di * ncol + dj;
-
-          t11 += (double)t11_p[j]; t22 += (double)t22_p[j];
-          t33 += (double)t33_p[j];
-          t12_r += (double)t12_r_p[j]; t12_i += (double)t12_i_p[j];
-          t13_r += (double)t13_r_p[j]; t13_i += (double)t13_i_p[j];
-          t23_r += (double)t23_r_p[j]; t23_i += (double)t23_i_p[j];
-
-          n_use ++;
-        }
-      }
-    }
-  }
-}
+if debug:
+    print("t11", t11)
+    print("t22", t22)
+    print("t33", t33)
 '''
-# printf("N_USE: %f\n", n_use);
-t11 /= n_use; t22 /= n_use; t33 /= n_use
-t12_r /= n_use; t12_i /= n_use
-t13_r /= n_use; t13_i /= n_use
-t23_r /= n_use; t23_i /= n_use
+print("arrays..")
+N = len(t11_p)
+t11c = [t11_p[i] + 0j for i in range(N)] # + 0j; # a = t11 + 0j
+t22c = [t22_p[i] + 0j for i in range(N)] # + 0j; # b = t22 + 0j
+t33c = [t33_p[i] + 0j for i in range(N)] # + 0j; # c = t33 + 0j
 
-a = t11; b = t22; c = t33
-z1 = t12_r + t12_i * 1j
-z2 = t13_r + t13_i * 1j
-z3 = t23_r + t23_i * 1j
+t12c = [t12_r_p[i] + t12_i_p[i] * 1j  for i in range(N)] # z1 = t12_r + t12_i * 1j
+t13c = [t13_r_p[i] + t13_i_p[i] * 1j  for i in range(N)] # z2 = t13_r + t13_i * 1j
+t23c = [t23_r_p[i] + t23_i_p[i] * 1j  for i in range(N)] # z3 = t23_r + t23_i * 1j
+
+''' # aliases
+t12c = z1
+t13c = z2
+t23c = z3
+t11c = a
+t22c = b
+t33c = c
+'''
+t11c = np.array(t11c)
+t22c = np.array(t22c) 
+t33c = np.array(t33c)
 
 # /* avoid 0 elements.. conditioning */
-eps2 = (a + b + c) * (1.0e-9) + eps
-F = (float(nrow + ncol) / 2.) + 0j
-z1 = z1 + eps2 * F
-z2 = z2 + eps2 * F  
-z3 = z3 + eps2 * F  
-a = a + eps2 * F  
-b = b + eps2 * F 
-c = c + eps2 * F 
+print("conditioning..")
+eps2 = (t11c + t22c + t33c ) * (1.0e-9) + eps # eps2 = (a + b + c) * (1.0e-9) + eps
+t12c = t12c + eps2 * F # z1 = z1 + eps2 * F
+t13c = t13c + eps2 * F # z2 = z2 + eps2 * F
+t23c = t23c + eps2 * F # z3 = z3 + eps2 * F
+t11c = t11c + eps2 * F # a = a + eps2 * F
+t22c = t22c + eps2 * F # b = b + eps2 * F
+t33c = t33c + eps2 * F # c = c + eps2 * F
 
-T = herm3(a, z1, z2, b, z3, c)
+print("lamcloude..")
+[e1_v, e2_v, e3_V, v1_v, v2_v, v3_v] = lamcloude_vectorised(t11c, t22c, t33c, t12c, t13c, t23c) # lamcloude(a, b, c, z1, z2, z3)
 
-L, E1, E2, E3 = eig(T)
-print("L", L)  
-print("E2", E2)
-print("E3", E3)
+debug = False
 
-o2d1 = E2.a 
-o2d2 = E2.b 
-o2d3 = E2.c
+if debug:
+    print("lamcloude")
+    print("e1", e1)
+    print("e2", e2)
+    print("e3", e3)
+    print("v1", v1)
+    print("v2", v2)
+    print("v3", v3)
 
-o3d1 = E3.a 
-o3d2 = E3.b
-o3d3 = E3.c
+# rank 1 t3
+[t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v) # rank1_t3(e1, v1, v2, v3)
 
-o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = o2d1.conjugate(), o2d2.conjugate(), o2d3.conjugate(), o3d1.conjugate(), o3d2.conjugate(), o3d3.conjugate()
 
+# generate alpha etc. eigenvector parameters
+alpha = np.arccos(np.abs(v1_v)) # math.acos(abs(v1_v[i]));
+phi = np.angle(t12c) # cmath.phase(t12c[i]);
+theta = np.angle((t22c - t33c) + 2. * 1j * t23c.real) / 4.  # cmath.phase((t22c[i] - t33c[i]) + 2. * 1j * t23c[i].real) / 4.
+
+
+
+# generate RGB colour composite from multiple eigenvector angles
+dn = alpha * 2. / M_PI # alpha angle in red channel                # out: red channel
+theta2 = theta + (theta > M_PI / 4.) * (M_PI / 4. - theta)
+theta2 = theta2 + (theta2 < -M_PI / 4.) * (-M_PI / 4. - theta2)
+vn = (theta2 + M_PI / 4.) * 2. / M_PI   # az slope is green        # out: green channel
+sn = np.abs(phi) / M_PI  # mag of Pauli phase is blue (180 is Bragg)  # out: blue channel
+
+'''
+out_r = dn
+out_g = vn
+out_b = sn
+out_e1 = e1
+out_e2 = e2
+out_e3 = e3
+'''
+
+'''
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
 num_workers = mp.cpu_count() * 4  # Number of worker processes (threads)
-chunk_size = 9  # number of elements returned by decom() function
-
-#cProfile.run('for i in range(12345): decom(i)')
-# sys.exit(1)
-
+chunk_size = 7 # number of elements returned by decom() function
 results = work_queue(job_count, num_workers, chunk_size)
+'''
+
+import time
+start_time = time.time()
+
+[opt, hv, pwr, sopt, aopt, popt]  = decom()
+
+end_time = time.time()
+
+print("decom()", end_time - start_time)
+
+
+'''
+out_hv = copy.deepcopy(out_opt)
+out_pwr = copy.deepcopy(out_opt)
+out_sopt = copy.deepcopt(out_opt)
+out_aopt = copy.deepcopy(out_opt)
+out_popt = copy.deepcopy(out_opt)
 
 for i in range(nrow * ncol):
     job_i = int(results[i* chunk_size])
     out_opt[job_i] =  results[i * chunk_size + 1]
-    out_sopt[job_i] = results[i * chunk_size + 2]
-    out_r[job_i] = results[i * chunk_size + 3]
-    out_g[job_i] = results[i * chunk_size + 4]
-    out_b[job_i] = results[i * chunk_size + 5]
+    out_hv[job_i] = results[i * chunk_size + 2]
+    out_pwr[job_i] = results[i * chunk_size + 3]
+    out_sopt[job_i] = results[i * chunk_size + 4]
+    out_aopt[job_i] = results[i * chunk_size + 5]
+    out_popt[job_i] =  results[i * chunk_size + 6]
+'''
 
 '''
+ return [i, opt, hv, pwr, sopt, aopt, popt] #out_r, out_g, out_b, out_e1, out_e2, out_e3]
+
 [i, opt, sopt, out_r, out_g, out_b, out_e1, out_e2, out_e3]
 '''
 print("+w opt.bin")
+'''
 write_binary(out_opt, "opt.bin"); write_hdr("opt.hdr", ncol, nrow, 1, ["opt.bin"])
+write_binary(out_hv, "hv.bin"); write_hdr("hv.hdr", ncol, nrow, 1, ["hv.bin"])
+write_binary(out_pwr, "pwr.bin"); write_hdr("pwr.hdr", ncol, nrow, 1, ["pwr.bin"])
 write_binary(out_sopt, "sopt.bin"); write_hdr("sopt.hdr", ncol, nrow, 1, ["sopt.bin"])
-write_binary(out_r, "r.bin"); write_hdr("r.hdr", ncol, nrow, 1, ["r.bin"])
-write_binary(out_g, "g.bin"); write_hdr("g.hdr", ncol, nrow, 1, ["g.bin"])
-write_binary(out_b, "b.bin"); write_hdr("b.hdr", ncol, nrow, 1, ["b.bin"])
-
+write_binary(out_aopt, "aopt.bin"); write_hdr("aopt.hdr", ncol, nrow, 1, ["aopt.bin"])
+write_binary(out_popt, "popt.bin"); write_hdr("popt.hdr", ncol, nrow, 1, ["popt.bin"])
+'''
 # test case: 
 # python3 cloude_decom.py  313 798
