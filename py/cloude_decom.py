@@ -171,7 +171,7 @@ def lamcloude(a, b, c, z1, z2, z3):
     return [e1, e2, e3, v1, v2, v3] 
 
 def lamcloude_vectorised(a, b, c, z1, z2, z3):
-    e1 = np.array( [math.nan + 0j for i in range(npx)] )
+    e1 = np.array([math.nan + 0j for i in range(npx)])
     e2 = copy.deepcopy(e1)
     e3 = copy.deepcopy(e1)
     v1 = copy.deepcopy(e1)
@@ -190,18 +190,24 @@ def lamcloude_vectorised(a, b, c, z1, z2, z3):
 
 
 def rank1_t3(e1, v1, v2, v3):  #  generate T3 rank 1
-    e1v1 = e1 * v1
-    e1v2 = e1 * v2
-    v2c = v2.conjugate()
-    v3c = v3.conjugate()
-    return [ e1v1 * v1.conjugate(), e1v1 * v2c, e1v1 * v3c, e1v2 * v2c, e1v2 * v3c, e1 * v3 * v3c]
+    e1v1, e1v2 = e1 * v1, e1 * v2
+    v2c, v3c = v2.conjugate(), v3.conjugate()
+    '''
+    [t11c, t12c, t13c, t22c, t23c, t33c]   '''
+    return [e1v1 * v1.conjugate(), 
+            e1v1 * v2c,
+            e1v1 * v3c,
+            e1v2 * v2c,
+            e1v2 * v3c,
+            e1 * v3 * v3c]
 
-def rank1_t3_vectorised(e1, v1, v2, v3):  #  generate T3 rank 1
-    e1v1 = e1 * v1
-    e1v2 = e1 * v2
-    v2c = np.conjugate(v2) # v2.conjugate()
-    v3c = np.conjugate(v3) # v3.conjugate()
-    return [ e1v1 * np.conjugate(v1), # v1.conjugate(),
+def rank1_t3_vectorised(e1, v1, v2, v3):  #  generate T3 rank 1 ( numpy vectorised version )
+    e1v1, e1v2 = e1 * v1, e1 * v2
+    v2c, v3c = np.conjugate(v2), np.conjugate(v3) # v3.conjugate()
+
+    '''
+    [t11c, t12c, t13c, t22c, t23c, t33c]   '''
+    return [e1v1 * np.conjugate(v1), # v1.conjugate(),
              e1v1 * v2c, 
              e1v1 * v3c, 
              e1v2 * v2c, 
