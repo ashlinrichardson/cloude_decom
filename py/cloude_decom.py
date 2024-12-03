@@ -1,3 +1,13 @@
+'''cloude_decom.py
+
+Todo:
+simple gui (point select)
+polygon select ( shapefile or input to GUI )
+
+e.g.
+
+python3 cloude_decom.py  313 798
+'''
 from misc import read_config, read_binary, write_binary, write_hdr
 import matplotlib.pyplot as plt
 import multiprocessing as mp
@@ -15,8 +25,8 @@ xp, yp = None, None
 nrow, ncol = None, None
 eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
 F = None
-o2d1, o2d2, o2de, o3d1, o3d2, o3d3 = None, None, None, None, None, None
-o2d1c, o2d2c, o2dec, o3d1c, o3d2c, o3d3c = None, None, None, None, None, None
+# o2d1, o2d2, o2de, o3d1, o3d2, o3d3 = None, None, None, None, None, None
+# o2d1c, o2d2c, o2dec, o3d1c, o3d2c, o3d3c = None, None, None, None, None, None
 
 out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = None, None, None, None, None, None, None, None, None
 t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
@@ -119,15 +129,11 @@ def eig(A): #  L, E1, E2, E3): # herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<
 def read_T3(d):
     global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p 
     sep = os.path.sep
-    t11_p = read_binary(d + sep + 'T11.bin')[3]
-    t22_p = read_binary(d + sep + 'T22.bin')[3]
+    t11_p, t22_p = read_binary(d + sep + 'T11.bin')[3], read_binary(d + sep + 'T22.bin')[3]
     t33_p = read_binary(d + sep + 'T33.bin')[3]
-    t12_r_p = read_binary(d + sep + 'T12_real.bin')[3]
-    t12_i_p = read_binary(d + sep + 'T12_imag.bin')[3]
-    t13_r_p = read_binary(d + sep + 'T13_real.bin')[3]
-    t13_i_p = read_binary(d + sep + 'T13_imag.bin')[3]
-    t23_r_p = read_binary(d + sep + 'T23_real.bin')[3]
-    t23_i_p = read_binary(d + sep + 'T23_imag.bin')[3]
+    t12_r_p, t12_i_p = read_binary(d + sep + 'T12_real.bin')[3], read_binary(d + sep + 'T12_imag.bin')[3]
+    t13_r_p, t13_i_p = read_binary(d + sep + 'T13_real.bin')[3], read_binary(d + sep + 'T13_imag.bin')[3]
+    t23_r_p, t23_i_p = read_binary(d + sep + 'T23_real.bin')[3], read_binary(d + sep + 'T23_imag.bin')[3]
 
 def lamcloude(a, b, c, z1, z2, z3):
     p = 1./3.
@@ -204,107 +210,71 @@ def rank1_t3(e1, v1, v2, v3):  #  generate T3 rank 1
 def rank1_t3_vectorised(e1, v1, v2, v3):  #  generate T3 rank 1 ( numpy vectorised version )
     e1v1, e1v2 = e1 * v1, e1 * v2
     v2c, v3c = np.conjugate(v2), np.conjugate(v3) # v3.conjugate()
-
     '''
     [t11c, t12c, t13c, t22c, t23c, t33c]   '''
     return [e1v1 * np.conjugate(v1), # v1.conjugate(),
-             e1v1 * v2c, 
-             e1v1 * v3c, 
-             e1v2 * v2c, 
-             e1v2 * v3c, 
-             e1 * v3 * v3c]
+            e1v1 * v2c, 
+            e1v1 * v3c, 
+            e1v2 * v2c, 
+            e1v2 * v3c, 
+            e1 * v3 * v3c]
 
 
 def write_out(variable_name):
+    # print(type(variable_name))
+    # print("+w", variable_name + ".bin")
     cmd =  'write_binary(' + variable_name + '.tolist(), "' + variable_name + '.bin"); write_hdr("' + variable_name + '.hdr", ncol, nrow, 1, ["' + variable_name + '.bin"])'
-    return(cmd)
+    # print(cmd)
+    exec(cmd)
+    # return(cmd)
 
-def decom():   # calculate decom for pixel at linear index "i"
-    global o2d1
-    global o2d2
-    global o2d3
-    global o3d1
-    global o3d2
-    global o3d3
-    global o2d1c
-    global o2d2c
-    global o2d3c
-    global o3d1c
-    global o3d2c
-    global o3d3c 
+def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c):   # calculate decom for pixel at linear index "i"
     print("decom..")
-    '''if i % 10000 == 0:
-            print(i, 100. * (i + 1) / (nrow * ncol))
-    #debug = (i == ncol * yp + xp)  # check if we're on target pixel
+    ''' # aliases
+      t12c = z1
+      t13c = z2
+      t23c = z3
+      t11c = a
+      t22c = b
+      t33c = c
     '''
-    if True:
-        ''' # aliases
-t12c = z1
-t13c = z2
-t23c = z3
-t11c = a
-t22c = b
-t33c = c
-        '''
+    # project data onto null channels // null_vecs=[o2d o3d];
+    z1 = o2d1c*v1_v + o2d2c*v2_v + o2d3c*v3_v
+    z2 = o3d1c*v1_v + o3d2c*v2_v + o3d3c*v3_v
     
-        # project data onto null channels // null_vecs=[o2d o3d];
-        z1 = o2d1c*v1_v + o2d2c*v2_v + o2d3c*v3_v
-        z2 = o3d1c*v1_v + o3d2c*v2_v + o3d3c*v3_v
+    # find optimum weights
+    popt = np.angle(t13c * np.conjugate(t12c)) * 180. / M_PI   # cmath.phase(z2 * z1.conjugate()) * 180. / M_PI
+    za = (t12c * np.conjugate(t12c) - t13c * np.conjugate(t13c)) + 1j * 2. * np.abs(t12c) * np.abs( t13c) #  abs(z1) * abs(z2)
+    aopt = np.angle(za) * 90. / M_PI # cmath.phase(za) * 90. / M_PI
+    ar = aopt * M_PI / 180.
+    br = popt * M_PI / 180.
     
-        # find optimum weights
-        popt = np.angle(t13c * np.conjugate(t12c)) * 180. / M_PI   # cmath.phase(z2 * z1.conjugate()) * 180. / M_PI
-        za = (t12c * np.conjugate(t12c) - t13c * np.conjugate(t13c)) + 1j * 2. * np.abs(t12c) * np.abs( t13c) #  abs(z1) * abs(z2)
-        aopt = np.angle(za) * 90. / M_PI # cmath.phase(za) * 90. / M_PI
-        ar = aopt * M_PI / 180.
-        br = popt * M_PI / 180.
-
-        print("ar", ar)
-        print("br", br)
-        print(o2d1)
-        print(o3d1)
-        # optimum weight vector
-        w1 = np.conjugate(np.cos(ar) * o2d1 + np.sin(ar) * np.exp(1j * br) * o3d1) # .conjugate()
-        w2 = np.conjugate(np.cos(ar) * o2d2 + np.sin(ar) * np.exp(1j * br) * o3d2) # .conjugate()
-        w3 = np.conjugate(np.cos(ar) * o2d3 + np.sin(ar) * np.exp(1j * br) * o3d3) # .conjugate()
+    print("ar", ar)
+    print("br", br)
+    print(o2d1)
+    print(o3d1)
+    # optimum weight vector
+    w1 = np.conjugate(np.cos(ar) * o2d1 + np.sin(ar) * np.exp(1j * br) * o3d1) # .conjugate()
+    w2 = np.conjugate(np.cos(ar) * o2d2 + np.sin(ar) * np.exp(1j * br) * o3d2) # .conjugate()
+    w3 = np.conjugate(np.cos(ar) * o2d3 + np.sin(ar) * np.exp(1j * br) * o3d3) # .conjugate()
     
-        # find optimum subspace signal
-        zopt = w1 * v1_v + w2 * v2_v + w3 * v3_v
-        ip = np.abs(zopt * np.conjugate(zopt)) #  zopt.conjugate()) 
-        ip_eps = ip + eps;
-        sopt = 10. * np.log(ip_eps) / math.log(10.); # optimum normalised power
+    # find optimum subspace signal
+    zopt = w1 * v1_v + w2 * v2_v + w3 * v3_v
+    ip = np.abs(zopt * np.conjugate(zopt))  # zopt.conjugate
+    ip_eps = ip + eps;
+    sopt = 10. * np.log(ip_eps) / math.log(10.); # optimum normalised power
     
-        sp = t11c + t22c + t33c  # span power
-        abs_sp = np.abs(sp)
-        pwr = 10. * np.log(np.abs(sp)) / math.log(10.)  # span channel
+    sp = t11c + t22c + t33c  # span power
+    abs_sp = np.abs(sp)
+    pwr = 10. * np.log(np.abs(sp)) / math.log(10.)  # span channel
     
-        sm = np.abs(t33c) #  math.fabs(t33)
-        hv = 10. * np.log(sm) / math.log(10.)
-        sm2 = sopt + pwr
+    sm = np.abs(t33c) #  math.fabs(t33)
+    hv = 10. * np.log(sm) / math.log(10.)
+    sm2 = sopt + pwr
     
-        opt = 10. ** ( sm2 / 10.) # pow(10., sm2 / 10.)  # linear opt channel
+    opt = 10. ** ( sm2 / 10.) # pow(10., sm2 / 10.)  # linear opt channel
     
-        print("+w opt.bin")
-        write_binary(opt.tolist(), "opt.bin"); write_hdr("opt.hdr", ncol, nrow, 1, ["opt.bin"])
-
-        for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
-            cmd = write_out(x)
-            print(cmd)
-            exec(cmd)
-           
-        return [ opt, hv, pwr, sopt, aopt, popt] #out_r, out_g, out_b, out_e1, out_e2, out_e3]
-        '''
-        # out_opt[i] =  opt;
-        # out_v1[i] = sopt;
-        //out_hv[i] = hv;
-        //out_sm[i] = sm;
-        //out_pwr[i] = (float)pwr;
-        //out_sopt[i] = (float)sopt;
-        //out_abs_sp[i] = (float)abs_sp;
-        //out_ar[i] = (float) abs(ar);
-        //out_br[i] = (float) abs(br);
-        '''
-    else:
-        pass
+    return [ opt, hv, pwr, sopt, aopt, popt]
 
 
 def worker(task_queue, result_array, job_count, chunk_size):
@@ -354,9 +324,6 @@ if xp < 0 or xp > ncol:
 
 if yp < 0 or yp > nrow: 
     err("y coord out of bounds")
-
-
-
 
 if False:
     r_reshape = np.array(t22_p).reshape((nrow, ncol))
@@ -534,16 +501,14 @@ T11c = np.abs(t11c)
 T22c = np.abs(t22c)
 T33c = np.abs(t33c)
 
-cmd = write_out(T11c); print(cmd); exec(cmd)
-cmd = write_out(T22c); print(cmd); exec(cmd)
-cmd = write_out(T33c); print(cmd); exec(cmd)
-
+cmd = write_out('T11c')
+cmd = write_out('T22c')
+cmd = write_out('T33c')
 
 # generate alpha etc. eigenvector parameters
 alpha = np.arccos(np.abs(v1_v)) # math.acos(abs(v1_v[i]));
 phi = np.angle(t12c) # cmath.phase(t12c[i]);
 theta = np.angle((t22c - t33c) + 2. * 1j * t23c.real) / 4.  # cmath.phase((t22c[i] - t33c[i]) + 2. * 1j * t23c[i].real) / 4.
-
 
 # generate RGB colour composite from multiple eigenvector angles
 dn = alpha * 2. / M_PI # alpha angle in red channel                # out: red channel
@@ -571,43 +536,17 @@ results = work_queue(job_count, num_workers, chunk_size)
 import time
 start_time = time.time()
 
-[opt, hv, pwr, sopt, aopt, popt]  = decom()
+[opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c)
 
 end_time = time.time()
 
 print("decom()", end_time - start_time)
 
 
-'''
-out_hv = copy.deepcopy(out_opt)
-out_pwr = copy.deepcopy(out_opt)
-out_sopt = copy.deepcopt(out_opt)
-out_aopt = copy.deepcopy(out_opt)
-out_popt = copy.deepcopy(out_opt)
+for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
+    write_out(x)
 
-for i in range(nrow * ncol):
-    job_i = int(results[i* chunk_size])
-    out_opt[job_i] =  results[i * chunk_size + 1]
-    out_hv[job_i] = results[i * chunk_size + 2]
-    out_pwr[job_i] = results[i * chunk_size + 3]
-    out_sopt[job_i] = results[i * chunk_size + 4]
-    out_aopt[job_i] = results[i * chunk_size + 5]
-    out_popt[job_i] =  results[i * chunk_size + 6]
-'''
 
-'''
- return [i, opt, hv, pwr, sopt, aopt, popt] #out_r, out_g, out_b, out_e1, out_e2, out_e3]
 
-[i, opt, sopt, out_r, out_g, out_b, out_e1, out_e2, out_e3]
-'''
-print("+w opt.bin")
-'''
-write_binary(out_opt, "opt.bin"); write_hdr("opt.hdr", ncol, nrow, 1, ["opt.bin"])
-write_binary(out_hv, "hv.bin"); write_hdr("hv.hdr", ncol, nrow, 1, ["hv.bin"])
-write_binary(out_pwr, "pwr.bin"); write_hdr("pwr.hdr", ncol, nrow, 1, ["pwr.bin"])
-write_binary(out_sopt, "sopt.bin"); write_hdr("sopt.hdr", ncol, nrow, 1, ["sopt.bin"])
-write_binary(out_aopt, "aopt.bin"); write_hdr("aopt.hdr", ncol, nrow, 1, ["aopt.bin"])
-write_binary(out_popt, "popt.bin"); write_hdr("popt.hdr", ncol, nrow, 1, ["popt.bin"])
-'''
 # test case: 
-# python3 cloude_decom.py  313 798
+#
