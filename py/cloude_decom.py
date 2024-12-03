@@ -25,12 +25,8 @@ xp, yp = None, None
 nrow, ncol = None, None
 eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
 F = None
-# o2d1, o2d2, o2de, o3d1, o3d2, o3d3 = None, None, None, None, None, None
-# o2d1c, o2d2c, o2dec, o3d1c, o3d2c, o3d3c = None, None, None, None, None, None
-
 out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = None, None, None, None, None, None, None, None, None
 t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
-
 t11c, t22c, t33c, t12c, t13c, t23c = None, None, None, None, None, None
 v1_v, v2_v, v3_v, e1_v, e2_v, e3_v = None, None, None, None, None, None
 
@@ -308,36 +304,6 @@ def work_queue(job_count, num_workers, chunk_size):
     return result_array  # return list(result_array)  # convert to regular list 
 
 
-x = read_config('../T3/config.txt')
-nrow, ncol = x['nrow'], x['ncol']
-F = (float(nrow) + float(ncol)) / 2.
-npx = nrow * ncol
-read_T3('../T3/')  # load the T3 matrix data
-
-# initialize output variables
-out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
-
-xp, yp = int(sys.argv[2]), int(sys.argv[1])  # cloude_decom T3 313 798 # col/ row for test target
-
-if xp < 0 or xp > ncol:
-    err("x coord out of bounds")
-
-if yp < 0 or yp > nrow: 
-    err("y coord out of bounds")
-
-if False:
-    r_reshape = np.array(t22_p).reshape((nrow, ncol))
-    g_reshape = np.array(t33_p).reshape((nrow, ncol))
-    b_reshape = np.array(t11_p).reshape((nrow, ncol))
-    rgb = np.zeros((nrow, ncol, 3))
-    rgb[:, :, 0] = r_reshape
-    rgb[:, :, 1] = g_reshape
-    rgb[:, :, 2] = b_reshape
-    plt.figure()
-    plt.imshow(rgb)
-    plt.tight_layout()
-    plt.show()
-
 def nullspace_vectors(xp, yp):
     n_use = 1;
     i = yp * ncol + xp
@@ -415,8 +381,40 @@ def nullspace_vectors(xp, yp):
     o3d3 = E3.c
     
     o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = o2d1.conjugate(), o2d2.conjugate(), o2d3.conjugate(), o3d1.conjugate(), o3d2.conjugate(), o3d3.conjugate()
-    
     return [o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c]
+
+
+# program start
+x = read_config('../T3/config.txt')
+nrow, ncol = x['nrow'], x['ncol']
+F = (float(nrow) + float(ncol)) / 2.
+npx = nrow * ncol
+read_T3('../T3/')  # load the T3 matrix data
+
+# initialize output variables
+out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
+
+xp, yp = int(sys.argv[2]), int(sys.argv[1])  # cloude_decom T3 313 798 # col/ row for test target
+
+if xp < 0 or xp > ncol:
+    err("x coord out of bounds")
+
+if yp < 0 or yp > nrow: 
+    err("y coord out of bounds")
+
+if False:
+    r_reshape = np.array(t22_p).reshape((nrow, ncol))
+    g_reshape = np.array(t33_p).reshape((nrow, ncol))
+    b_reshape = np.array(t11_p).reshape((nrow, ncol))
+    rgb = np.zeros((nrow, ncol, 3))
+    rgb[:, :, 0] = r_reshape
+    rgb[:, :, 1] = g_reshape
+    rgb[:, :, 2] = b_reshape
+    plt.figure()
+    plt.imshow(rgb)
+    plt.tight_layout()
+    plt.show()
+
 
 print("null vectors..")
 o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = nullspace_vectors(xp, yp)
@@ -429,24 +427,6 @@ print(o3d2c)
 print(o3d3c)
 
 
-
-# need to vectorize this part
-'''
-t11 = t11_p[i]
-t22 = t22_p[i]
-t33 = t33_p[i]
-t12_r = t12_r_p[i]
-t12_i = t12_i_p[i]
-t13_r = t13_r_p[i]
-t13_i = t13_i_p[i]
-t23_r = t23_r_p[i]
-t23_i = t23_i_p[i]
-
-if debug:
-    print("t11", t11)
-    print("t22", t22)
-    print("t33", t33)
-'''
 print("arrays..")
 N = len(t11_p)
 t11c = [t11_p[i] + 0j for i in range(N)] # + 0j; # a = t11 + 0j
@@ -517,14 +497,9 @@ theta2 = theta2 + (theta2 < -M_PI / 4.) * (-M_PI / 4. - theta2)
 vn = (theta2 + M_PI / 4.) * 2. / M_PI   # az slope is green        # out: green channel
 sn = np.abs(phi) / M_PI  # mag of Pauli phase is blue (180 is Bragg)  # out: blue channel
 
-'''
-out_r = dn
-out_g = vn
-out_b = sn
-out_e1 = e1
-out_e2 = e2
-out_e3 = e3
-'''
+# special RGB encoding: (r,g,b) = (dn, vn, sn)
+for x in ['alpha', 'phi', 'theta', 'dn', 'theta2', 'vn', 'sn']:
+    write_out(x)
 
 '''
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
@@ -535,9 +510,7 @@ results = work_queue(job_count, num_workers, chunk_size)
 
 import time
 start_time = time.time()
-
 [opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c)
-
 end_time = time.time()
 
 print("decom()", end_time - start_time)
@@ -545,8 +518,3 @@ print("decom()", end_time - start_time)
 
 for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
     write_out(x)
-
-
-
-# test case: 
-#
