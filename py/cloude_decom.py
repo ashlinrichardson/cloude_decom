@@ -209,6 +209,10 @@ def rank1_t3_vectorised(e1, v1, v2, v3):  #  generate T3 rank 1
              e1 * v3 * v3c]
 
 
+def write_out(variable_name):
+    cmd =  'write_binary(' + variable_name + '.tolist(), "' + variable_name + '.bin"); write_hdr("' + variable_name + '.hdr", ncol, nrow, 1, ["' + variable_name + '.bin"])'
+    return(cmd)
+
 def decom():   # calculate decom for pixel at linear index "i"
     global o2d1
     global o2d2
@@ -273,10 +277,14 @@ t33c = c
     
         opt = 10. ** ( sm2 / 10.) # pow(10., sm2 / 10.)  # linear opt channel
     
-
         print("+w opt.bin")
         write_binary(opt.tolist(), "opt.bin"); write_hdr("opt.hdr", ncol, nrow, 1, ["opt.bin"])
 
+        for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
+            cmd = write_out(x)
+            print(cmd)
+            exec(cmd)
+           
         return [ opt, hv, pwr, sopt, aopt, popt] #out_r, out_g, out_b, out_e1, out_e2, out_e3]
         '''
         # out_opt[i] =  opt;
@@ -512,15 +520,23 @@ if debug:
     print("v2", v2)
     print("v3", v3)
 
+print("rank 1 t3..")
 # rank 1 t3
 [t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v) # rank1_t3(e1, v1, v2, v3)
+
+T11c = np.abs(t11c)
+T22c = np.abs(t22c)
+T33c = np.abs(t33c)
+
+cmd = write_out(T11c); print(cmd); exec(cmd)
+cmd = write_out(T22c); print(cmd); exec(cmd)
+cmd = write_out(T33c); print(cmd); exec(cmd)
 
 
 # generate alpha etc. eigenvector parameters
 alpha = np.arccos(np.abs(v1_v)) # math.acos(abs(v1_v[i]));
 phi = np.angle(t12c) # cmath.phase(t12c[i]);
 theta = np.angle((t22c - t33c) + 2. * 1j * t23c.real) / 4.  # cmath.phase((t22c[i] - t33c[i]) + 2. * 1j * t23c[i].real) / 4.
-
 
 
 # generate RGB colour composite from multiple eigenvector angles
