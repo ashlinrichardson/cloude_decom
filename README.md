@@ -38,6 +38,12 @@ wsl --install
 ```
 wsl
 ```
+
+4. Install "unzip" command (needed to open code) 
+At the WSL prompt:
+```
+sudo apt install unzip
+```
 ## Instructions for building and running the interactive method, using the test data provided:
 Please open your terminal and run the following commands:
 
