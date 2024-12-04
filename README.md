@@ -62,7 +62,7 @@ Notes:
 2) Alternate downloading method, you could use this instead of step "1)" above if you're already [connected to github by ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh):
 
 ```
-git clone git@github.com:ashlinrichardson/cloude_decom.git        # 1) download the project..
+git clone git@github.com:ashlinrichardson/cloude_decom.git
 ```
 
 and then proceed to "2) enter the project folder". This approach would make sense if you're experienced with GitHub and considering making code revisions
@@ -101,8 +101,31 @@ Default target window size is 3. To run with a different window size, e.g. 5:
 cd T3
 cloude_view stack.bin 5
 ```
-### Building and running the non-interactive version:
+### NEW: running the Python version
+If you already downloaded the code, proceed to step 3)
+### 1) download the code
+```
+curl -o cloude_decom.zip https://codeload.github.com/ashlinrichardson/cloude_decom/zip/refs/heads/master; unzip cloude_decom.zip; mv cloude_decom-master cloude_decom
+```
+
+### 2) enter the project folder 
+```
+cd cloude_decom
+```
+
+### 3) run the python code on the sample data provided:
+```
+python3 py/cloude_decom.py T3
+```
+
+This gui works almost the same as the C++ gui. Depressing the mouse button will restore the "default" visualization e.g. (r,g,b) = (T22, T33, T11). Releasing the mouse button will run the decom ( and generate and display the product opt.bin).
+
+### 4) 
+To run the python version at a specific target location (column, row index) examine the top of the python file for examples.
+
 ### Running the method on other data
+* Make sure your dataset is in T3 matrix format ( PolSARPro standard ). ENVI header files ( one for each .bin file) are expected, as is the PolSARPro "config.txt" file.
+
 ### Running on T3 data produced by SNAP
 ## Thanks
 Thanks to [Eric Pottier](https://scholar.google.it/citations?hl=en&user=wObZqM0AAAAJ&view_op=list_works&sortby=pubdate) and [JAXA](https://global.jaxa.jp/) for providing ALOS-1 quad-pol data over San Fransisco, California. Please [click here](https://ietr-lab.univ-rennes1.fr/polsarpro-bio/sample_datasets/) to see other sample data generously provided by Dr. Pottier.
