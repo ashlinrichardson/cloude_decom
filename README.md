@@ -88,7 +88,7 @@ e.g. row/col index: (x,y)=863,739
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="800">
 
-whereas cancelling an urban area highlights oceanographic and topographic features:
+whereas cancelling an urban area highlights oceanographic and topographic features: e.g. at point (x,y) = (688, 663) 
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_urban.png" width="800">
 
