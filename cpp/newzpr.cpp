@@ -979,7 +979,7 @@ void zprInstance::zprMouse(int button, int state, int x, int y){
     cout << "run: " << cmd << endl;
     system(cmd.c_str());
     writeHeader("opt_vis.hdr", IMG_NR, IMG_NC, 3);
-    system("cat OPT.bin OPT.bin OPT.bin > opt_vis.bin");
+    system("cat opt.bin opt.bin opt.bin > opt_vis.bin");
     FILE * f = fopen("opt_vis.bin", "rb");
     //printf("fread..\n");
     if(!f) err("failed to open input file\n");
