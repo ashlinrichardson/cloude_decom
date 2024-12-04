@@ -525,13 +525,14 @@ results = work_queue(job_count, num_workers, chunk_size)
 
 print("null vectors..")
 o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = nullspace_vectors(xp, yp)
-
+'''
 print(o2d1c)
 print(o2d2c) 
 print(o2d3c) 
 print(o3d1c)
 print(o3d2c)
 print(o3d3c)
+'''
 
 [opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c)
 
@@ -539,16 +540,40 @@ for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
     write_out(x)
 
 
+def naninf_list(x):
+    Y = []
+    X = None
+    if type(x) != list:
+        X = list(x.ravel().tolist())
+    else:
+        X = x
+
+    for i in X:
+        if not (math.isnan(i) or math.isinf(i)):
+            Y.append(i)
+    return Y
+
 if True:
-    r_reshape = np.array(t22_p).reshape((nrow, ncol))
-    g_reshape = np.array(t33_p).reshape((nrow, ncol))
-    b_reshape = np.array(t11_p).reshape((nrow, ncol))
+    def scale(rgb_i):
+        values = naninf_list(rgb_i) # values.reshape(np.prod(values.shape)).tolist()
+        values.sort()
+        n_pct = 1. # percent for stretch value
+        frac = n_pct / 100.
+        rgb_min, rgb_max = values[int(math.floor(float(len(values))*frac))],\
+                           values[int(math.floor(float(len(values))*(1. - frac)))]
+        rng = rgb_max - rgb_min  # apply restored or derived scaling
+        rgb_i = (rgb_i - rgb_min) / (rng if rng != 0. else 1.)
+        rgb_i[rgb_i < 0.] = 0.  # clip
+        rgb_i[rgb_i > 1.] = 1.
+        return rgb_i
     rgb = np.zeros((nrow, ncol, 3))
-    rgb[:, :, 0] = r_reshape
-    rgb[:, :, 1] = g_reshape
-    rgb[:, :, 2] = b_reshape
+    rgb[:, :, 0] = scale(np.array(t22_p)).reshape((nrow, ncol))
+    rgb[:, :, 1] = scale(np.array(t33_p)).reshape((nrow, ncol))
+    rgb[:, :, 2] = scale(np.array(t11_p)).reshape((nrow, ncol))
     plt.figure()
     plt.imshow(rgb)
+    # plt.title('JAXA ALOS-1 data over SanFransisco, USA')
+    plt.xlabel('(R,G,B)=(T22, T33, T11)')
     plt.tight_layout()
     plt.show()
 
