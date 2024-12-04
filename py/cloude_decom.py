@@ -47,7 +47,7 @@ t11c, t22c, t33c, t12c, t13c, t23c =\
     None, None, None, None, None, None
 v1_v, v2_v, v3_v, e1_v, e2_v, e3_v =\
     None, None, None, None, None, None
-
+dn, vn, sn = None, None, None
 
 class vec3:
     def __init__(self, a, b, c):
@@ -134,7 +134,11 @@ def eigv(A, _lambda):  # herm3<cf> &A, cf & lambda){
 
 def eig(A):
     lambdas = A.solve_characteristic()
-    e1, e2, e3 = eigv(A, lambdas.a), eigv(A, lambdas.b), eigv(A, lambdas.c)
+
+    e1, e2, e3 = eigv(A, lambdas.a),\
+                 eigv(A, lambdas.b),\
+                 eigv(A, lambdas.c)
+
     l1, l2, l3 = lambdas.a, lambdas.b, lambdas.c  
 
     e1.normalize()
@@ -146,7 +150,6 @@ def eig(A):
          [abs(l3), e3]]
 
     X.sort(reverse=True)  # sort eigenvectors by eigenvalue ( decreasing order )
-
     L = [X[i][0] for i in range(len(X))]
 
     L = vec3(L[0], L[1], L[2])
@@ -154,7 +157,6 @@ def eig(A):
     d1, d2, d3 = (A*E1)/(L.a) - E1, (A*E2)/(L.b) - E2, (A*E3)/(L.c) - E3;
 
     diff = d1.norm() + d2.norm() + d3.norm()
-
     return [L, E1, E2, E3]
 
 
@@ -183,9 +185,7 @@ def lamcloude(a, b, c, z1, z2, z3):
     z1p, z2p, z3p = z1.conjugate(),\
                     z2.conjugate(),\
                     z3.conjugate()
-
     fac0 = z1 * z1p + z2 * z2p + z3 * z3p
-
 
     deta = a * b * c - c * z1 * z1p - b * z2 * z2p + z1 * z2p * z3 + z1p * z2 * z3p - a * z3 * z3p
     s2 = a * a - a * b + b * b - a * c - b * c + c * c + 3. * fac0
@@ -271,12 +271,12 @@ def rank1_t3_vectorised(e1, v1, v2, v3):  #  generate T3 rank 1 ( numpy vectoris
 
 
 def write_out(variable_name):
-    # print(type(variable_name))
-    # print("+w", variable_name + ".bin")
-    cmd =  'write_binary(' + variable_name + '.tolist(), "' + variable_name + '.bin"); write_hdr("' + variable_name + '.hdr", ncol, nrow, 1, ["' + variable_name + '.bin"])'
+    cmd =  ('write_binary(' + variable_name + '.tolist(), "' +
+            variable_name + '.bin"); write_hdr("' +
+            variable_name + '.hdr", ncol, nrow, 1, ["' +
+            variable_name + '.bin"])'
     # print(cmd)
     exec(cmd)
-    # return(cmd)
 
 
 def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c):   # calculate decom for pixel at linear index "i"
@@ -447,13 +447,13 @@ t33c = np.array(t33c)
 
 # /* avoid 0 elements.. conditioning */
 print("conditioning..")
-eps2 = (t11c + t22c + t33c ) * (1.0e-9) + eps # eps2 = (a + b + c) * (1.0e-9) + eps
-t12c = t12c + eps2 * F # z1 = z1 + eps2 * F
-t13c = t13c + eps2 * F # z2 = z2 + eps2 * F
-t23c = t23c + eps2 * F # z3 = z3 + eps2 * F
-t11c = t11c + eps2 * F # a = a + eps2 * F
-t22c = t22c + eps2 * F # b = b + eps2 * F
-t33c = t33c + eps2 * F # c = c + eps2 * F
+eps2 = (t11c + t22c + t33c ) * (1.0e-9) + eps
+t12c = t12c + eps2 * F 
+t13c = t13c + eps2 * F 
+t23c = t23c + eps2 * F
+t11c = t11c + eps2 * F 
+t22c = t22c + eps2 * F
+t33c = t33c + eps2 * F 
 
 pickle_filename = os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'cloude_decom.pkl'
 if os.path.exists(pickle_filename):
@@ -463,11 +463,11 @@ if os.path.exists(pickle_filename):
 else:
     print("lamcloude..")
     [e1_v, e2_v, e3_V, v1_v, v2_v, v3_v] =\
-        lamcloude_vectorised(t11c, t22c, t33c, t12c, t13c, t23c) # lamcloude(a, b, c, z1, z2, z3)
+        lamcloude_vectorised(t11c, t22c, t33c, t12c, t13c, t23c)
     
     print("rank1 t3..")
     [t11c, t12c, t13c, t22c, t23c, t33c] =\
-        rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v) # rank1_t3(e1, v1, v2, v3)
+        rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v)
     
     T11c = np.abs(t11c)
     T22c = np.abs(t22c)
@@ -477,9 +477,9 @@ else:
         write_out(x)
 
     # generate alpha etc. eigenvector parameters : ) 
-    alpha = np.arccos(np.abs(v1_v)) # math.acos(abs(v1_v[i]));
-    phi = np.angle(t12c) # cmath.phase(t12c[i]);
-    theta = np.angle((t22c - t33c) + 2. * 1j * t23c.real) / 4.  # cmath.phase((t22c[i] - t33c[i]) + 2. * 1j * t23c[i].real) / 4.
+    alpha = np.arccos(np.abs(v1_v))
+    phi = np.angle(t12c)
+    theta = np.angle((t22c - t33c) + 2. * 1j * t23c.real) / 4.  
 
     # generate RGB colour composite from multiple eigenvector angles
     dn = alpha * 2. / M_PI # alpha angle in red channel                # out: red channel
@@ -540,9 +540,14 @@ def scale(rgb_i):
 
 # default visualization
 rgb = np.zeros((nrow, ncol, 3))
-rgb[:, :, 0] = scale(np.array(t22_p)).reshape((nrow, ncol))
-rgb[:, :, 1] = scale(np.array(t33_p)).reshape((nrow, ncol))
-rgb[:, :, 2] = scale(np.array(t11_p)).reshape((nrow, ncol))
+if special_rgb:
+    rgb[:, :, 0] = scale(np.array(dn)).reshape((nrow, ncol))
+    rgb[:, :, 1] = scale(np.array(vn)).reshape((nrow, ncol))
+    rgb[:, :, 2] = scale(np.array(sn)).reshape((nrow, ncol))
+else:
+    rgb[:, :, 0] = scale(np.array(t22_p)).reshape((nrow, ncol))
+    rgb[:, :, 1] = scale(np.array(t33_p)).reshape((nrow, ncol))
+    rgb[:, :, 2] = scale(np.array(t11_p)).reshape((nrow, ncol))
 fig, ax = plt.subplots()
 im = ax.imshow(rgb)
 # plt.title('JAXA ALOS-1 data over SanFransisco, USA')
