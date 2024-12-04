@@ -340,11 +340,6 @@ def nullspace_vectors(xp, yp):
     t23_r = t23_r_p[i]
     t23_i = t23_i_p[i]
     
-    print("target info:")
-    print("T11", t11)
-    print("T22", t22)
-    print("T33", t33)
-    
     '''(ws > 1){
       for(int di = yp - dw; di <= yp + dw; di++){
         if(di >=0 && di < nrow){
@@ -389,9 +384,9 @@ def nullspace_vectors(xp, yp):
     T = herm3(a, z1, z2, b, z3, c)
     
     L, E1, E2, E3 = eig(T)
-    print("L", L)
+    '''print("L", L)
     print("E2", E2)
-    print("E3", E3)
+    print("E3", E3)'''
     
     o2d1 = E2.a
     o2d2 = E2.b
@@ -506,12 +501,20 @@ else:
 
 
 print("null vectors..")
-o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = nullspace_vectors(xp, yp)
+if xp is not None and yp is not None:
+    [o2d1, o2d2, o2d3, 
+     o3d1, o3d2, o3d3,
+     o2d1c, o2d2c, o2d3c,
+     o3d1c, o3d2c, o3d3c] = nullspace_vectors(xp, yp)
 
-[opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c)
+    [opt, hv, pwr, sopt, aopt, popt]  =\
+        decom(o2d1, o2d2, o2d3,
+              o3d1, o3d2, o3d3,
+              o2d1c, o2d2c, o2d3c,
+              o3d1c, o3d2c, o3d3c)
 
-for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
-    write_out(x)
+    for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
+        write_out(x)
 
 
 def naninf_list(x):
@@ -548,7 +551,7 @@ plt.tight_layout()
 
 
 def on_press(event):  # called when point is clicked
-    print("on_press", event.xdata, event.ydata)
+    print("on_press(): now release mouse button over target location")
     ax.imshow(rgb)
     plt.xlabel('(R,G,B)=(T22, T33, T11)')
     plt.draw()  # Redraw the canvas
