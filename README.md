@@ -25,15 +25,32 @@ Inputs: A) fully-polarimetric SAR data in standard [PolSARPro](https://ietr-lab.
 The interactive version supports exploring fully-polarimetric SAR data quickly, by selecting a target location using the mouse, then viewing the resulting optimised radar cross section promptly
 
 * Tested on **Ubuntu 20 LTS** and MacOS. Windows to be supported soon
-### Instructions for building and running the interactive method, using the test data provided:
+## Instructions for building and running the interactive method, using the test data provided:
 Please open your terminal and run the following commands:
+
+### 1) download the code
 ```
-# 1) download the code:
 curl -o cloude_decom.zip https://codeload.github.com/ashlinrichardson/cloude_decom/zip/refs/heads/master; unzip cloude_decom.zip; mv cloude_decom-master cloude_decom
-cd cloude_decom                                                   # 2) enter the project folder 
-python3 cpp/compile.py                                            # 3) build the project codes..
-cd T3                                                             # 4) enter the test data folder.. 
-cloude_view                                                       # 5) run the interactive program! 
+```
+
+### 2) enter the project folder 
+```
+cd cloude_decom
+```
+
+### 3) compile the code
+```
+python3 cpp/compile.py
+```
+
+### 4) enter the sample data folder
+```
+cd T3
+```
+
+### 5) run the interactive program
+```
+cloude_view
 ```
 If all goes well, you should see an interactive visualization of the test data (as below). 
 
