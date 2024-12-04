@@ -468,30 +468,22 @@ t33c = t33c + eps2 * F # c = c + eps2 * F
 
 if os.path.exists("cloude_decom.pkl"):
     print("unpickling..")
-    t1 = time.time()
     [t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v] = pickle.load(open('cloude_decom.pkl', 'rb'))
-    t2 = time.time() - t1
-    print("unpickling time:", t2)
 else:
-
-    t1 = time.time()
-    print("rank1/ lamcloude..")
+    print("lamcloude..")
     [e1_v, e2_v, e3_V, v1_v, v2_v, v3_v] = lamcloude_vectorised(t11c, t22c, t33c, t12c, t13c, t23c) # lamcloude(a, b, c, z1, z2, z3)
     
-    
-    print("rank 1 t3..")
-    # rank 1 t3
+    print("rank1 t3..")
     [t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v) # rank1_t3(e1, v1, v2, v3)
     
     T11c = np.abs(t11c)
     T22c = np.abs(t22c)
     T33c = np.abs(t33c)
 
-    cmd = write_out('T11c')
-    cmd = write_out('T22c')
-    cmd = write_out('T33c')
+    for x in ['T11c', 'T22c', 'T33c']:
+        write_out(x)
 
-    # generate alpha etc. eigenvector parameters
+    # generate alpha etc. eigenvector parameters : ) 
     alpha = np.arccos(np.abs(v1_v)) # math.acos(abs(v1_v[i]));
     phi = np.angle(t12c) # cmath.phase(t12c[i]);
     theta = np.angle((t22c - t33c) + 2. * 1j * t23c.real) / 4.  # cmath.phase((t22c[i] - t33c[i]) + 2. * 1j * t23c[i].real) / 4.
@@ -506,14 +498,8 @@ else:
     # special RGB encoding: (r,g,b) = (dn, vn, sn)
     for x in ['alpha', 'phi', 'theta', 'dn', 'theta2', 'vn', 'sn']:
         write_out(x)
-    t2 = time.time() - t1
-    print("rank1 time", t2)
-
     print("pickling..")
-    t1 = time.time()
     pickle.dump([t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v], open('cloude_decom.pkl', 'wb'))
-    t2 = time.time() - t1
-    print("pickling time:", t2)
 
 '''
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
@@ -532,12 +518,7 @@ print(o3d1c)
 print(o3d2c)
 print(o3d3c)
 
-start_time = time.time()
 [opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c)
-end_time = time.time()
-
-print("decom()", end_time - start_time)
-
 
 for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
     write_out(x)
