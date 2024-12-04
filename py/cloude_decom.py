@@ -271,9 +271,10 @@ def rank1_t3_vectorised(e1, v1, v2, v3):  #  generate T3 rank 1 ( numpy vectoris
 
 
 def write_out(variable_name):
+    dd = os.path.normpath(args[1]) + sep
     cmd =  ('write_binary(' + variable_name + '.tolist(), "' +
-            variable_name + '.bin"); write_hdr("' +
-            variable_name + '.hdr", ncol, nrow, 1, ["' +
+            dd + variable_name + '.bin"); write_hdr("' +
+            dd + variable_name + '.hdr", ncol, nrow, 1, ["' +
             variable_name + '.bin"])')
     # print(cmd)
     exec(cmd)
