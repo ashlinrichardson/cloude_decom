@@ -20,15 +20,17 @@ import math
 import sys
 import os
 
-M_PI = math.pi
-xp, yp = None, None
-nrow, ncol = None, None
-eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
 F = None
-out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = None, None, None, None, None, None, None, None, None
+M_PI = math.pi
+xp, yp = None, None  # target pixel, "graphics" convention (+x right, +y down)
+nrow, ncol = None, None  # image dimensions
+eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
+
+
 t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
 t11c, t22c, t33c, t12c, t13c, t23c = None, None, None, None, None, None
 v1_v, v2_v, v3_v, e1_v, e2_v, e3_v = None, None, None, None, None, None
+
 
 class vec3:
     def __init__(self, a, b, c):
@@ -39,13 +41,19 @@ class vec3:
 
     def normalize(self):
         norm = self.norm()  # give vector l2 length of 1 
-        self.a, self.b, self.c = self.a / norm, self.b / norm, self.c / norm
+        self.a, self.b, self.c = self.a / norm,\
+                                 self.b / norm,\
+                                 self.c / norm
 
     def __truediv__(self, a):  # define division by scalar ( X / a ) operator
-        return vec3(self.a / a, self.b / a, self.c / a)
+        return vec3(self.a / a,
+                    self.b / a,
+                    self.c / a)
     
     def __sub__(self, b):
-        return vec3(self.a - b.b, self.b - b.b, self.c - b.c)
+        return vec3(self.a - b.b,
+                    self.b - b.b,
+                    self.c - b.c)
     
     def __str__(self):  # tostring()
         return ' '.join([str(x) for x in [self.a, self.b, self.c]])
@@ -71,8 +79,7 @@ class herm3:
     def solve_characteristic(self):
         a, b, c, d, e, f = self.a, self.b, self.c, self.d, self.e, self.f
         _A, _B = -1. + 0j, a + d + f
-        cc = self.c.conjugate()
-        bc = self.b.conjugate()
+        cc, bc = self.c.conjugate(), self.b.conjugate()
         ec = self.e.conjugate()
         _C = (-(a*d) - a*f - d*f + b* bc + c* cc + e* ec)
         _D = d*(a*f - c* cc) + e*(b* cc - a* ec) + bc *(-(b*f) + c* ec)
@@ -92,6 +99,7 @@ class herm3:
                 ' '.join([str(x) for x in [0, self.d, self.e]]) + '\n' + 
                 ' '.join([str(x) for x in [0, 0, self.f]]))
         
+
 def eigv(A, _lambda):  # herm3<cf> &A, cf & lambda){
     ''' syms a lambda b y c z d y e z
         solve( '(a-lambda)+b*y+c*z', 'conj(b) + y*(d-lambda) +e*z')  '''
@@ -130,6 +138,7 @@ def read_T3(d):
     t12_r_p, t12_i_p = read_binary(d + sep + 'T12_real.bin')[3], read_binary(d + sep + 'T12_imag.bin')[3]
     t13_r_p, t13_i_p = read_binary(d + sep + 'T13_real.bin')[3], read_binary(d + sep + 'T13_imag.bin')[3]
     t23_r_p, t23_i_p = read_binary(d + sep + 'T23_real.bin')[3], read_binary(d + sep + 'T23_imag.bin')[3]
+
 
 def lamcloude(a, b, c, z1, z2, z3):
     p = 1./3.
@@ -172,6 +181,7 @@ def lamcloude(a, b, c, z1, z2, z3):
     v1, v2, v3 = v1 / n, v2 / n, v3 / n  # normalised components as output
     return [e1, e2, e3, v1, v2, v3] 
 
+
 def lamcloude_vectorised(a, b, c, z1, z2, z3):
     e1 = np.array([math.nan + 0j for i in range(npx)])
     e2 = copy.deepcopy(e1)
@@ -203,6 +213,7 @@ def rank1_t3(e1, v1, v2, v3):  #  generate T3 rank 1
             e1v2 * v3c,
             e1 * v3 * v3c]
 
+
 def rank1_t3_vectorised(e1, v1, v2, v3):  #  generate T3 rank 1 ( numpy vectorised version )
     e1v1, e1v2 = e1 * v1, e1 * v2
     v2c, v3c = np.conjugate(v2), np.conjugate(v3) # v3.conjugate()
@@ -223,6 +234,7 @@ def write_out(variable_name):
     # print(cmd)
     exec(cmd)
     # return(cmd)
+
 
 def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c):   # calculate decom for pixel at linear index "i"
     print("decom..")
@@ -281,6 +293,7 @@ def worker(task_queue, result_array, job_count, chunk_size):
             break 
         start_idx = job * chunk_size  # start index for results chunk (this job)
         result_array[start_idx: start_idx + chunk_size] = decom(job)  # put the results at the appropriate location
+
 
 def work_queue(job_count, num_workers, chunk_size):
     task_queue = mp.Queue()  # task queue object
@@ -392,7 +405,7 @@ npx = nrow * ncol
 read_T3('../T3/')  # load the T3 matrix data
 
 # initialize output variables
-out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
+# out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
 
 xp, yp = int(sys.argv[2]), int(sys.argv[1])  # cloude_decom T3 313 798 # col/ row for test target
 
@@ -414,17 +427,6 @@ if False:
     plt.imshow(rgb)
     plt.tight_layout()
     plt.show()
-
-
-print("null vectors..")
-o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = nullspace_vectors(xp, yp)
-
-print(o2d1c)
-print(o2d2c) 
-print(o2d3c) 
-print(o3d1c)
-print(o3d2c)
-print(o3d3c)
 
 
 print("arrays..")
@@ -507,6 +509,16 @@ num_workers = mp.cpu_count() * 4  # Number of worker processes (threads)
 chunk_size = 7 # number of elements returned by decom() function
 results = work_queue(job_count, num_workers, chunk_size)
 '''
+
+print("null vectors..")
+o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = nullspace_vectors(xp, yp)
+
+print(o2d1c)
+print(o2d2c) 
+print(o2d3c) 
+print(o3d1c)
+print(o3d2c)
+print(o3d3c)
 
 import time
 start_time = time.time()
