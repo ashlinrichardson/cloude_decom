@@ -83,6 +83,9 @@ ALOS PALSAR data over SanFransisco, California in pauli encoding **(r, g, b) = (
 
 For example, triggering the processing by pointing at water, demonstrates (by "cancelling" water) the ability to pinpoint ships: 
 
+e.g. row/col index: (x,y)=863,739
+
+
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="800">
 
 whereas cancelling an urban area highlights oceanographic and topographic features:
@@ -120,7 +123,7 @@ python3 py/cloude_decom.py T3
 
 This gui works almost the same as the C++ gui. Depressing the mouse button will restore the "default" visualization e.g. (r,g,b) = (T22, T33, T11). Releasing the mouse button will run the decom ( and generate and display the product opt.bin).
 
-### 4) 
+### 4) Extra options
 To run the python version at a specific target location (column, row index) examine the top of the python file for examples.
 
 ### Running the method on other data
