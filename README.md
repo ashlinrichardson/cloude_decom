@@ -151,7 +151,7 @@ Quite a few interesting parameters are output by the program, such as the diagon
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/rank_1_t3.png" width="800">
 
-Comparing the pauli representation with the eigenvalues ( sorted ) and with the diagonal of the rank-1 T3 matrix:
+Comparing the pauli representation with the eigenvalues ( sorted ) and also with the rank-1 matrix elements:
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/compare.gif" width="800">
 
