@@ -134,25 +134,30 @@ curl -o cloude_decom.zip https://codeload.github.com/ashlinrichardson/cloude_dec
 cd cloude_decom
 ```
 
-### 3) run the python code on the sample data provided:
+### 3) make sure python dependencies are installed ( quite standard ):
+```
+python3 -m pip install numpy matplotlib
+```
+
+### 4) run the python code on the sample data provided:
 ```
 python3 py/cloude_decom.py T3
 ```
 
-This gui works almost the same as the C++ gui. Depressing the mouse button will restore the "default" visualization e.g. (r,g,b) = (T22, T33, T11). Releasing the mouse button will run the decom ( and generate and display the product opt.bin).
+This gui works "the same" as the C++ gui:
+* Depressing the mouse button will restore the "default" visualization e.g. (r,g,b) = (T22, T33, T11).
+* Releasing the mouse button will run the decom ( and generate and display the product opt.bin).
 
-### 4) Extra options
+### 5) Extra options
 To run the python version at a specific target location (column, row index) examine the top of the python file for examples. For example, the flag ```--special_rgb``` can be used to display a special color-encoding:
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/rgb_special.png" width="800">
 
-### 5) Extra parameters
-Quite a few interesting parameters are output by the program, such as the diagonal elements of the rank-1 T3 matrix:
-
+### 6) Extra parameters
+Quite a few parameters are output by the program, such as the diagonal elements of the rank-1 T3 matrix:
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/rank_1_t3.png" width="800">
 
 Comparing the pauli representation with the eigenvalues ( sorted ) and also with the rank-1 matrix elements:
-
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/compare.gif" width="800">
 
 ### Running the method on other data
