@@ -563,12 +563,12 @@ def on_press(event):  # called when point is clicked
 
 
 def on_release(event):
-    print("on_release", event.xdata, event.ydata)
     x, y = event.xdata, event.ydata
 
     if x is not None and y is not None:  # ensure click within axes
         x = math.floor(x + 0.5)
         y = math.floor(y + 0.5)
+        print('on_release(): run decom at (x,y)=' + str(x) + ',' + str(y))
 
         [o2d1, o2d2, o2d3,
          o3d1, o3d2, o3d3,
