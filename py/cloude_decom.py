@@ -21,6 +21,18 @@ import math
 import time
 import sys
 import os
+args = sys.argv
+
+special_rgb = '--special_rgb' in args
+args_new = []
+
+for arg in args:
+    if arg[:2] == '--':
+        pass
+    else:
+        args_new += [arg]
+args = args_new
+
 
 F = None
 M_PI = math.pi
@@ -314,38 +326,6 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
     return [ opt, hv, pwr, sopt, aopt, popt]
 
 
-def worker(task_queue, result_array, job_count, chunk_size):
-    """ Worker function to process tasks (one integer at a time) and store results in the shared array """
-    while True:
-        job = task_queue.get()  # get next job
-        if job is None:  # sentinel value to stop worker
-            break 
-        start_idx = job * chunk_size  # start index for results chunk (this job)
-        result_array[start_idx: start_idx + chunk_size] = decom(job)  # put the results at the appropriate location
-
-
-def work_queue(job_count, num_workers, chunk_size):
-    task_queue = mp.Queue()  # task queue object
-    result_array = mp.Array('d', [math.nan + 0j] * (job_count * chunk_size))  # init array with null
-
-    processes = []
-    for _ in range(num_workers):  # start the workers
-        p = mp.Process(target=worker, args=(task_queue, result_array, job_count, chunk_size))
-        p.start()
-        processes.append(p)
-
-    for job in range(job_count):  # add jobs to task queue
-        task_queue.put(job)
-
-    for _ in range(num_workers):  # add sentinel values to stop the workers
-        task_queue.put(None)
-
-    for p in processes:  # wait to finish
-        p.join()
-
-    return result_array  # return list(result_array)  # convert to regular list 
-
-
 def nullspace_vectors(xp, yp):
     print('nullspace_vectors', xp, yp)
     n_use = 1;
@@ -429,7 +409,7 @@ def nullspace_vectors(xp, yp):
 
 
 # program start
-in_dir = os.path.normpath(sys.argv[1])
+in_dir = os.path.normpath(args[1])
 x = read_config(in_dir + os.path.sep + 'config.txt')
 nrow, ncol = x['nrow'], x['ncol']
 F = (float(nrow) + float(ncol)) / 2.
@@ -439,14 +419,14 @@ read_T3(in_dir)  # load the T3 matrix data
 # initialize output variables
 # out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
 
-xp, yp = int(sys.argv[3]), int(sys.argv[2])  # cloude_decom T3 313 798 # col/ row for test target
+xp, yp = int(args[3]) if len(args) > 3 else None,\
+         int(args[2]) if len(args) > 2 else None    # cloude_decom T3 313 798 # col/ row for previous test target
 
-if xp < 0 or xp > ncol:
-    err("x coord out of bounds")
-
-if yp < 0 or yp > nrow: 
-    err("y coord out of bounds")
-
+# check specified col, row indices ( respectively ) are "in bounds"
+if xp is not None and (xp < 0 or xp > ncol):
+        err("x coord out of bounds")
+if yp is not None and (yp < 0 or yp > nrow):
+        err("y coord out of bounds")
 
 print("complex arrays..")
 N = len(t11_p)
@@ -522,14 +502,8 @@ else:
                  t12c, t13c, t23c,
                  v1_v, v2_v, v3_v,
                  e1_v, e2_v, e3_v],
-                open('cloude_decom.pkl', 'wb'))
+                open(pickle_filename, 'wb'))
 
-'''
-job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
-num_workers = mp.cpu_count() * 4  # Number of worker processes (threads)
-chunk_size = 7 # number of elements returned by decom() function
-results = work_queue(job_count, num_workers, chunk_size)
-'''
 
 print("null vectors..")
 o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = nullspace_vectors(xp, yp)
