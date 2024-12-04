@@ -1,12 +1,24 @@
 '''cloude_decom.py
 
+instructions: 
+
+# to run basic example:
+    python3 py/cloude_decom.py T3 
+
+# special rgb for targeting:
+    python3 py/cloude_decom.py T3 --special_rgb
+
+# specify target location (y, x) coordinate to "cancel" a specific ship:
+    python3 py/cloude_decom.py T3 393 616
+
+
+# when running on a specific target, suppress the gui:
+    python3 py/cloude_decom.py T3 393 616 --no_gui
+
+
 Todo:
-simple gui (point select)
-polygon select ( shapefile or input to GUI )
-
-e.g.
-
-python3 cloude_decom.py  313 798
+(DONE) simple gui (point select)
+(TODO) polygon select ( shapefile or input to GUI )
 '''
 from misc import read_config, read_binary, write_binary, write_hdr
 import matplotlib.pyplot as plt
@@ -24,7 +36,8 @@ import os
 args = sys.argv
 sep = os.path.sep
 
-special_rgb = '--special_rgb' in args
+special_rgb = '--special_rgb' in args  # use special (r,g,b) = (dn, vn, sn) visualization ( alphas ) 
+no_gui = '--no_gui' in args  # option to suppress gui window (just run at specific target)
 args_new = []
 
 for arg in args:
@@ -48,8 +61,8 @@ t11c, t22c, t33c, t12c, t13c, t23c =\
     None, None, None, None, None, None
 v1_v, v2_v, v3_v, e1_v, e2_v, e3_v =\
     None, None, None, None, None, None
-
-opt, hv, pwr, sopt, aopt, popt = None, None, None, None, None, None
+opt, hv, pwr, sopt, aopt, popt =\
+    None, None, None, None, None, None
 dn, vn, sn = None, None, None
 
 class vec3:
@@ -520,6 +533,9 @@ if xp is not None and yp is not None:
 
     for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
         write_out(x)
+
+    if no_gui:
+        sys.exit(0)
 
 
 def naninf_list(x):
