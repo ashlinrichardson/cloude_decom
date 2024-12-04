@@ -298,8 +298,8 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
     # find optimum subspace signal
     zopt = w1 * v1_v + w2 * v2_v + w3 * v3_v
     ip = np.abs(zopt * np.conjugate(zopt))  # zopt.conjugate
-    ip_eps = ip + eps;
-    sopt = 10. * np.log(ip_eps) / math.log(10.); # optimum normalised power
+    ip_eps = ip + eps
+    sopt = 10. * np.log(ip_eps) / math.log(10.)  # optimum normalised power
     
     sp = t11c + t22c + t33c  # span power
     abs_sp = np.abs(sp)
@@ -429,11 +429,12 @@ def nullspace_vectors(xp, yp):
 
 
 # program start
-x = read_config('../T3/config.txt')
+in_dir = os.path.normpath(sys.argv[1])
+x = read_config(in_dir + os.path.sep + 'config.txt')
 nrow, ncol = x['nrow'], x['ncol']
 F = (float(nrow) + float(ncol)) / 2.
 npx = nrow * ncol
-read_T3(sys.argv[1])  # load the T3 matrix data
+read_T3(in_dir)  # load the T3 matrix data
 
 # initialize output variables
 # out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
