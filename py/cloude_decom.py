@@ -420,21 +420,8 @@ if xp < 0 or xp > ncol:
 if yp < 0 or yp > nrow: 
     err("y coord out of bounds")
 
-if False:
-    r_reshape = np.array(t22_p).reshape((nrow, ncol))
-    g_reshape = np.array(t33_p).reshape((nrow, ncol))
-    b_reshape = np.array(t11_p).reshape((nrow, ncol))
-    rgb = np.zeros((nrow, ncol, 3))
-    rgb[:, :, 0] = r_reshape
-    rgb[:, :, 1] = g_reshape
-    rgb[:, :, 2] = b_reshape
-    plt.figure()
-    plt.imshow(rgb)
-    plt.tight_layout()
-    plt.show()
 
-
-print("arrays..")
+print("complex arrays..")
 N = len(t11_p)
 t11c = [t11_p[i] + 0j for i in range(N)] # + 0j; # a = t11 + 0j
 t22c = [t22_p[i] + 0j for i in range(N)] # + 0j; # b = t22 + 0j
@@ -468,13 +455,16 @@ t33c = t33c + eps2 * F # c = c + eps2 * F
 
 if os.path.exists("cloude_decom.pkl"):
     print("unpickling..")
-    [t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v] = pickle.load(open('cloude_decom.pkl', 'rb'))
+    [t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v] =\
+        pickle.load(open('cloude_decom.pkl', 'rb'))
 else:
     print("lamcloude..")
-    [e1_v, e2_v, e3_V, v1_v, v2_v, v3_v] = lamcloude_vectorised(t11c, t22c, t33c, t12c, t13c, t23c) # lamcloude(a, b, c, z1, z2, z3)
+    [e1_v, e2_v, e3_V, v1_v, v2_v, v3_v] =\
+        lamcloude_vectorised(t11c, t22c, t33c, t12c, t13c, t23c) # lamcloude(a, b, c, z1, z2, z3)
     
     print("rank1 t3..")
-    [t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v) # rank1_t3(e1, v1, v2, v3)
+    [t11c, t12c, t13c, t22c, t23c, t33c] =\
+        rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v) # rank1_t3(e1, v1, v2, v3)
     
     T11c = np.abs(t11c)
     T22c = np.abs(t22c)
@@ -498,8 +488,13 @@ else:
     # special RGB encoding: (r,g,b) = (dn, vn, sn)
     for x in ['alpha', 'phi', 'theta', 'dn', 'theta2', 'vn', 'sn']:
         write_out(x)
+
     print("pickling..")
-    pickle.dump([t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v], open('cloude_decom.pkl', 'wb'))
+    pickle.dump([t11c, t22c, t33c,
+                 t12c, t13c, t23c,
+                 v1_v, v2_v, v3_v,
+                 e1_v, e2_v, e3_v],
+                open('cloude_decom.pkl', 'wb'))
 
 '''
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
@@ -522,3 +517,19 @@ print(o3d3c)
 
 for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
     write_out(x)
+
+
+if True:
+    r_reshape = np.array(t22_p).reshape((nrow, ncol))
+    g_reshape = np.array(t33_p).reshape((nrow, ncol))
+    b_reshape = np.array(t11_p).reshape((nrow, ncol))
+    rgb = np.zeros((nrow, ncol, 3))
+    rgb[:, :, 0] = r_reshape
+    rgb[:, :, 1] = g_reshape
+    rgb[:, :, 2] = b_reshape
+    plt.figure()
+    plt.imshow(rgb)
+    plt.tight_layout()
+    plt.show()
+
+
