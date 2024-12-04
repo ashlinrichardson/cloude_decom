@@ -147,6 +147,12 @@ def eig(A):
 
 
 def read_T3(d):
+    d = os.path.normpath(d)
+    t11f = d + os.path.sep + 'T11.bin'
+    t11h = d + os.path.sep + 'T11.hdr'
+    if not os.path.exists(t11f):
+        err('could not find file: ' + t11f)
+    
     global t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p 
     sep = os.path.sep
     t11_p, t22_p = read_binary(d + sep + 'T11.bin')[3], read_binary(d + sep + 'T22.bin')[3]
@@ -415,8 +421,11 @@ def nullspace_vectors(xp, yp):
     o3d2 = E3.b
     o3d3 = E3.c
     
-    o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = o2d1.conjugate(), o2d2.conjugate(), o2d3.conjugate(), o3d1.conjugate(), o3d2.conjugate(), o3d3.conjugate()
-    return [o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c]
+    o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = o2d1.conjugate(), o2d2.conjugate(),\
+                                               o2d3.conjugate(), o3d1.conjugate(),\
+                                               o3d2.conjugate(), o3d3.conjugate()
+    return [o2d1, o2d2, o2d3, o3d1, o3d2, o3d3,
+            o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c]
 
 
 # program start
@@ -424,12 +433,12 @@ x = read_config('../T3/config.txt')
 nrow, ncol = x['nrow'], x['ncol']
 F = (float(nrow) + float(ncol)) / 2.
 npx = nrow * ncol
-read_T3('../T3/')  # load the T3 matrix data
+read_T3(sys.argv[1])  # load the T3 matrix data
 
 # initialize output variables
 # out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
 
-xp, yp = int(sys.argv[2]), int(sys.argv[1])  # cloude_decom T3 313 798 # col/ row for test target
+xp, yp = int(sys.argv[3]), int(sys.argv[2])  # cloude_decom T3 313 798 # col/ row for test target
 
 if xp < 0 or xp > ncol:
     err("x coord out of bounds")
@@ -522,14 +531,6 @@ results = work_queue(job_count, num_workers, chunk_size)
 
 print("null vectors..")
 o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = nullspace_vectors(xp, yp)
-'''
-print(o2d1c)
-print(o2d2c) 
-print(o2d3c) 
-print(o3d1c)
-print(o3d2c)
-print(o3d3c)
-'''
 
 [opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c)
 
@@ -569,44 +570,34 @@ im = ax.imshow(rgb)
 plt.xlabel('(R,G,B)=(T22, T33, T11)')
 plt.tight_layout()
 
-i = 0  # alternate showing decom, vs. showing default vis
 
-def on_click(event):  # called when point is clicked
+def on_press(event):  # called when point is clicked
+    ax.imshow(rgb)
+    plt.xlabel('(R,G,B)=(T22, T33, T11)')
+    plt.draw()  # Redraw the canvas
+
+
+def on_release(event):
     x, y = event.xdata, event.ydata
     x = math.floor(x + 0.5)
     y = math.floor(y + 0.5)
-    global i
     if x is not None and y is not None:  # ensure click within axes
-        print(x, y, i)
+        [o2d1, o2d2, o2d3,
+         o3d1, o3d2, o3d3,
+         o2d1c, o2d2c, o2d3c,
+         o3d1c, o3d2c, o3d3c] = nullspace_vectors(x, y)
 
-        if i == 0:
-            [o2d1, o2d2, o2d3,
-             o3d1, o3d2, o3d3,
-             o2d1c, o2d2c, o2d3c,
-             o3d1c, o3d2c, o3d3c] = nullspace_vectors(x, y)
-
-            [opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3,
-                                                      o3d1, o3d2, o3d3,
-                                                      o2d1c, o2d2c, o2d3c,
-                                                      o3d1c, o3d2c, o3d3c)
-
-            ax.imshow(scale(opt).reshape((nrow, ncol)),
-                      cmap='gray',
-                      vmin=0,
-                      vmax=1)  # Update the image
-            plt.xlabel('opt.bin')
-
-        else:
-            ax.imshow(rgb)
-            plt.xlabel('(R,G,B)=(T22, T33, T11)')
-
-        # plt.tight_layout()
-        plt.draw()  # Redraw the canvas
-        i = (i + 1) % 2
-
-        print("null vectors..")
+        [opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3,
+                                                  o3d1, o3d2, o3d3,
+                                                  o2d1c, o2d2c, o2d3c,
+                                                  o3d1c, o3d2c, o3d3c)
+        ax.imshow(scale(opt).reshape((nrow, ncol)),
+                  cmap='gray',
+                  vmin=0,
+                  vmax=1)  # Update the image
+        plt.xlabel('opt.bin')
 
 
-
-fig.canvas.mpl_connect('button_press_event', on_click)
+fig.canvas.mpl_connect('button_press_event', on_press)
+fig.canvas.mpl_connect('button_release_event', on_release)
 plt.show()
