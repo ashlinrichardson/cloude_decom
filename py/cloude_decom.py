@@ -557,6 +557,8 @@ def scale(rgb_i):
     rgb_i[rgb_i < 0.] = 0.  # clip
     rgb_i[rgb_i > 1.] = 1.
     return rgb_i
+
+# default visualization
 rgb = np.zeros((nrow, ncol, 3))
 rgb[:, :, 0] = scale(np.array(t22_p)).reshape((nrow, ncol))
 rgb[:, :, 1] = scale(np.array(t33_p)).reshape((nrow, ncol))
@@ -567,8 +569,7 @@ im = ax.imshow(rgb)
 plt.xlabel('(R,G,B)=(T22, T33, T11)')
 plt.tight_layout()
 
-i = 0
-
+i = 0  # alternate showing decom, vs. showing default vis
 
 def on_click(event):  # called when point is clicked
     x, y = event.xdata, event.ydata
@@ -579,13 +580,26 @@ def on_click(event):  # called when point is clicked
         print(x, y, i)
 
         if i == 0:
-            o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = nullspace_vectors(x, y)
-            [opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c)
-            ax.imshow(scale(opt).reshape((nrow, ncol)), cmap='gray', vmin=0, vmax = 1.)  # Update the image
+            [o2d1, o2d2, o2d3,
+             o3d1, o3d2, o3d3,
+             o2d1c, o2d2c, o2d3c,
+             o3d1c, o3d2c, o3d3c] = nullspace_vectors(x, y)
+
+            [opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3,
+                                                      o3d1, o3d2, o3d3,
+                                                      o2d1c, o2d2c, o2d3c,
+                                                      o3d1c, o3d2c, o3d3c)
+
+            ax.imshow(scale(opt).reshape((nrow, ncol)),
+                      cmap='gray',
+                      vmin=0,
+                      vmax=1)  # Update the image
+            plt.xlabel('opt.bin')
 
         else:
             ax.imshow(rgb)
-            plt.xlabel('opt.bin')
+            plt.xlabel('(R,G,B)=(T22, T33, T11)')
+
         # plt.tight_layout()
         plt.draw()  # Redraw the canvas
         i = (i + 1) % 2
