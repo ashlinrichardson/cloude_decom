@@ -97,12 +97,12 @@ ALOS PALSAR data over SanFransisco, California in pauli encoding **(r, g, b) = (
 
 For example, triggering the processing by pointing at water, demonstrates (by "cancelling" water) the ability to pinpoint ships: 
 
-e.g. row/col index: (x,y)=863,739
+e.g. optimum radar cross section produced by selecting target at row/col index: (x,y)=863,739
 
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="800">
 
-whereas cancelling an urban area highlights oceanographic and topographic features: e.g. at point (x,y) = (688, 663) 
+whereas cancelling an urban area highlights oceanographic and topographic features: e.g. optimum radar cross section produced by selecting target at point (x,y) = (688, 663) 
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_urban.png" width="800">
 
