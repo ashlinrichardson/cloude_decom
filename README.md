@@ -29,9 +29,7 @@ The interactive version supports exploring fully-polarimetric SAR data quickly, 
 Please open your terminal and run the following commands:
 ```
 # 1) download the code:
-curl -o cloude_decom.zip https://codeload.github.com/ashlinrichardson/cloude_decom/zip/refs/heads/master
-unzip cloude_decom.zip
-mv cloude_decom-master cloude_decom
+curl -o cloude_decom.zip https://codeload.github.com/ashlinrichardson/cloude_decom/zip/refs/heads/master; unzip cloude_decom.zip; mv cloude_decom-master cloude_decom
 cd cloude_decom                                                   # 2) enter the project folder 
 python3 cpp/compile.py                                            # 3) build the project codes..
 cd T3                                                             # 4) enter the test data folder.. 
