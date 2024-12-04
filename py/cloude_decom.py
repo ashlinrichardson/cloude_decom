@@ -480,10 +480,11 @@ t11c = t11c + eps2 * F # a = a + eps2 * F
 t22c = t22c + eps2 * F # b = b + eps2 * F
 t33c = t33c + eps2 * F # c = c + eps2 * F
 
-if os.path.exists("cloude_decom.pkl"):
+pickle_filename = os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'cloude_decom.pkl'
+if os.path.exists(pickle_filename):
     print("unpickling..")
     [t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v] =\
-        pickle.load(open('cloude_decom.pkl', 'rb'))
+        pickle.load(open(pickle_filename, 'rb'))
 else:
     print("lamcloude..")
     [e1_v, e2_v, e3_V, v1_v, v2_v, v3_v] =\
@@ -573,16 +574,20 @@ plt.tight_layout()
 
 
 def on_press(event):  # called when point is clicked
+    print("on_press", event.xdata, event.ydata)
     ax.imshow(rgb)
     plt.xlabel('(R,G,B)=(T22, T33, T11)')
     plt.draw()  # Redraw the canvas
 
 
 def on_release(event):
+    print("on_release", event.xdata, event.ydata)
     x, y = event.xdata, event.ydata
-    x = math.floor(x + 0.5)
-    y = math.floor(y + 0.5)
+
     if x is not None and y is not None:  # ensure click within axes
+        x = math.floor(x + 0.5)
+        y = math.floor(y + 0.5)
+
         [o2d1, o2d2, o2d3,
          o3d1, o3d2, o3d3,
          o2d1c, o2d2c, o2d3c,
@@ -597,6 +602,7 @@ def on_release(event):
                   vmin=0,
                   vmax=1)  # Update the image
         plt.xlabel('opt.bin')
+        plt.draw()
 
 
 fig.canvas.mpl_connect('button_press_event', on_press)
