@@ -124,7 +124,9 @@ python3 py/cloude_decom.py T3
 This gui works almost the same as the C++ gui. Depressing the mouse button will restore the "default" visualization e.g. (r,g,b) = (T22, T33, T11). Releasing the mouse button will run the decom ( and generate and display the product opt.bin).
 
 ### 4) Extra options
-To run the python version at a specific target location (column, row index) examine the top of the python file for examples.
+To run the python version at a specific target location (column, row index) examine the top of the python file for examples. For example, the flag ```--special_rgb``` can be used to display a special color-encoding:
+
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/rgb_special.png" width="800">
 
 ### Running the method on other data
 * Make sure your dataset is in T3 matrix format ( PolSARPro standard ). ENVI header files ( one for each .bin file) are expected, as is the PolSARPro "config.txt" file.
