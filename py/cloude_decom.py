@@ -459,7 +459,7 @@ t33c = t33c + eps2 * F
 pickle_filename = os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'cloude_decom.pkl'
 if os.path.exists(pickle_filename):
     print("unpickling..")
-    [t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v] =\
+    [t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v, dn, vn, sn] =\
         pickle.load(open(pickle_filename, 'rb'))
 else:
     print("lamcloude..")
@@ -497,7 +497,8 @@ else:
     pickle.dump([t11c, t22c, t33c,
                  t12c, t13c, t23c,
                  v1_v, v2_v, v3_v,
-                 e1_v, e2_v, e3_v],
+                 e1_v, e2_v, e3_v,
+                 dn, vn, sn],
                 open(pickle_filename, 'wb'))
 
 
@@ -580,6 +581,10 @@ def on_release(event):
                                                   o3d1, o3d2, o3d3,
                                                   o2d1c, o2d2c, o2d3c,
                                                   o3d1c, o3d2c, o3d3c)
+
+        for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
+            write_out(x)
+
         ax.imshow(scale(opt).reshape((nrow, ncol)),
                   cmap='gray',
                   vmin=0,
