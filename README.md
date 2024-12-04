@@ -42,6 +42,7 @@ wsl
 Please open your terminal and run the following commands:
 
 ### 1) download the code
+(by the way, make sure to use the "copy" icon to the right of the code fragment, followed by pasting in your terminal, in order to avoid re-typing manually). All code fragments require pressing "RETURN" key afterwards to run the command. 
 ```
 curl -o cloude_decom.zip https://codeload.github.com/ashlinrichardson/cloude_decom/zip/refs/heads/master; unzip cloude_decom.zip; mv cloude_decom-master cloude_decom
 ```
