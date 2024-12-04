@@ -65,8 +65,8 @@ float ** T; /* T3 matrix elements */
 float ** T_f; /* filtered T3 matrix elements */
 float ** out_d; /* output buffers */
 
-#define N_OUT 10 /* number of output bands.. was 17 */
-#define _e1_f 0 /* output data indexing */
+#define N_OUT 17 /* number of output bands.. was 17 */
+#define _e1_f 0  /* output data indexing */
 #define _e2_f 1
 #define _e3_f 2
 #define _r_f 3
@@ -91,11 +91,10 @@ const char * out_fn[] = {
   "r.bin",
   "g.bin",
   "b.bin",
-  "OPT.bin",
+  "opt.bin",
   "v1.bin",
   "v2.bin",
-  "v3.bin"};
-/*,
+  "v3.bin",
   "hv.bin",
   "sm.bin",
   "pwr.bin",
@@ -103,7 +102,6 @@ const char * out_fn[] = {
   "abs_sp.bin",
   "ar.bin",
   "br.bin"};
-*/
 
 char sep(){
   #ifdef _WIN32
@@ -313,7 +311,9 @@ int NROW, NCOL;
 float * out_e1, * out_e2, * out_e3;
 float * out_r, * out_g, * out_b;
 float * out_opt;
-float * out_v1, * out_v2, * out_v3; //, * out_hv, * out_sm, * out_pwr, * out_sopt, * out_abs_sp, * out_ar, * out_br;
+float * out_v1, * out_v2, * out_v3;
+
+float * out_hv, * out_sm, * out_pwr, * out_sopt, * out_abs_sp, * out_ar, * out_br;
 
 float * t11_p;
 float * t12_r_p;
@@ -423,15 +423,15 @@ void decom(size_t i){
   out_opt[i] = (float) opt;
   out_v1[i] = (float) sopt;
 
-  //out_hv[i] = (float)hv;
-  //out_sm[i] = (float)sm;
+  out_hv[i] = (float)hv;
+  out_sm[i] = (float)sm;
 
-  //out_pwr[i] = (float)pwr;
-  //out_sopt[i] = (float)sopt;
-  //out_abs_sp[i] = (float)abs_sp;
+  out_pwr[i] = (float)pwr;
+  out_sopt[i] = (float)sopt;
+  out_abs_sp[i] = (float)abs_sp;
 
-  //out_ar[i] = (float) abs(ar);
-  //out_br[i] = (float) abs(br);
+  out_ar[i] = (float) abs(ar);
+  out_br[i] = (float) abs(br);
 }
 
 int main(int argc, char ** argv){
@@ -495,12 +495,17 @@ int main(int argc, char ** argv){
   t23_i_p = T[T23_im];
   t33_p = T[T33];
 
-  out_e1 = out_d[_e1_f]; out_e2 = out_d[_e2_f]; out_e3 = out_d[_e3_f];
-  out_r = out_d[_r_f]; out_g = out_d[_g_f]; out_b = out_d[_b_f];
+  out_e1 = out_d[_e1_f];
+  out_e2 = out_d[_e2_f];
+  out_e3 = out_d[_e3_f];
+  out_r = out_d[_r_f];
+  out_g = out_d[_g_f];
+  out_b = out_d[_b_f];
   out_opt = out_d[_opt_f];
-  out_v1 = out_d[_v1_f]; out_v2 = out_d[_v2_f]; out_v3 = out_d[_v3_f];
+  out_v1 = out_d[_v1_f]; 
+  out_v2 = out_d[_v2_f];
+  out_v3 = out_d[_v3_f];
   
-  /*
   out_hv = out_d[_hv_f];
   out_sm = out_d[_sm_f];
   out_pwr = out_d[_pwr_f];
@@ -508,7 +513,6 @@ int main(int argc, char ** argv){
   out_abs_sp = out_d[_abs_sp_f];
   out_ar = out_d[_ar_f];
   out_br = out_d[_br_f];
-*/
 
   /*
   %select reference coherency matrix
