@@ -22,6 +22,7 @@ import time
 import sys
 import os
 args = sys.argv
+sep = os.path.sep
 
 special_rgb = '--special_rgb' in args
 args_new = []
@@ -47,6 +48,8 @@ t11c, t22c, t33c, t12c, t13c, t23c =\
     None, None, None, None, None, None
 v1_v, v2_v, v3_v, e1_v, e2_v, e3_v =\
     None, None, None, None, None, None
+
+opt, hv, pwr, sopt, aopt, popt = None, None, None, None, None, None
 dn, vn, sn = None, None, None
 
 class vec3:
@@ -271,7 +274,7 @@ def rank1_t3_vectorised(e1, v1, v2, v3):  #  generate T3 rank 1 ( numpy vectoris
 
 
 def write_out(variable_name):
-    dd = os.path.normpath(args[1]) + sep
+    dd = os.path.normpath(args[1]) + os.path.sep
     cmd =  ('write_binary(' + variable_name + '.tolist(), "' +
             dd + variable_name + '.bin"); write_hdr("' +
             dd + variable_name + '.hdr", ncol, nrow, 1, ["' +
@@ -565,6 +568,13 @@ def on_press(event):  # called when point is clicked
 
 
 def on_release(event):
+    global opt
+    global hv
+    global pwr
+    global sopt
+    global aopt
+    global popt
+
     x, y = event.xdata, event.ydata
 
     if x is not None and y is not None:  # ensure click within axes
