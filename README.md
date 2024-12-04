@@ -67,6 +67,10 @@ git clone git@github.com:ashlinrichardson/cloude_decom.git
 
 and then proceed to "2) enter the project folder". This approach would make sense if you're experienced with GitHub and considering making code revisions
 
+3) Another alternative downloading method (assuming you have **wget** installed)
+```
+wget https://github.com/ashlinrichardson/cloude_decom/archive/refs/heads/master.zip; unzip master.zip; mv cloude_decom-master cloude_decom
+```
 ### Using the mouse
 Assuming the mouse pointer is positioned somewhere over the image display:
 * **depressing the left button**, restores the default visualization used (e.g. the pauli encoding)
