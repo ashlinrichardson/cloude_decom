@@ -282,8 +282,6 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
     ar = aopt * M_PI / 180.
     br = popt * M_PI / 180.
     
-    print("ar", ar)
-    print("br", br)
     print(o2d1)
     print(o3d1)
     # optimum weight vector
@@ -343,6 +341,7 @@ def work_queue(job_count, num_workers, chunk_size):
 
 
 def nullspace_vectors(xp, yp):
+    print('nullspace_vectors', xp, yp)
     n_use = 1;
     i = yp * ncol + xp
     t11 = t11_p[i]
@@ -360,9 +359,7 @@ def nullspace_vectors(xp, yp):
     print("T22", t22)
     print("T33", t33)
     
-    if len(sys.argv) > 3:
-        pass
-        '''(ws > 1){
+    '''(ws > 1){
       for(int di = yp - dw; di <= yp + dw; di++){
         if(di >=0 && di < nrow){
           for(int dj = xp - dw; dj <= xp + dw; dj ++){
@@ -542,39 +539,60 @@ for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
 
 def naninf_list(x):
     Y = []
-    X = None
-    if type(x) != list:
-        X = list(x.ravel().tolist())
-    else:
-        X = x
-
+    X = list(x.ravel().tolist()) if type(x) != list else x
     for i in X:
         if not (math.isnan(i) or math.isinf(i)):
             Y.append(i)
     return Y
 
-if True:
-    def scale(rgb_i):
-        values = naninf_list(rgb_i) # values.reshape(np.prod(values.shape)).tolist()
-        values.sort()
-        n_pct = 1. # percent for stretch value
-        frac = n_pct / 100.
-        rgb_min, rgb_max = values[int(math.floor(float(len(values))*frac))],\
-                           values[int(math.floor(float(len(values))*(1. - frac)))]
-        rng = rgb_max - rgb_min  # apply restored or derived scaling
-        rgb_i = (rgb_i - rgb_min) / (rng if rng != 0. else 1.)
-        rgb_i[rgb_i < 0.] = 0.  # clip
-        rgb_i[rgb_i > 1.] = 1.
-        return rgb_i
-    rgb = np.zeros((nrow, ncol, 3))
-    rgb[:, :, 0] = scale(np.array(t22_p)).reshape((nrow, ncol))
-    rgb[:, :, 1] = scale(np.array(t33_p)).reshape((nrow, ncol))
-    rgb[:, :, 2] = scale(np.array(t11_p)).reshape((nrow, ncol))
-    plt.figure()
-    plt.imshow(rgb)
-    # plt.title('JAXA ALOS-1 data over SanFransisco, USA')
-    plt.xlabel('(R,G,B)=(T22, T33, T11)')
-    plt.tight_layout()
-    plt.show()
+def scale(rgb_i):
+    values = naninf_list(rgb_i) # values.reshape(np.prod(values.shape)).tolist()
+    values.sort()
+    n_pct = 1. # percent for stretch value
+    frac = n_pct / 100.
+    rgb_min, rgb_max = values[int(math.floor(float(len(values))*frac))],\
+                       values[int(math.floor(float(len(values))*(1. - frac)))]
+    rng = rgb_max - rgb_min  # apply restored or derived scaling
+    rgb_i = (rgb_i - rgb_min) / (rng if rng != 0. else 1.)
+    rgb_i[rgb_i < 0.] = 0.  # clip
+    rgb_i[rgb_i > 1.] = 1.
+    return rgb_i
+rgb = np.zeros((nrow, ncol, 3))
+rgb[:, :, 0] = scale(np.array(t22_p)).reshape((nrow, ncol))
+rgb[:, :, 1] = scale(np.array(t33_p)).reshape((nrow, ncol))
+rgb[:, :, 2] = scale(np.array(t11_p)).reshape((nrow, ncol))
+fig, ax = plt.subplots()
+im = ax.imshow(rgb)
+# plt.title('JAXA ALOS-1 data over SanFransisco, USA')
+plt.xlabel('(R,G,B)=(T22, T33, T11)')
+plt.tight_layout()
+
+i = 0
 
 
+def on_click(event):  # called when point is clicked
+    x, y = event.xdata, event.ydata
+    x = math.floor(x + 0.5)
+    y = math.floor(y + 0.5)
+    global i
+    if x is not None and y is not None:  # ensure click within axes
+        print(x, y, i)
+
+        if i == 0:
+            o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c = nullspace_vectors(x, y)
+            [opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c)
+            ax.imshow(scale(opt).reshape((nrow, ncol)), cmap='gray', vmin=0, vmax = 1.)  # Update the image
+
+        else:
+            ax.imshow(rgb)
+            plt.xlabel('opt.bin')
+        # plt.tight_layout()
+        plt.draw()  # Redraw the canvas
+        i = (i + 1) % 2
+
+        print("null vectors..")
+
+
+
+fig.canvas.mpl_connect('button_press_event', on_click)
+plt.show()
