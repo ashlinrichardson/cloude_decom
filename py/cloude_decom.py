@@ -317,8 +317,6 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
     ar = aopt * M_PI / 180.
     br = popt * M_PI / 180.
     
-    print(o2d1)
-    print(o3d1)
     # optimum weight vector
     w1 = np.conjugate(np.cos(ar) * o2d1 + np.sin(ar) * np.exp(1j * br) * o3d1) # .conjugate()
     w2 = np.conjugate(np.cos(ar) * o2d2 + np.sin(ar) * np.exp(1j * br) * o3d2) # .conjugate()
@@ -344,7 +342,7 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
 
 
 def nullspace_vectors(xp, yp):
-    print('nullspace_vectors', xp, yp)
+    # print('nullspace_vectors', xp, yp)
     n_use = 1;
     i = yp * ncol + xp
     t11 = t11_p[i]
