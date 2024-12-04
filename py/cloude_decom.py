@@ -274,7 +274,7 @@ def write_out(variable_name):
     cmd =  ('write_binary(' + variable_name + '.tolist(), "' +
             variable_name + '.bin"); write_hdr("' +
             variable_name + '.hdr", ncol, nrow, 1, ["' +
-            variable_name + '.bin"])'
+            variable_name + '.bin"])')
     # print(cmd)
     exec(cmd)
 
