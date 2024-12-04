@@ -146,22 +146,29 @@ def read_T3(d):
 
 
 def lamcloude(a, b, c, z1, z2, z3):
+    if math.isnan(a.real):
+        return([float('nan') for i in range(6)])
+
     p = 1./3.
     tra = (a + b + c) / 3.
-    z1p, z2p, z3p = z1.conjugate(), z2.conjugate(), z3.conjugate()
+    z1p, z2p, z3p = z1.conjugate(),\
+                    z2.conjugate(),\
+                    z3.conjugate()
     fac0 = z1 * z1p + z2 * z2p + z3 * z3p
 
-    s1 = a * b + a * c + b * c - fac0
+
     deta = a * b * c - c * z1 * z1p - b * z2 * z2p + z1 * z2p * z3 + z1p * z2 * z3p - a * z3 * z3p
     s2 = a * a - a * b + b * b - a * c - b * c + c * c + 3. * fac0
-    fac1 = 27. * deta - 27. * s1 * tra + 54. * (tra ** 3.)
-    tr3 = fac1 + cmath.sqrt( (fac1 ** 2.)- 4. * (s2 ** 3.))
-    j1s3 = 1j * math.sqrt(3.)
-    fac2 = 1. + j1s3
-    fac3 = 1. - j1s3
+    s1 = a * b + a * c + b * c - fac0
 
-    ptr3p = tr3 ** p
+    fac1 = 27. * deta - 27. * s1 * tra + 54. * (tra ** 3.)
+    tr3 = fac1 + cmath.sqrt((fac1 ** 2.)- 4. * (s2 ** 3.))
+    j1s3 = 1j * math.sqrt(3.)
+    fac2, fac3 = 1. + j1s3,\
+                 1. - j1s3
+
     p2p = 2. ** p
+    ptr3p = tr3 ** p
     p22p = 2. ** ( 2 * p ) 
     e1 = (tra + ptr3p / (3. * p2p) + (s2 * p2p + eps) / (3. * ptr3p + eps)).real
     e2 = (tra - (fac2 * s2) / (3. * ptr3p * p22p + eps) - (fac3 * ptr3p) / (6. * p2p + eps)).real
@@ -286,7 +293,7 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
     sm2 = sopt + pwr
     
     opt = 10. ** ( sm2 / 10.) # pow(10., sm2 / 10.)  # linear opt channel
-    
+
     return [ opt, hv, pwr, sopt, aopt, popt]
 
 
