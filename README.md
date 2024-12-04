@@ -146,6 +146,11 @@ To run the python version at a specific target location (column, row index) exam
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/rgb_special.png" width="800">
 
+### 5) Extra parameters
+Quite a few interesting parameters are output by the program, such as the diagonal elements of the rank-1 T3 matrix:
+
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/rank_1_t3.png" width="800">
+
 ### Running the method on other data
 * Make sure your dataset is in T3 matrix format ( PolSARPro standard ). ENVI header files ( one for each .bin file) are expected, as is the PolSARPro "config.txt" file.
 
