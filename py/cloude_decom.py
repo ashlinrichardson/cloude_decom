@@ -13,10 +13,12 @@ import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
 import cProfile
+import pickle
 import ctypes
 import cmath
 import copy
 import math
+import time
 import sys
 import os
 
@@ -27,9 +29,12 @@ nrow, ncol = None, None  # image dimensions
 eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
 
 
-t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p = None, None, None, None, None, None, None, None, None
-t11c, t22c, t33c, t12c, t13c, t23c = None, None, None, None, None, None
-v1_v, v2_v, v3_v, e1_v, e2_v, e3_v = None, None, None, None, None, None
+t11_p, t22_p, t33_p, t12_r_p, t12_i_p, t13_r_p, t13_i_p, t23_r_p, t23_i_p =\
+    None, None, None, None, None, None, None, None, None
+t11c, t22c, t33c, t12c, t13c, t23c =\
+    None, None, None, None, None, None
+v1_v, v2_v, v3_v, e1_v, e2_v, e3_v =\
+    None, None, None, None, None, None
 
 
 class vec3:
@@ -247,8 +252,8 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
       t33c = c
     '''
     # project data onto null channels // null_vecs=[o2d o3d];
-    z1 = o2d1c*v1_v + o2d2c*v2_v + o2d3c*v3_v
-    z2 = o3d1c*v1_v + o3d2c*v2_v + o3d3c*v3_v
+    z1 = o2d1c * v1_v + o2d2c * v2_v + o2d3c * v3_v
+    z2 = o3d1c * v1_v + o3d2c * v2_v + o3d3c * v3_v
     
     # find optimum weights
     popt = np.angle(t13c * np.conjugate(t12c)) * 180. / M_PI   # cmath.phase(z2 * z1.conjugate()) * 180. / M_PI
@@ -461,47 +466,54 @@ t11c = t11c + eps2 * F # a = a + eps2 * F
 t22c = t22c + eps2 * F # b = b + eps2 * F
 t33c = t33c + eps2 * F # c = c + eps2 * F
 
-print("lamcloude..")
-[e1_v, e2_v, e3_V, v1_v, v2_v, v3_v] = lamcloude_vectorised(t11c, t22c, t33c, t12c, t13c, t23c) # lamcloude(a, b, c, z1, z2, z3)
+if os.path.exists("cloude_decom.pkl"):
+    print("unpickling..")
+    t1 = time.time()
+    [t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v] = pickle.load(open('cloude_decom.pkl', 'rb'))
+    t2 = time.time() - t1
+    print("unpickling time:", t2)
+else:
 
-debug = False
+    t1 = time.time()
+    print("rank1/ lamcloude..")
+    [e1_v, e2_v, e3_V, v1_v, v2_v, v3_v] = lamcloude_vectorised(t11c, t22c, t33c, t12c, t13c, t23c) # lamcloude(a, b, c, z1, z2, z3)
+    
+    
+    print("rank 1 t3..")
+    # rank 1 t3
+    [t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v) # rank1_t3(e1, v1, v2, v3)
+    
+    T11c = np.abs(t11c)
+    T22c = np.abs(t22c)
+    T33c = np.abs(t33c)
 
-if debug:
-    print("lamcloude")
-    print("e1", e1)
-    print("e2", e2)
-    print("e3", e3)
-    print("v1", v1)
-    print("v2", v2)
-    print("v3", v3)
+    cmd = write_out('T11c')
+    cmd = write_out('T22c')
+    cmd = write_out('T33c')
 
-print("rank 1 t3..")
-# rank 1 t3
-[t11c, t12c, t13c, t22c, t23c, t33c] = rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v) # rank1_t3(e1, v1, v2, v3)
+    # generate alpha etc. eigenvector parameters
+    alpha = np.arccos(np.abs(v1_v)) # math.acos(abs(v1_v[i]));
+    phi = np.angle(t12c) # cmath.phase(t12c[i]);
+    theta = np.angle((t22c - t33c) + 2. * 1j * t23c.real) / 4.  # cmath.phase((t22c[i] - t33c[i]) + 2. * 1j * t23c[i].real) / 4.
 
-T11c = np.abs(t11c)
-T22c = np.abs(t22c)
-T33c = np.abs(t33c)
+    # generate RGB colour composite from multiple eigenvector angles
+    dn = alpha * 2. / M_PI # alpha angle in red channel                # out: red channel
+    theta2 = theta + (theta > M_PI / 4.) * (M_PI / 4. - theta)
+    theta2 = theta2 + (theta2 < -M_PI / 4.) * (-M_PI / 4. - theta2)
+    vn = (theta2 + M_PI / 4.) * 2. / M_PI   # az slope is green        # out: green channel
+    sn = np.abs(phi) / M_PI  # mag of Pauli phase is blue (180 is Bragg)  # out: blue channel
 
-cmd = write_out('T11c')
-cmd = write_out('T22c')
-cmd = write_out('T33c')
+    # special RGB encoding: (r,g,b) = (dn, vn, sn)
+    for x in ['alpha', 'phi', 'theta', 'dn', 'theta2', 'vn', 'sn']:
+        write_out(x)
+    t2 = time.time() - t1
+    print("rank1 time", t2)
 
-# generate alpha etc. eigenvector parameters
-alpha = np.arccos(np.abs(v1_v)) # math.acos(abs(v1_v[i]));
-phi = np.angle(t12c) # cmath.phase(t12c[i]);
-theta = np.angle((t22c - t33c) + 2. * 1j * t23c.real) / 4.  # cmath.phase((t22c[i] - t33c[i]) + 2. * 1j * t23c[i].real) / 4.
-
-# generate RGB colour composite from multiple eigenvector angles
-dn = alpha * 2. / M_PI # alpha angle in red channel                # out: red channel
-theta2 = theta + (theta > M_PI / 4.) * (M_PI / 4. - theta)
-theta2 = theta2 + (theta2 < -M_PI / 4.) * (-M_PI / 4. - theta2)
-vn = (theta2 + M_PI / 4.) * 2. / M_PI   # az slope is green        # out: green channel
-sn = np.abs(phi) / M_PI  # mag of Pauli phase is blue (180 is Bragg)  # out: blue channel
-
-# special RGB encoding: (r,g,b) = (dn, vn, sn)
-for x in ['alpha', 'phi', 'theta', 'dn', 'theta2', 'vn', 'sn']:
-    write_out(x)
+    print("pickling..")
+    t1 = time.time()
+    pickle.dump([t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v], open('cloude_decom.pkl', 'wb'))
+    t2 = time.time() - t1
+    print("pickling time:", t2)
 
 '''
 job_count = nrow * ncol  # 10  # Total number of jobs (more jobs than workers)
@@ -520,7 +532,6 @@ print(o3d1c)
 print(o3d2c)
 print(o3d3c)
 
-import time
 start_time = time.time()
 [opt, hv, pwr, sopt, aopt, popt]  = decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c)
 end_time = time.time()
