@@ -65,7 +65,9 @@ class vec3:
 
 
 def solve_cubic(a, b, c, d):
-    _2t13, _2t23, sqrt3 = 2. ** 0.3333333333333333, 2. ** 0.6666666666666666, math.sqrt(3.)
+    _2t13, _2t23, sqrt3 = 2. ** 0.3333333333333333,\
+                          2. ** 0.6666666666666666,\
+                          math.sqrt(3.)
     
     t1, t2 = b*(-2.*b*b + 9.*a*c) - 27.*a*a*d, 3.*a*c -b*b
     t0 = (t1 +  (4.*(t2*t2*t2) + (t1*t1)) ** 0.5)
@@ -83,11 +85,15 @@ class herm3:
 
     def solve_characteristic(self):
         a, b, c, d, e, f = self.a, self.b, self.c, self.d, self.e, self.f
-        _A, _B = -1. + 0j, a + d + f
-        cc, bc = self.c.conjugate(), self.b.conjugate()
+
+        _A, _B = -1. + 0j,\
+                 a + d + f
+
         ec = self.e.conjugate()
+        cc, bc = self.c.conjugate(), self.b.conjugate()
         _C = (-(a*d) - a*f - d*f + b* bc + c* cc + e* ec)
         _D = d*(a*f - c* cc) + e*(b* cc - a* ec) + bc *(-(b*f) + c* ec)
+        
         return solve_cubic(_A, _B, _C, _D)
 
     def __mul__(self, other):
@@ -114,7 +120,7 @@ def eigv(A, _lambda):  # herm3<cf> &A, cf & lambda){
                 (-(A.b)* Abc -_lambda*(A.a)+(A.d)*(A.a)-(A.d)*_lambda+(_lambda*_lambda))/((A.b)*(A.e)-(A.d)*(A.c)+_lambda*(A.c)))
 
 
-def eig(A): #  L, E1, E2, E3): # herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<cf> &E2, vec3<cf> &E3){
+def eig(A):
     lambdas = A.solve_characteristic()
     e1, e2, e3 = eigv(A, lambdas.a), eigv(A, lambdas.b), eigv(A, lambdas.c)
     l1, l2, l3 = lambdas.a, lambdas.b, lambdas.c  
@@ -123,15 +129,20 @@ def eig(A): #  L, E1, E2, E3): # herm3<cf> &A , vec3<cf> &L, vec3<cf> &E1, vec3<
     e2.normalize()
     e3.normalize()
 
-    X = [[abs(l1), e1], [abs(l2), e2], [abs(l3), e3]]
+    X = [[abs(l1), e1],
+         [abs(l2), e2],
+         [abs(l3), e3]]
+
     X.sort(reverse=True)  # sort eigenvectors by eigenvalue ( decreasing order )
 
     L = [X[i][0] for i in range(len(X))]
+
     L = vec3(L[0], L[1], L[2])
     E1, E2, E3 = X[0][1], X[1][1], X[2][1]
-
     d1, d2, d3 = (A*E1)/(L.a) - E1, (A*E2)/(L.b) - E2, (A*E3)/(L.c) - E3;
-    diff = d1.norm() + d2.norm() + d3.norm() 
+
+    diff = d1.norm() + d2.norm() + d3.norm()
+
     return [L, E1, E2, E3]
 
 
@@ -154,6 +165,7 @@ def lamcloude(a, b, c, z1, z2, z3):
     z1p, z2p, z3p = z1.conjugate(),\
                     z2.conjugate(),\
                     z3.conjugate()
+
     fac0 = z1 * z1p + z2 * z2p + z3 * z3p
 
 
@@ -180,6 +192,7 @@ def lamcloude(a, b, c, z1, z2, z3):
         tmp = e1; e1 = e2; d2 = tmp 
     if(e2 < e3):
         tmp = e2; e2 = e3; e3 = tmp
+
     if(e1 < e3 or e1 < e2 or e2 < e3):
         print("Warning: not sorted (%e, %e, %e)\n", e1, e2, e3);
 
