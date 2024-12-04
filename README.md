@@ -147,3 +147,13 @@ At your convenience, please be welcome to:
 * [open an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) on this repository,
 * [submit a pull request](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request), or
 * provide feedback by email
+
+# Notes: steps performed on SAN_FRANCISCO_ALOS1.zip:
+1. Radar --> Radiometric --> Calibrate (write complex output)
+2. Radar --> Geometric --> ALOS Deskewing
+3. Radar --> Polarimetric --> Faraday Rotation Correction
+4. Radar -> Polarimetrc --> Polarimetric Matrix Generation ( T3 matrix ) 
+5. Radar --> Radiometric --> Radiometric Terrain Flattening ( Small et al RTF )
+6. Radar --> Utilities --> Multilooking ( to approx square pixel ) 
+7. Radar -> Polarimetric --> Speckle filter (Boxcar filter, 7x7) 
+8. Radar -> Geometric --> Terrain Correction --> Range Doppler Terrain Correction ( to put in geographic coordinates )
