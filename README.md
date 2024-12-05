@@ -166,6 +166,10 @@ Quite a few parameters are output by the program, such as the diagonal elements 
 Comparing the pauli representation with the eigenvalues ( sorted ) and also with the rank-1 matrix elements:
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/compare.gif" width="800">
 
+### 7) Polygon / area target
+Using the right mouse button draws an area target. Click the left mouse button once to close the polygon
+
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/poly_target.gif" width="800">
 ### Running the method on other data
 * Make sure your dataset is in T3 matrix format ( PolSARPro standard ). ENVI header files ( one for each .bin file) are expected, as is the PolSARPro "config.txt" file.
 
