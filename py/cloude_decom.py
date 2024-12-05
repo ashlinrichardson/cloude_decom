@@ -576,9 +576,10 @@ plt.tight_layout()
 
 def on_press(event):  # called when point is clicked
     print("on_press(): now release mouse button over target location")
-    ax.imshow(rgb)
-    plt.xlabel('(R,G,B)=(T22, T33, T11)')
-    plt.draw()  # Redraw the canvas
+    if event.button == 1:
+        ax.imshow(rgb)
+        plt.xlabel('(R,G,B)=(T22, T33, T11)')
+        plt.draw()  # Redraw the canvas
 
 
 def on_release(event):
@@ -591,7 +592,7 @@ def on_release(event):
 
     x, y = event.xdata, event.ydata
 
-    if x is not None and y is not None:  # ensure click within axes
+    if event.button == 1 and (x is not None) and (y is not None):  # ensure click within axes
         x = math.floor(x + 0.5)
         y = math.floor(y + 0.5)
         print('on_release(): run decom at (x,y)=' + str(x) + ',' + str(y))
