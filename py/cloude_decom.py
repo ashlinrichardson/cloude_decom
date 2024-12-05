@@ -498,7 +498,7 @@ t11c = t11c + eps2 * F
 t22c = t22c + eps2 * F
 t33c = t33c + eps2 * F 
 
-pickle_filename = os.path.dirname(os.path.abspath(in_dir)) + os.path.sep + 'cloude_decom.pkl'
+pickle_filename = os.path.normpath(args[1]) + os.path.sep + 'cloude_decom.pkl'
 if os.path.exists(pickle_filename):
     print("unpickling..")
     [t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v, dn, vn, sn] =\
