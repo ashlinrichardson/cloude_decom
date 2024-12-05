@@ -498,7 +498,7 @@ t11c = t11c + eps2 * F
 t22c = t22c + eps2 * F
 t33c = t33c + eps2 * F 
 
-pickle_filename = os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'cloude_decom.pkl'
+pickle_filename = os.path.dirname(os.path.abspath(in_dir)) + os.path.sep + 'cloude_decom.pkl'
 if os.path.exists(pickle_filename):
     print("unpickling..")
     [t11c, t22c, t33c, t12c, t13c, t23c, v1_v, v2_v, v3_v, e1_v, e2_v, e3_v, dn, vn, sn] =\
@@ -694,34 +694,7 @@ def on_press(event):  # called when point is clicked
 
             vertices = []  # Reset vertices after finalizing polygon
             # drawing_poly = False
-    elif event.button == 3:  # Right mouse btn.. start or continue drawing poly
-        if event.xdata is not None and event.ydata is not None:
-            if not drawing_poly:
-                vertices = []
-                for line in polygon_lines:
-                    line.remove()
-                polygon_lines = []
-                line, = ax.plot([], [], 'r-', lw=2)
 
-            if decom_plotted: # or not drawing_poly:
-                print("imshow(rgb) 2")
-                ax.imshow(rgb)
-                plt.xlabel('(R,G,B)=(T22, T33, T11)')
-                decom_plotted = False
-
-            drawing_poly = True
-            vertices.append(data_to_pixel(event.xdata,
-                                          event.ydata))  # add vertex
-
-            if len(vertices) > 1:
-                new_line, = ax.plot([vertices[-2][0], vertices[-1][0]],
-                                    [vertices[-2][1], vertices[-1][1]], 'g-', lw=2)
-                polygon_lines += [new_line]
-            
-            if len(vertices) > 1:  # update line if >1 points
-                update_line(event)
-            else:
-                fig.canvas.draw()
     else:
         pass  # no action on middle button
 
@@ -734,6 +707,7 @@ def on_release(event):
     global popt
     global drawing_poly
     global decom_plotted
+    global vertices, polygon_lines, line
     x, y = event.xdata, event.ydata
 
     if event.button == 1 and drawing_poly:
@@ -767,6 +741,34 @@ def on_release(event):
         plt.draw()
         decom_plotted = True
 
+    elif event.button == 3:  # Right mouse btn.. start or continue drawing poly
+        if event.xdata is not None and event.ydata is not None:
+            if not drawing_poly:
+                vertices = []
+                for line in polygon_lines:
+                    line.remove()
+                polygon_lines = []
+                line, = ax.plot([], [], 'r-', lw=2)
+
+            if decom_plotted: # or not drawing_poly:
+                print("imshow(rgb) 2")
+                ax.imshow(rgb)
+                plt.xlabel('(R,G,B)=(T22, T33, T11)')
+                decom_plotted = False
+
+            drawing_poly = True
+            vertices.append(data_to_pixel(event.xdata,
+                                          event.ydata))  # add vertex
+
+            if len(vertices) > 1:
+                new_line, = ax.plot([vertices[-2][0], vertices[-1][0]],
+                                    [vertices[-2][1], vertices[-1][1]], 'g-', lw=2)
+                polygon_lines += [new_line]
+            
+            if len(vertices) > 1:  # update line if >1 points
+                update_line(event)
+            else:
+                fig.canvas.draw()
 
 fig.canvas.mpl_connect('button_press_event', on_press)
 fig.canvas.mpl_connect('button_release_event', on_release)
