@@ -21,6 +21,7 @@ Todo:
 (TODO) polygon select ( shapefile or input to GUI )
 '''
 from misc import read_config, read_binary, write_binary, write_hdr
+from matplotlib.backend_bases import MouseEvent
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
@@ -557,6 +558,7 @@ def scale(rgb_i):
     rgb_i[rgb_i > 1.] = 1.
     return rgb_i
 
+
 # default visualization
 rgb = np.zeros((nrow, ncol, 3))
 if special_rgb:
@@ -567,20 +569,99 @@ else:
     rgb[:, :, 0] = scale(np.array(t22_p)).reshape((nrow, ncol))
     rgb[:, :, 1] = scale(np.array(t33_p)).reshape((nrow, ncol))
     rgb[:, :, 2] = scale(np.array(t11_p)).reshape((nrow, ncol))
+
+# gui stuff
+vertices = []  # (x,y) coordinates in our polygon ( once finalized )
+drawing_poly = False  # we are in the process of drawing a polygon
+decom_plotted = False
 fig, ax = plt.subplots()
+
 im = ax.imshow(rgb)
 # plt.title('JAXA ALOS-1 data over SanFransisco, USA')
 plt.xlabel('(R,G,B)=(T22, T33, T11)')
 plt.tight_layout()
+line, = ax.plot([], [], 'r-', lw=2)  # dynamically updated line
+polygon_lines = []
 
+def data_to_pixel(x, y):
+    pixel_coords = ((x + 0.5, y + 0.5))
+    return np.floor(pixel_coords).astype(int)
+
+# update dynamic line segment
+def update_line(event):
+    global line
+    if len(vertices) > 0:
+        x, y = data_to_pixel(event.xdata, event.ydata)  # current mouse position
+        line.set_data([vertices[-1][0], x],
+                      [vertices[-1][1], y])  # update the line
+        fig.canvas.draw()
 
 def on_press(event):  # called when point is clicked
-    print("on_press(): now release mouse button over target location")
-    if event.button == 1:
-        ax.imshow(rgb)
-        plt.xlabel('(R,G,B)=(T22, T33, T11)')
-        plt.draw()  # Redraw the canvas
+    global decom_plotted
+    global drawing_poly  # state variable
+    global vertices, polygon_lines, line
 
+    # print("on_press(): now release mouse button over target location")
+    if event.button == 1:
+        if not drawing_poly:  # left mouse click
+            ax.imshow(rgb)
+            plt.xlabel('(R,G,B)=(T22, T33, T11)')
+            plt.draw()  # Redraw the canvas
+            decom_plotted = False
+        else:
+            if len(vertices) > 1:
+                new_line, = ax.plot([vertices[-1][0], vertices[0][0]],
+                                    [vertices[-1][1], vertices[0][1]], 'g-', lw=2)
+                polygon_lines += [new_line]
+
+                line.set_data([], [])  # clear the red line data
+                fig.canvas.draw()
+                print("Polygon completed!")
+                print(vertices)
+
+            vertices = []  # Reset vertices after finalizing polygon
+            # drawing_poly = False
+    elif event.button == 3:  # Right mouse btn.. start or continue drawing poly
+        if event.xdata is not None and event.ydata is not None:
+
+            if not drawing_poly:
+                vertices = []
+                for line in polygon_lines:
+                    line.remove()
+                polygon_lines = []
+                line, = ax.plot([], [], 'r-', lw=2)
+
+            if decom_plotted: # or not drawing_poly:
+                ax.imshow(rgb)
+                plt.xlabel('(R,G,B)=(T22, T33, T11)')
+             
+            if decom_plotted:
+                decom_plotted = False
+
+            drawing_poly = True
+            vertices.append(data_to_pixel(event.xdata,
+                                          event.ydata))  # add vertex
+
+
+            # Convert to image pixel coordinates and print
+            px, py = data_to_pixel(event.xdata, event.ydata)
+            print(f"{event.xdata}, {event.ydata}")
+            print(f"Vertex at pixel: ({px}, {py})")
+
+
+            # plt.draw()  # Redraw the canvas
+
+            if len(vertices) > 1:
+                new_line, = ax.plot([vertices[-2][0], vertices[-1][0]],
+                                    [vertices[-2][1], vertices[-1][1]], 'g-', lw=2)
+                polygon_lines += [new_line]
+            
+            if len(vertices) > 1:  # update line if >1 points
+                update_line(event)
+            else:
+                fig.canvas.draw()
+    else:
+        pass  # no action on middle button
 
 def on_release(event):
     global opt
@@ -589,8 +670,13 @@ def on_release(event):
     global sopt
     global aopt
     global popt
-
+    global drawing_poly
+    global decom_plotted
     x, y = event.xdata, event.ydata
+
+    if event.button == 1 and drawing_poly:
+        drawing_poly = False
+        return
 
     if event.button == 1 and (x is not None) and (y is not None):  # ensure click within axes
         x = math.floor(x + 0.5)
@@ -616,8 +702,10 @@ def on_release(event):
                   vmax=1)  # Update the image
         plt.xlabel('opt.bin')
         plt.draw()
+        decom_plotted = True
 
 
 fig.canvas.mpl_connect('button_press_event', on_press)
 fig.canvas.mpl_connect('button_release_event', on_release)
+fig.canvas.mpl_connect('motion_notify_event', update_line)
 plt.show()
