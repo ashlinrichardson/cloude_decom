@@ -154,22 +154,22 @@ This gui works "the same" as the C++ gui:
 * Depressing the mouse button will restore the "default" visualization e.g. (r,g,b) = (T22, T33, T11).
 * Releasing the mouse button will run the decom ( and generate and display the product opt.bin).
 
-### 5) Extra options
+### 5) Polygon / area target
+Using the right mouse button draws an area target. Click the left mouse button once to close the polygon
+
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/poly_target.gif" width="800">
+
+### 6) Extra options
 To run the python version at a specific target location (column, row index) examine the top of the python file for examples. For example, the flag ```--special_rgb``` can be used to display a special color-encoding:
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/rgb_special.png" width="800">
 
-### 6) Extra parameters
+### 7) Extra parameters
 Quite a few parameters are output by the program, such as the diagonal elements of the rank-1 T3 matrix:
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/rank_1_t3.png" width="800">
 
 Comparing the pauli representation with the eigenvalues ( sorted ) and also with the rank-1 matrix elements:
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/compare.gif" width="800">
-
-### 7) Polygon / area target
-Using the right mouse button draws an area target. Click the left mouse button once to close the polygon
-
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/poly_target.gif" width="800">
 
 ### Running the method on other data
 * Make sure your dataset is in T3 matrix format ( PolSARPro standard ). ENVI header files ( one for each .bin file) are expected, as is the PolSARPro "config.txt" file.
