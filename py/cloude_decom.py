@@ -623,7 +623,6 @@ def on_press(event):  # called when point is clicked
             # drawing_poly = False
     elif event.button == 3:  # Right mouse btn.. start or continue drawing poly
         if event.xdata is not None and event.ydata is not None:
-
             if not drawing_poly:
                 vertices = []
                 for line in polygon_lines:
@@ -641,15 +640,6 @@ def on_press(event):  # called when point is clicked
             drawing_poly = True
             vertices.append(data_to_pixel(event.xdata,
                                           event.ydata))  # add vertex
-
-
-            # Convert to image pixel coordinates and print
-            px, py = data_to_pixel(event.xdata, event.ydata)
-            print(f"{event.xdata}, {event.ydata}")
-            print(f"Vertex at pixel: ({px}, {py})")
-
-
-            # plt.draw()  # Redraw the canvas
 
             if len(vertices) > 1:
                 new_line, = ax.plot([vertices[-2][0], vertices[-1][0]],
