@@ -103,18 +103,18 @@ Depressing the right mouse botton, or the "esc" key on the keyboard, both close 
 
 ### Sample output
 ALOS PALSAR data over SanFransisco, California in pauli encoding **(r, g, b) = (T22, T33, T11)**:
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/pauli.png" width="800">
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/pauli.png" width="800">
 
 For example, triggering the processing by pointing at water, demonstrates (by "cancelling" water) the ability to pinpoint ships: 
 
 e.g. optimum radar cross section produced by selecting target at row/col index: (x,y)=863,739
 
 
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_water.png" width="800">
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/opt_cancel_water.png" width="800">
 
 whereas cancelling an urban area highlights oceanographic and topographic features: e.g. optimum radar cross section produced by selecting target at point (x,y) = (688, 663) 
 
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/opt_cancel_urban.png" width="800">
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/opt_cancel_urban.png" width="800">
 
 
 ### Uninstalling
@@ -157,14 +157,14 @@ This gui works "the same" as the C++ gui:
 ### 5) Extra options
 To run the python version at a specific target location (column, row index) examine the top of the python file for examples. For example, the flag ```--special_rgb``` can be used to display a special color-encoding:
 
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/rgb_special.png" width="800">
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/rgb_special.png" width="800">
 
 ### 6) Extra parameters
 Quite a few parameters are output by the program, such as the diagonal elements of the rank-1 T3 matrix:
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/rank_1_t3.png" width="800">
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/rank_1_t3.png" width="800">
 
 Comparing the pauli representation with the eigenvalues ( sorted ) and also with the rank-1 matrix elements:
-<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/T3/compare.gif" width="800">
+<img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/compare.gif" width="800">
 
 ### Running the method on other data
 * Make sure your dataset is in T3 matrix format ( PolSARPro standard ). ENVI header files ( one for each .bin file) are expected, as is the PolSARPro "config.txt" file.
