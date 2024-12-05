@@ -22,6 +22,7 @@ Todo:
 '''
 from misc import read_config, read_binary, write_binary, write_hdr
 from matplotlib.backend_bases import MouseEvent
+from matplotlib.path import Path
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
@@ -342,19 +343,45 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
     return [ opt, hv, pwr, sopt, aopt, popt]
 
 
-def nullspace_vectors(xp, yp):
+def nullspace_vectors(xp, yp, mask=None):
     # print('nullspace_vectors', xp, yp)
-    n_use = 1;
-    i = yp * ncol + xp
-    t11 = t11_p[i]
-    t22 = t22_p[i]
-    t33 = t33_p[i]
-    t12_r = t12_r_p[i]
-    t12_i = t12_i_p[i]
-    t13_r = t13_r_p[i]
-    t13_i = t13_i_p[i]
-    t23_r = t23_r_p[i]
-    t23_i = t23_i_p[i]
+    t11, t22, t33, t12_r, t12_i, t13_r, t13_i, t23_r, t23_i = 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+    if (xp is None or yp is None) and mask is None:
+        err("must specify single point (xp, yp) or list of coords (mask)")
+
+    n_use = 0
+
+    if mask is None:
+        i = yp * ncol + xp
+        if not math.isnan(t11_p[i]):
+            t11 = t11_p[i]
+            t22 = t22_p[i]
+            t33 = t33_p[i]
+            t12_r = t12_r_p[i]
+            t12_i = t12_i_p[i]
+            t13_r = t13_r_p[i]
+            t13_i = t13_i_p[i]
+            t23_r = t23_r_p[i]
+            t23_i = t23_i_p[i]
+            n_use += 1
+    else:
+        for (x,y) in mask:
+            i = y * ncol + x
+            if not math.isnan(t11_p[i]):
+                t11 += t11_p[i]
+                t22 += t22_p[i]
+                t33 += t33_p[i]
+                t12_r += t12_r_p[i]
+                t12_i += t12_i_p[i]
+                t13_r += t13_r_p[i]
+                t13_i += t13_i_p[i]
+                t23_r += t23_r_p[i]
+                t23_i += t23_i_p[i]
+                n_use += 1
+
+    if n_use < 1:
+        err("no valid data area selected")
     
     '''(ws > 1){
       for(int di = yp - dw; di <= yp + dw; di++){
@@ -587,6 +614,22 @@ def data_to_pixel(x, y):
     pixel_coords = ((x + 0.5, y + 0.5))
     return np.floor(pixel_coords).astype(int)
 
+
+def get_polygon_mask(polygon_coords, image_width, image_height):
+    """
+    Create binary mask: points under poly have value True
+    :param polygon_coords: List of (x, y) tuples representing the polygon's vertices
+    :param image_width: Width of image (# of columns)
+    :param image_height: Height of image (# of rows)
+    :return: A binary mask (2D array): True == point is under poly
+    """
+    polygon = Path(polygon_coords)
+    x, y = np.meshgrid(np.arange(image_width), np.arange(image_height))
+    points = np.vstack((x.ravel(), y.ravel())).T  # Shape: (num_points, 2)
+    inside_mask = polygon.contains_points(points)
+    inside_image = inside_mask.reshape(image_height, image_width)
+    return inside_image
+
 # update dynamic line segment
 def update_line(event):
     global line
@@ -604,6 +647,7 @@ def on_press(event):  # called when point is clicked
     # print("on_press(): now release mouse button over target location")
     if event.button == 1:
         if not drawing_poly:  # left mouse click
+            print("imshow(rgb) 1")
             ax.imshow(rgb)
             plt.xlabel('(R,G,B)=(T22, T33, T11)')
             plt.draw()  # Redraw the canvas
@@ -618,6 +662,35 @@ def on_press(event):  # called when point is clicked
                 fig.canvas.draw()
                 print("Polygon completed!")
                 print(vertices)
+                mask = get_polygon_mask(vertices, ncol, nrow)
+                y_ind, x_ind = np.where(mask)  # row/col indices under mask
+                mask_points = list(zip(x_ind, y_ind))  
+                print(str(len(mask_points)), 'points under mask')
+                print(mask_points)
+
+                [o2d1, o2d2, o2d3, 
+                 o3d1, o3d2, o3d3,
+                 o2d1c, o2d2c, o2d3c,
+                 o3d1c, o3d2c, o3d3c] = nullspace_vectors(None, None, mask_points)
+
+                global opt, hv, pwr, sopt, aopt, popt
+                [opt, hv, pwr, sopt, aopt, popt]  =\
+                    decom(o2d1, o2d2, o2d3,
+                          o3d1, o3d2, o3d3,
+                          o2d1c, o2d2c, o2d3c,
+                          o3d1c, o3d2c, o3d3c)
+
+                for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
+                    write_out(x)
+
+                print("imshow(opt) poly")
+                ax.imshow(scale(opt).reshape((nrow, ncol)),
+                          cmap='gray',
+                          vmin=0,
+                          vmax=1)  # Update the image
+                plt.xlabel('opt.bin')
+                plt.draw()
+                decom_plotted = True
 
             vertices = []  # Reset vertices after finalizing polygon
             # drawing_poly = False
@@ -631,10 +704,9 @@ def on_press(event):  # called when point is clicked
                 line, = ax.plot([], [], 'r-', lw=2)
 
             if decom_plotted: # or not drawing_poly:
+                print("imshow(rgb) 2")
                 ax.imshow(rgb)
                 plt.xlabel('(R,G,B)=(T22, T33, T11)')
-             
-            if decom_plotted:
                 decom_plotted = False
 
             drawing_poly = True
@@ -685,7 +757,8 @@ def on_release(event):
 
         for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
             write_out(x)
-
+    
+        print("imshow(opt) 2")
         ax.imshow(scale(opt).reshape((nrow, ncol)),
                   cmap='gray',
                   vmin=0,
