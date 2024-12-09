@@ -11,6 +11,9 @@ instructions:
 # specify target location (y, x) coordinate to "cancel" a specific ship:
     python3 py/cloude_decom.py T3 393 616
 
+# cancel another ship:
+    python3 py/cloude_decom.py T3 718 779
+
 
 # when running on a specific target, suppress the gui:
     python3 py/cloude_decom.py T3 393 616 --no_gui
