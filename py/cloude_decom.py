@@ -249,7 +249,12 @@ def read_T3(d):
     t23_r_p, t23_i_p = read_binary(d + sep + 'T23_real.bin')[3], read_binary(d + sep + 'T23_imag.bin')[3]
 
 
-def lamcloude(a, b, c, z1, z2, z3):
+def lamcloude(a, b=None, c=None, z1=None, z2=None, z3=None):
+
+    if b is None:
+        X = a
+        a, b, c, z1, z2, z3 = X
+
     if math.isnan(a.real):
         return([float('nan') for i in range(6)])
 
@@ -306,6 +311,20 @@ def lamcloude_vectorised(a, b, c, z1, z2, z3):
     v2 = copy.deepcopy(e1)
     v3 = copy.deepcopy(e1)
 
+    print("prepare data..")
+    inputs = [[a[i], b[i], c[i], z1[i], z2[i], z3[i]] for i in range(npx)]
+    print("run lamcloude..")
+    results = parfor(lamcloude, inputs)
+
+    for i in range(npx):
+        e1[i] = results[i][0]
+        e2[i] = results[i][1]
+        e3[i] = results[i][2]
+        v1[i] = results[i][3]
+        v2[i] = results[i][4]
+        v3[i] = results[i][5]
+    return [e1, e2, e3, v1, v2, v3]
+    '''
     for i in range(npx):
         X = lamcloude(a[i], b[i], c[i], z1[i], z2[i], z3[i])
         e1[i] = X[0]
@@ -315,7 +334,7 @@ def lamcloude_vectorised(a, b, c, z1, z2, z3):
         v2[i] = X[4]
         v3[i] = X[5]
     return [e1, e2, e3, v1, v2, v3]
-
+    '''
 
 def rank1_t3(e1, v1, v2, v3):  #  generate T3 rank 1
     e1v1, e1v2 = e1 * v1, e1 * v2
