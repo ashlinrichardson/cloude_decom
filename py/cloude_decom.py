@@ -30,7 +30,7 @@ To upgrade pip:
 '''
 
 import warnings; warnings.filterwarnings("ignore", message="Unable to import Axes3D")
-from misc import read_config, read_binary, write_binary, write_hdr
+from misc import read_config, read_binary, write_binary, write_hdr, parfor
 from matplotlib.backend_bases import MouseEvent
 from matplotlib.path import Path
 import matplotlib.pyplot as plt
