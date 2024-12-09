@@ -159,12 +159,21 @@ Using the right mouse button draws an area target. Click the left mouse button o
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/poly_target.gif" width="800">
 
-### 6) Extra options
+### 6) Polygon / area target: specified from shapefile + georeferenced image
+Here is the sample command for running the decom using a "shapefile" target:
+
+```
+python3 py/cloude_decom.py T3 --shapefile=T3/shapefiles/water.shp
+```
+
+Note that T11.bin must include georeferencing information in the T11.hdr file. For this option, the GUI is suppressed and outputs ( opt.bin, etc ) are made available in the T3 data folder.
+
+### 7) Extra options
 To run the python version at a specific target location (column, row index) examine the top of the python file for examples. For example, the flag ```--special_rgb``` can be used to display a special color-encoding:
 
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/rgb_special.png" width="800">
 
-### 7) Extra parameters
+### 8) Extra parameters
 Quite a few parameters are output by the program, such as the diagonal elements of the rank-1 T3 matrix:
 <img src="https://raw.githubusercontent.com/ashlinrichardson/cloude_decom/master/plots/rank_1_t3.png" width="800">
 
