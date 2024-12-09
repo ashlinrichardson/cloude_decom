@@ -416,6 +416,7 @@ def nullspace_vectors(xp, yp, mask=None):
             n_use += 1
     else:
         print("mask pixels", mask)
+        print("|mask pixels|=", len(mask))
         for (x,y) in mask:
             i = y * ncol + x
             if not math.isnan(t11_p[i]):
