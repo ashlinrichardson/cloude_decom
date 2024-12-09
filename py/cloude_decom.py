@@ -26,6 +26,7 @@ To install dependencies:
 
 To upgrade pip:
     python3 -m pip install --upgrade pip
+
 '''
 
 import warnings; warnings.filterwarnings("ignore", message="Unable to import Axes3D")
