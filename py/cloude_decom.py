@@ -400,7 +400,7 @@ def nullspace_vectors(xp, yp, mask=None):
         err("must specify single point (xp, yp) or list of coords (mask)")
 
     n_use = 0
-
+    x_bar, y_bar = 0, 0
     if mask is None:
         i = yp * ncol + xp
         if not math.isnan(t11_p[i]):
@@ -415,7 +415,7 @@ def nullspace_vectors(xp, yp, mask=None):
             t23_i = t23_i_p[i]
             n_use += 1
     else:
-        print("mask pixels", mask)
+        # print("mask_pixels", mask)
         print("|mask pixels|=", len(mask))
         for (x,y) in mask:
             i = y * ncol + x
@@ -430,6 +430,8 @@ def nullspace_vectors(xp, yp, mask=None):
                 t23_r += t23_r_p[i]
                 t23_i += t23_i_p[i]
                 n_use += 1
+                x_bar += x
+                y_bar += y
 
     if n_use < 1:
         print("Error: no valid data area selected")
@@ -460,6 +462,11 @@ def nullspace_vectors(xp, yp, mask=None):
     t12_r /= n_use; t12_i /= n_use
     t13_r /= n_use; t13_i /= n_use
     t23_r /= n_use; t23_i /= n_use
+    print("Target T11:", t11)
+    print("Target T22:", t22)
+    print("Target T33:", t33)
+    x_bar /= n_use; y_bar /= n_use;
+    print("Target centroid (x,y)=", x_bar, y_bar)
     
     a = t11; b = t22; c = t33
     z1 = t12_r + t12_i * 1j
