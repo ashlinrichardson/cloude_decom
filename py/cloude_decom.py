@@ -19,6 +19,12 @@ instructions:
 Todo:
 (DONE) simple gui (point select)
 (TODO) polygon select ( shapefile or input to GUI )
+
+To install dependencies:
+    python3 -m pip install matplotlib numpy fiona shapely rasterio
+
+To upgrade pip:
+    python3 -m pip install --upgrade pip
 '''
 from misc import read_config, read_binary, write_binary, write_hdr
 from matplotlib.backend_bases import MouseEvent
@@ -26,25 +32,34 @@ from matplotlib.path import Path
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
+import rasterio
 import cProfile
+import shapely
 import pickle
 import ctypes
+import fiona
 import cmath
 import copy
 import math
 import time
 import sys
 import os
+from rasterio.features import geometry_mask
+from shapely.geometry import shape
 args = sys.argv
 sep = os.path.sep
 
 special_rgb = '--special_rgb' in args  # use special (r,g,b) = (dn, vn, sn) visualization ( alphas ) 
 no_gui = '--no_gui' in args  # option to suppress gui window (just run at specific target)
-args_new = []
+args_new, args_special = [], []
 
 for arg in args:
     if arg[:2] == '--':
-        pass
+        args_special += [arg]
+        
+        # check for shapefile argument
+        if arg.strip('--').split('=')[0] == 'shapefile':
+            sys.exit(1)
     else:
         args_new += [arg]
 args = args_new
