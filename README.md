@@ -166,6 +166,12 @@ Here is the sample command for running the decom using a "shapefile" target:
 python3 py/cloude_decom.py T3 --shapefile=T3/shapefiles/water.shp
 ```
 
+and e.g. cancelling a ship:
+
+```
+python3 py/cloude_decom.py T3 --shapefile=T3/shapefiles/ship.shp
+```
+
 Note that T11.bin must include georeferencing information in the T11.hdr file. For this option, the GUI is suppressed and outputs ( opt.bin, etc ) are made available in the T3 data folder.
 
 ### 7) Extra options
