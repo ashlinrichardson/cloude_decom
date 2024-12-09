@@ -92,7 +92,7 @@ for arg in args:
                                                out_shape=(height, width))
 
                 # convert to image coordinates (x, y)
-                shapefile_mask = [(x, y) for x, y in zip(*np.where(shapefile_mask))]
+                shapefile_mask = [(y, x) for x, y in zip(*np.where(shapefile_mask))]
             except:
                 print("Error: rasterio failed to open raster file:", raster_t11)
 
@@ -448,7 +448,7 @@ def nullspace_vectors(xp, yp, mask=None):
         y_bar_all += y
         n_all += 1
 
-    print("Centroid (x,y) including invalid:", x_bar_all, y_bar_all)
+    print("Target centroid (x,y) before excluding NaN:", x_bar_all, y_bar_all)
     if n_use < 1:
         print("Error: no valid data area selected")
         sys.exit(1)
