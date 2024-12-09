@@ -15,6 +15,8 @@ instructions:
 # when running on a specific target, suppress the gui:
     python3 py/cloude_decom.py T3 393 616 --no_gui
 
+# when running on a polygon target in shapefile, gui is suppressed ( opt.bin, etc. are produced in the T3 folder )
+    python3 py/cloude_decom.py T3 --shapefile=T3/shapefiles/water.shp
 
 Todo:
 (DONE) simple gui (point select)
@@ -26,6 +28,8 @@ To install dependencies:
 To upgrade pip:
     python3 -m pip install --upgrade pip
 '''
+
+import warnings; warnings.filterwarnings("ignore", message="Unable to import Axes3D")
 from misc import read_config, read_binary, write_binary, write_hdr
 from matplotlib.backend_bases import MouseEvent
 from matplotlib.path import Path
@@ -53,13 +57,43 @@ special_rgb = '--special_rgb' in args  # use special (r,g,b) = (dn, vn, sn) visu
 no_gui = '--no_gui' in args  # option to suppress gui window (just run at specific target)
 args_new, args_special = [], []
 
+shapefile_mask = None  # mask produced from shapefile provided at command-line
+
 for arg in args:
     if arg[:2] == '--':
         args_special += [arg]
         
         # check for shapefile argument
-        if arg.strip('--').split('=')[0] == 'shapefile':
-            sys.exit(1)
+        w = arg.strip('--').split('=')
+        if w[0] == 'shapefile':
+            shapefile = w[1]
+            print("+r", shapefile)
+
+            shapefile_shapes = None
+            try:
+                shapefile_shapes = [shape(feature['geometry']) for feature in fiona.open(shapefile)]       
+            except:
+                print("Error: fiona failed to open shapefile", shapefile)
+                sys.exit(1)
+    
+            raster_t11 = os.path.normpath(args[1]) + os.path.sep + 'T11.bin'
+            src = None
+            try:
+                print("+r", raster_t11)
+                src = rasterio.open(raster_t11)
+                raster_crs = src.crs
+                print(f"Raster CRS: {raster_crs}")
+                transform, width, height = src.transform, src.width, src.height
+    
+                shapefile_mask = geometry_mask(shapefile_shapes,
+                                               transform=transform,
+                                               invert=True,
+                                               out_shape=(height, width))
+
+                # convert to image coordinates (x, y)
+                shapefile_mask = [(x, y) for x, y in zip(*np.where(shapefile_mask))]
+            except:
+                print("Error: rasterio failed to open raster file:", raster_t11)
     else:
         args_new += [arg]
 args = args_new
@@ -381,6 +415,7 @@ def nullspace_vectors(xp, yp, mask=None):
             t23_i = t23_i_p[i]
             n_use += 1
     else:
+        print(mask)
         for (x,y) in mask:
             i = y * ncol + x
             if not math.isnan(t11_p[i]):
@@ -560,11 +595,13 @@ else:
 
 
 print("null vectors..")
-if xp is not None and yp is not None:
+if (xp is not None and yp is not None) or shapefile_mask is not None:
     [o2d1, o2d2, o2d3, 
      o3d1, o3d2, o3d3,
      o2d1c, o2d2c, o2d3c,
-     o3d1c, o3d2c, o3d3c] = nullspace_vectors(xp, yp)
+     o3d1c, o3d2c, o3d3c] = nullspace_vectors(xp if shapefile_mask is None else xp,
+                                              yp if shapefile_mask is None else yp,
+                                              shapefile_mask)
 
     [opt, hv, pwr, sopt, aopt, popt]  =\
         decom(o2d1, o2d2, o2d3,
@@ -575,8 +612,10 @@ if xp is not None and yp is not None:
     for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
         write_out(x)
 
-    if no_gui:
+    if no_gui or (shapefile_mask is not None):
         sys.exit(0)
+
+    # shapefile option goes here:
 
 
 def naninf_list(x):
