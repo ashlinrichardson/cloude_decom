@@ -415,7 +415,6 @@ def nullspace_vectors(xp, yp, mask=None):
             t23_i = t23_i_p[i]
             n_use += 1
     else:
-        print(mask)
         for (x,y) in mask:
             i = y * ncol + x
             if not math.isnan(t11_p[i]):
@@ -431,7 +430,8 @@ def nullspace_vectors(xp, yp, mask=None):
                 n_use += 1
 
     if n_use < 1:
-        err("no valid data area selected")
+        print("Error: no valid data area selected")
+        sys.exit(1)
     
     '''(ws > 1){
       for(int di = yp - dw; di <= yp + dw; di++){
