@@ -405,11 +405,15 @@ def nullspace_vectors(xp, yp, mask=None):
     if (xp is None or yp is None) and mask is None:
         err("must specify single point (xp, yp) or list of coords (mask)")
 
-    n_use = 0
+    n_use, n_all = 0, 0
     x_bar, y_bar = 0, 0
+    x_bar_all = 0
+    y_bar_all = 0
     if mask is None:
         x_bar = xp
         y_bar = yp
+        y_bar_all = xp
+        y_bar_all = yp
         i = yp * ncol + xp
         if not math.isnan(t11_p[i]):
             t11 = t11_p[i]
@@ -440,7 +444,11 @@ def nullspace_vectors(xp, yp, mask=None):
                 n_use += 1
                 x_bar += x
                 y_bar += y
+        x_bar_all += x
+        y_bar_all += y
+        n_all += 1
 
+    print("Centroid (x,y) including invalid:", x_bar_all, y_bar_all)
     if n_use < 1:
         print("Error: no valid data area selected")
         sys.exit(1)
