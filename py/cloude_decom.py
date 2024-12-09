@@ -8,15 +8,11 @@ instructions:
 # special rgb for targeting:
     python3 py/cloude_decom.py T3 --special_rgb
 
-# specify target location (y, x) coordinate to "cancel" a specific ship:
-    python3 py/cloude_decom.py T3 393 616
+# specify target location (x,y) coordinate to "cancel" a specific ship:
+    python3 py/cloude_decom.py T3  --x=616 --y=393 --no_gui
 
 # cancel another ship:
-    python3 py/cloude_decom.py T3 779 718 # 718 779
-
-
-# when running on a specific target, suppress the gui:
-    python3 py/cloude_decom.py T3 393 616 --no_gui
+    python3 py/cloude_decom.py T3  --x=779 --y=718 --no_gui
 
 # when running on a polygon target in shapefile, gui is suppressed ( opt.bin, etc. are produced in the T3 folder )
     python3 py/cloude_decom.py T3 --shapefile=T3/shapefiles/water.shp
@@ -56,6 +52,7 @@ from shapely.geometry import shape
 args = sys.argv
 sep = os.path.sep
 
+xp, yp = None, None  # target pixel, "graphics" convention (+x right, +y down)
 special_rgb = '--special_rgb' in args  # use special (r,g,b) = (dn, vn, sn) visualization ( alphas ) 
 no_gui = '--no_gui' in args  # option to suppress gui window (just run at specific target)
 args_new, args_special = [], []
@@ -97,6 +94,12 @@ for arg in args:
                 shapefile_mask = [(x, y) for x, y in zip(*np.where(shapefile_mask))]
             except:
                 print("Error: rasterio failed to open raster file:", raster_t11)
+
+        if w[0] == 'x':
+            xp = int(w[1])
+
+        if w[0] == 'y':
+            yp = int(w[1])
     else:
         args_new += [arg]
 args = args_new
@@ -104,7 +107,6 @@ args = args_new
 
 F = None
 M_PI = math.pi
-xp, yp = None, None  # target pixel, "graphics" convention (+x right, +y down)
 nrow, ncol = None, None  # image dimensions
 eps = np.finfo(np.float64).eps  # "machine epsilon" for 64-bit floating point number
 
@@ -405,6 +407,8 @@ def nullspace_vectors(xp, yp, mask=None):
     n_use = 0
     x_bar, y_bar = 0, 0
     if mask is None:
+        x_bar = xp
+        y_bar = yp
         i = yp * ncol + xp
         if not math.isnan(t11_p[i]):
             t11 = t11_p[i]
@@ -519,8 +523,9 @@ read_T3(in_dir)  # load the T3 matrix data
 # initialize output variables
 # out_r, out_g, out_b, out_e1, out_e2, out_e3, out_opt, out_sopt, out_v1 = [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)], [math.nan for i in range(npx)]
 
-xp, yp = int(args[3]) if len(args) > 3 else None,\
-         int(args[2]) if len(args) > 2 else None    # cloude_decom T3 313 798 # col/ row for previous test target
+
+# xp, yp = int(args[3]) if len(args) > 3 else None,\
+#         int(args[2]) if len(args) > 2 else None    # cloude_decom T3 313 798 # col/ row for previous test target
 
 # check specified col, row indices ( respectively ) are "in bounds"
 if xp is not None and (xp < 0 or xp > ncol):
