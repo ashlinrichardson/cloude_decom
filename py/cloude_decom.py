@@ -5,6 +5,9 @@ instructions:
 # to run basic example:
     python3 py/cloude_decom.py T3 
 
+# to run basic example faster ( because of using a smaller dataset ):
+    python3 py/cloude_decom.py T3_small
+
 # special rgb for targeting:
     python3 py/cloude_decom.py T3 --special_rgb
 
