@@ -31,7 +31,7 @@ To upgrade pip:
 '''
 
 import warnings; warnings.filterwarnings("ignore", message="Unable to import Axes3D")
-from misc import read_config, read_binary, write_binary, write_hdr, parfor, err
+from misc import read_config, read_binary, write_binary, write_hdr, parfor, err, exist
 from matplotlib.backend_bases import MouseEvent
 from matplotlib.path import Path
 import matplotlib.pyplot as plt
@@ -559,23 +559,9 @@ if yp is not None and (yp < 0 or yp > nrow):
 
 print("complex arrays..")
 N = len(t11_p)
-'''
-t11c = [t11_p[i] + 0j for i in range(N)] # + 0j; # a = t11 + 0j
-t22c = [t22_p[i] + 0j for i in range(N)] # + 0j; # b = t22 + 0j
-t33c = [t33_p[i] + 0j for i in range(N)] # + 0j; # c = t33 + 0j
-
-t12c = [t12_r_p[i] + t12_i_p[i] * 1j  for i in range(N)] # z1 = t12_r + t12_i * 1j
-t13c = [t13_r_p[i] + t13_i_p[i] * 1j  for i in range(N)] # z2 = t13_r + t13_i * 1j
-t23c = [t23_r_p[i] + t23_i_p[i] * 1j  for i in range(N)] # z3 = t23_r + t23_i * 1j
-
-t11c = np.array(t11c)
-t22c = np.array(t22c) 
-t33c = np.array(t33c)
-'''
 t11c = np.array(t11_p) + 0j
 t22c = np.array(t22_p) + 0j
 t33c = np.array(t33_p) + 0j
-
 t12c = np.array(t12_r_p) + np.array(t12_i_p) * 1j
 t13c = np.array(t13_r_p) + np.array(t13_i_p) * 1j
 t23c = np.array(t23_r_p) + np.array(t23_i_p) * 1j
@@ -587,8 +573,6 @@ t11c = a
 t22c = b
 t33c = c
 '''
-
-
 # /* avoid 0 elements.. conditioning */
 print("conditioning..")
 eps2 = (t11c + t22c + t33c ) * (1.0e-9) + eps
@@ -612,13 +596,16 @@ else:
     print("rank1 t3..")
     [t11c, t12c, t13c, t22c, t23c, t33c] =\
         rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v)
-    
+   
+    ''' 
     T11c = np.abs(t11c)
     T22c = np.abs(t22c)
     T33c = np.abs(t33c)
 
     for x in ['T11c', 'T22c', 'T33c']:
         write_out(x)
+
+    '''
 
     # generate alpha etc. eigenvector parameters : ) 
     alpha = np.arccos(np.abs(v1_v))
@@ -693,15 +680,29 @@ def scale(rgb_i):
 
 # default visualization
 print("scaling rgb..")
-rgb = np.zeros((nrow, ncol, 3))
+rgb, rgb_pkl = None, None
 if special_rgb:
-    rgb[:, :, 0] = scale(np.array(dn)).reshape((nrow, ncol))
-    rgb[:, :, 1] = scale(np.array(vn)).reshape((nrow, ncol))
-    rgb[:, :, 2] = scale(np.array(sn)).reshape((nrow, ncol))
+    rgb_pkl = os.path.normpath(args[1]) + os.path.sep + 'rgb_special.pkl'
+    if exist(rgb_pkl):
+        [rgb] = pickle.load(open(rgb_pkl), 'rb')
+    else:
+        rgb = np.zeros((nrow, ncol, 3))
+        rgb[:, :, 0] = scale(np.array(dn)).reshape((nrow, ncol))
+        rgb[:, :, 1] = scale(np.array(vn)).reshape((nrow, ncol))
+        rgb[:, :, 2] = scale(np.array(sn)).reshape((nrow, ncol))
+        pickle.dump([rgb],
+                    open(rgb_pkl, 'wb'))
 else:
-    rgb[:, :, 0] = scale(np.array(t22_p)).reshape((nrow, ncol))
-    rgb[:, :, 1] = scale(np.array(t33_p)).reshape((nrow, ncol))
-    rgb[:, :, 2] = scale(np.array(t11_p)).reshape((nrow, ncol))
+    rgb_pkl = os.path.normpath(args[1]) + os.path.sep + 'rgb.pkl'
+    if exist(rgb_pkl):
+        [rgb] = pickle.load(open(rgb_pkl, 'rb'))
+    else:
+        rgb = np.zeros((nrow, ncol, 3))
+        rgb[:, :, 0] = scale(np.array(t22_p)).reshape((nrow, ncol))
+        rgb[:, :, 1] = scale(np.array(t33_p)).reshape((nrow, ncol))
+        rgb[:, :, 2] = scale(np.array(t11_p)).reshape((nrow, ncol))
+        pickle.dump([rgb],
+                    open(rgb_pkl, 'wb'))
 print("done scaling.")
 
 # gui stuff
