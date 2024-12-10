@@ -1,8 +1,8 @@
 Nrow
-730
+600
 ---------
 Ncol
-451
+500
 ---------
 PolarCase
 bistatic
