@@ -1,0 +1,12 @@
+ENVI
+samples = 451
+lines = 730
+bands = 1
+header offset = 0
+file type = ENVI Standard
+data type = 4
+interleave = bsq
+byte order = 0
+map info = {Geographic Lat/Lon, 1, 1, -122.549595504279, 37.9127773836428, 0.000445809464688987, 0.000445809464688987,WGS-84}
+coordinate system string = {GEOGCS["GCS_WGS84_DD",DATUM["D_WGS_1984",SPHEROID["WGS84",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]}
+band names = {T13_imag}
