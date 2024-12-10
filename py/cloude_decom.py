@@ -45,6 +45,7 @@ import cProfile
 import shapely
 import pickle
 import ctypes
+import shutil
 import fiona
 import cmath
 import copy
@@ -57,6 +58,7 @@ from shapely.geometry import shape
 args = sys.argv
 sep = os.path.sep
 
+in_dir = None
 xp, yp = None, None  # target pixel, "graphics" convention (+x right, +y down)
 special_rgb = '--special_rgb' in args  # use special (r,g,b) = (dn, vn, sn) visualization ( alphas ) 
 no_gui = '--no_gui' in args  # option to suppress gui window (just run at specific target)
@@ -362,6 +364,7 @@ def rank1_t3_vectorised(e1, v1, v2, v3):  #  generate T3 rank 1 ( numpy vectoris
 
 
 def write_out(variable_name):
+    global in_dir
     dd = os.path.normpath(args[1]) + os.path.sep
     cmd =  ('write_binary(' + variable_name + '.tolist(), "' +
             dd + variable_name + '.bin"); write_hdr("' +
@@ -369,7 +372,11 @@ def write_out(variable_name):
             variable_name + '.bin"])')
     # print(cmd)
     exec(cmd)
-
+    
+    # copy the T11.hdr file over the header for this file, so the map info / CRS are retained
+    t11h = os.path.normpath(os.path.abspath(in_dir)) + os.path.sep + 'T11.hdr'
+    shutil.copy(t11h,
+                dd + variable_name + '.hdr')
 
 def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c, o3d3c):   # calculate decom for pixel at linear index "i"
     print("decom..")
