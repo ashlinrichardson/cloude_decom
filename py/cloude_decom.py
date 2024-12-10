@@ -559,6 +559,7 @@ if yp is not None and (yp < 0 or yp > nrow):
 
 print("complex arrays..")
 N = len(t11_p)
+'''
 t11c = [t11_p[i] + 0j for i in range(N)] # + 0j; # a = t11 + 0j
 t22c = [t22_p[i] + 0j for i in range(N)] # + 0j; # b = t22 + 0j
 t33c = [t33_p[i] + 0j for i in range(N)] # + 0j; # c = t33 + 0j
@@ -567,6 +568,17 @@ t12c = [t12_r_p[i] + t12_i_p[i] * 1j  for i in range(N)] # z1 = t12_r + t12_i * 
 t13c = [t13_r_p[i] + t13_i_p[i] * 1j  for i in range(N)] # z2 = t13_r + t13_i * 1j
 t23c = [t23_r_p[i] + t23_i_p[i] * 1j  for i in range(N)] # z3 = t23_r + t23_i * 1j
 
+t11c = np.array(t11c)
+t22c = np.array(t22c) 
+t33c = np.array(t33c)
+'''
+t11c = np.array(t11_p) + 0j
+t22c = np.array(t22_p) + 0j
+t33c = np.array(t33_p) + 0j
+
+t12c = np.array(t12_r_p) + np.array(t12_i_p) * 1j
+t13c = np.array(t13_r_p) + np.array(t13_i_p) * 1j
+t23c = np.array(t23_r_p) + np.array(t23_i_p) * 1j
 ''' # aliases
 t12c = z1
 t13c = z2
@@ -575,19 +587,17 @@ t11c = a
 t22c = b
 t33c = c
 '''
-t11c = np.array(t11c)
-t22c = np.array(t22c) 
-t33c = np.array(t33c)
+
 
 # /* avoid 0 elements.. conditioning */
 print("conditioning..")
 eps2 = (t11c + t22c + t33c ) * (1.0e-9) + eps
-t12c = t12c + eps2 * F 
-t13c = t13c + eps2 * F 
-t23c = t23c + eps2 * F
-t11c = t11c + eps2 * F 
-t22c = t22c + eps2 * F
-t33c = t33c + eps2 * F 
+t12c += eps2 * F 
+t13c += eps2 * F 
+t23c += eps2 * F
+t11c += eps2 * F 
+t22c += eps2 * F
+t33c += eps2 * F 
 
 pickle_filename = os.path.normpath(args[1]) + os.path.sep + 'cloude_decom.pkl'
 if os.path.exists(pickle_filename):
@@ -682,6 +692,7 @@ def scale(rgb_i):
 
 
 # default visualization
+print("scaling rgb..")
 rgb = np.zeros((nrow, ncol, 3))
 if special_rgb:
     rgb[:, :, 0] = scale(np.array(dn)).reshape((nrow, ncol))
@@ -691,6 +702,7 @@ else:
     rgb[:, :, 0] = scale(np.array(t22_p)).reshape((nrow, ncol))
     rgb[:, :, 1] = scale(np.array(t33_p)).reshape((nrow, ncol))
     rgb[:, :, 2] = scale(np.array(t11_p)).reshape((nrow, ncol))
+print("done scaling.")
 
 # gui stuff
 vertices = []  # (x,y) coordinates in our polygon ( once finalized )
@@ -743,6 +755,7 @@ def on_press(event):  # called when point is clicked
     if event.button == 1:
         if not drawing_poly:  # left mouse click
             print("imshow(rgb) 1")
+            plt.cla()
             ax.imshow(rgb)
             plt.xlabel('(R,G,B)=(T22, T33, T11)')
             plt.draw()  # Redraw the canvas
@@ -775,7 +788,7 @@ def on_press(event):  # called when point is clicked
                           o2d1c, o2d2c, o2d3c,
                           o3d1c, o3d2c, o3d3c)
 
-                for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
+                for x in ['opt']: # , 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
                     write_out(x)
 
                 print("imshow(opt) poly")
@@ -828,6 +841,7 @@ def on_release(event):
             write_out(x)
     
         print("imshow(opt) 2")
+        plt.cla()
         ax.imshow(scale(opt).reshape((nrow, ncol)),
                   cmap='gray',
                   vmin=0,
