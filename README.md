@@ -154,6 +154,7 @@ This gui works "the same" as the C++ gui:
 * Depressing the mouse button will restore the "default" visualization e.g. (r,g,b) = (T22, T33, T11).
 * Releasing the mouse button will run the decom ( and generate and display the product opt.bin).
 
+Press <escape> on the keyboard, or use the "close window" button to exit.
 ### 5) Polygon / area target
 Using the right mouse button draws an area target. Click the left mouse button once to close the polygon
 
