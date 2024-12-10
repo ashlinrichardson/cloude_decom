@@ -19,7 +19,8 @@ instructions:
 
 Todo:
 (DONE) simple gui (point select)
-(TODO) polygon select ( shapefile or input to GUI )
+(DONE) polygon select ( shapefile or input to GUI )
+(TODO) write files on ESC or close plot
 
 To install dependencies:
     python3 -m pip install matplotlib numpy fiona shapely rasterio
@@ -30,7 +31,7 @@ To upgrade pip:
 '''
 
 import warnings; warnings.filterwarnings("ignore", message="Unable to import Axes3D")
-from misc import read_config, read_binary, write_binary, write_hdr, parfor
+from misc import read_config, read_binary, write_binary, write_hdr, parfor, err
 from matplotlib.backend_bases import MouseEvent
 from matplotlib.path import Path
 import matplotlib.pyplot as plt
@@ -74,16 +75,12 @@ for arg in args:
             try:
                 shapefile_shapes = [shape(feature['geometry']) for feature in fiona.open(shapefile)]       
             except:
-                print("Error: fiona failed to open shapefile", shapefile)
-                sys.exit(1)
+                err("fiona failed to open shapefile: " + shapefile)
     
             raster_t11 = os.path.normpath(args[1]) + os.path.sep + 'T11.bin'
-            src = None
             try:
                 print("+r", raster_t11)
-                src = rasterio.open(raster_t11)
-                raster_crs = src.crs
-                print(f"Raster CRS: {raster_crs}")
+                src = rasterio.open(raster_t11)  # raster_crs = src.crs
                 transform, width, height = src.transform, src.width, src.height
     
                 shapefile_mask = geometry_mask(shapefile_shapes,
@@ -91,14 +88,13 @@ for arg in args:
                                                invert=True,
                                                out_shape=(height, width))
 
-                # convert to image coordinates (x, y)
+                # convert to image coords (x,y) "graphics convention"
                 shapefile_mask = [(y, x) for x, y in zip(*np.where(shapefile_mask))]
             except:
-                print("Error: rasterio failed to open raster file:", raster_t11)
+                err("rasterio failed to open raster file: " + raster_t11)
 
         if w[0] == 'x':
             xp = int(w[1])
-
         if w[0] == 'y':
             yp = int(w[1])
     else:
@@ -654,7 +650,7 @@ if (xp is not None and yp is not None) or shapefile_mask is not None:
               o2d1c, o2d2c, o2d3c,
               o3d1c, o3d2c, o3d3c)
 
-    for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
+    for x in ['opt']: # 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
         write_out(x)
 
     if no_gui or (shapefile_mask is not None):
@@ -828,7 +824,7 @@ def on_release(event):
                                                   o2d1c, o2d2c, o2d3c,
                                                   o3d1c, o3d2c, o3d3c)
 
-        for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
+        for x in ['opt']: # 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
             write_out(x)
     
         print("imshow(opt) 2")
