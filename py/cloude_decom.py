@@ -891,18 +891,25 @@ def on_release(event):
                 fig.canvas.draw()
 
 def quit():
-     # what to do at the end
-     global opt
-     global hv
-     global pwr
-     global sopt
-     global aopt
-     global popt
+    # what to do at the end
+    global opt
+    global hv
+    global pwr
+    global sopt
+    global aopt
+    global popt
  
-     for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
-         write_out(x)
-     print('Cheerio')
-     sys.exit(0)
+    for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
+        write_out(x)
+    print('Cheerio')
+    sys.exit(0)
+
+def on_key(event):
+    if event.key == 'escape':
+        quit()
+ 
+def on_close(event):
+    quit()
 
 fig.canvas.mpl_connect('button_press_event', on_press)
 fig.canvas.mpl_connect('button_release_event', on_release)
