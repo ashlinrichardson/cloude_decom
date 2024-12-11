@@ -473,7 +473,7 @@ def nullspace_vectors(xp, yp, mask=None):
         y_bar_all += y
         n_all += 1
 
-    print("Target centroid (x,y) before excluding NaN:", x_bar_all, y_bar_all)
+    print("Target centroid (x,y) before excluding NaN:", x_bar_all/n_use, y_bar_all/n_use)
     if n_use < 1:
         print("Error: no valid data area selected")
         sys.exit(1)
@@ -890,7 +890,24 @@ def on_release(event):
             else:
                 fig.canvas.draw()
 
+def quit():
+     # what to do at the end
+     global opt
+     global hv
+     global pwr
+     global sopt
+     global aopt
+     global popt
+ 
+     for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt']:
+         write_out(x)
+     print('Cheerio')
+     sys.exit(0)
+
 fig.canvas.mpl_connect('button_press_event', on_press)
 fig.canvas.mpl_connect('button_release_event', on_release)
 fig.canvas.mpl_connect('motion_notify_event', update_line)
+
+fig.canvas.mpl_connect('key_press_event', on_key)
+fig.canvas.mpl_connect('close_event', on_close)
 plt.show()
