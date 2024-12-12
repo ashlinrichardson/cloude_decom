@@ -118,7 +118,7 @@ t11c, t22c, t33c, t12c, t13c, t23c =\
 v1_v, v2_v, v3_v, e1_v, e2_v, e3_v =\
     None, None, None, None, None, None
 
-abs_v1_v, abs_v2_v, abs_v3_v, abs_e1_v, abs_e2_v, abs_e3_v = None, None, None, None, None, None
+v1, v2, v3, e1, e2, e3 = None, None, None, None, None, None
 opt, hv, pwr, sopt, aopt, popt =\
     None, None, None, None, None, None
 dn, vn, sn = None, None, None
@@ -910,18 +910,17 @@ def quit():
     global aopt
     global popt
     global v1_v, v2_v, v3_v, e1_v, e2_v, e3_v
-    global abs_v1_v, abs_v2_v, abs_v3_v, abs_e1_v, abs_e2_v, abs_e3_v
+    global v1, v2, v3, e1, e2, e3 # abs_v1_v, abs_v2_v, abs_v3_v, abs_e1_v, abs_e2_v, abs_e3_v
  
-    abs_v1_v = np.abs(v1_v)
-    abs_v2_v = np.abs(v2_v)
-    abs_v3_v = np.abs(v3_v)
-    abs_e1_v = np.abs(e1_v)
-    abs_e2_v = np.abs(e2_v)
-    abs_e3_v = np.abs(e3_v)
+    v1 = np.abs(v1_v)
+    v2 = np.abs(v2_v)
+    v3 = np.abs(v3_v)
+    e1 = np.abs(e1_v)
+    e2 = np.abs(e2_v)
+    e3 = np.abs(e3_v)
 
     for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt',
-              'abs_v1_v', 'abs_v2_v', 'abs_v3_v',
-              'abs_e1_v', 'abs_e2_v', 'abs_e3_v']:
+              'v1', 'v2', 'v3', 'e1', 'e2', 'e3']:
         write_out(x)
     print('Cheerio')
     sys.exit(0)
