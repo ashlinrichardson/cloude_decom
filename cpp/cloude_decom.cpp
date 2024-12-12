@@ -421,7 +421,10 @@ void decom(size_t i){
   double opt = pow(10., sm2 / 10.); // linear opt channel
 
   out_opt[i] = (float) opt;
-  out_v1[i] = (float) sopt;
+  //out_v1[i] = (float) sopt;
+  out_v1[i] = (float)abs(v1);
+  out_v2[i] = (float)abs(v2);
+  out_v3[i] = (float)abs(v3);
 
   out_hv[i] = (float)hv;
   out_sm[i] = (float)sm;
