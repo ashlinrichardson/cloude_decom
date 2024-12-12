@@ -305,12 +305,13 @@ def lamcloude(a, b=None, c=None, z1=None, z2=None, z3=None):
 
 
 def lamcloude_vectorised(a, b, c, z1, z2, z3):
+    global npx
     e1 = np.full(npx, np.nan + 0j) # e1 = np.array([math.nan + 0j for i in range(npx)])
-    e2 = np.copy(e1) # e2 = copy.deepcopy(e1)
-    e3 = np.copy(e1) # e3 = copy.deepcopy(e1)
-    v1 = np.copy(e1) # v1 = copy.deepcopy(e1)
-    v2 = np.copy(e1) #  copy.deepcopy(e1)
-    v3 = np.copy(e1) #copy.deepcopy(e1)
+    e2 = np.full(npx, np.nan + 0j) # np.copy(e1) # e2 = copy.deepcopy(e1)
+    e3 = np.full(npx, np.nan + 0j) # np.copy(e1) # e3 = copy.deepcopy(e1)
+    v1 = np.full(npx, np.nan + 0j) # np.copy(e1) # v1 = copy.deepcopy(e1)
+    v2 = np.full(npx, np.nan + 0j) # np.copy(e1) #  copy.deepcopy(e1)
+    v3 = np.full(npx, np.nan + 0j) # np.copy(e1) #copy.deepcopy(e1)
 
     print("prepare data..")
     inputs = [[a[i], b[i], c[i], z1[i], z2[i], z3[i]] for i in range(npx)]
@@ -388,6 +389,8 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
       t22c = b
       t33c = c
     '''
+    global v1_v, v2_v, v3_v
+
     # project data onto null channels // null_vecs=[o2d o3d];
     z1 = o2d1c * v1_v + o2d2c * v2_v + o2d3c * v3_v
     z2 = o3d1c * v1_v + o3d2c * v2_v + o3d3c * v3_v
@@ -428,6 +431,7 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
 
 
 def nullspace_vectors(xp, yp, mask=None):
+    global t11_p, t22_p, t33_p, t12_r, t12_i, t13_r, t13_i, t23_r, t23_i
     # print('nullspace_vectors', xp, yp)
     t11, t22, t33, t12_r, t12_i, t13_r, t13_i, t23_r, t23_i = 0, 0, 0, 0, 0, 0, 0, 0, 0
 
@@ -609,7 +613,7 @@ else:
     print("lamcloude..")
     [e1_v, e2_v, e3_v, v1_v, v2_v, v3_v] =\
         lamcloude_vectorised(t11c, t22c, t33c, t12c, t13c, t23c)
-    
+ 
     print("rank1 t3..")
     [t11c, t12c, t13c, t22c, t23c, t33c] =\
         rank1_t3_vectorised(e1_v, v1_v, v2_v, v3_v)
