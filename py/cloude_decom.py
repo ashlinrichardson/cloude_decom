@@ -119,6 +119,8 @@ v1_v, v2_v, v3_v, e1_v, e2_v, e3_v =\
     None, None, None, None, None, None
 
 v1, v2, v3, e1, e2, e3 = None, None, None, None, None, None
+v2_angle, v3_angle = None, None
+
 opt, hv, pwr, sopt, aopt, popt =\
     None, None, None, None, None, None
 dn, vn, sn = None, None, None
@@ -911,7 +913,7 @@ def quit():
     global popt
     global v1_v, v2_v, v3_v, e1_v, e2_v, e3_v
     global v1, v2, v3, e1, e2, e3 # abs_v1_v, abs_v2_v, abs_v3_v, abs_e1_v, abs_e2_v, abs_e3_v
- 
+    global v2_angle, v3_angle
     v1 = np.abs(v1_v)
     v2 = np.abs(v2_v)
     v3 = np.abs(v3_v)
@@ -919,8 +921,13 @@ def quit():
     e2 = np.abs(e2_v)
     e3 = np.abs(e3_v)
 
+    # v1_angle = np.angle(v1_v)  # no angle for v1
+    v2_angle = np.angle(v2_v)
+    v3_angle = np.angle(v3_v)
+
     for x in ['opt', 'hv', 'pwr', 'sopt', 'aopt', 'popt',
-              'v1', 'v2', 'v3', 'e1', 'e2', 'e3']:
+              'v1', 'v2', 'v3', 'e1', 'e2', 'e3',
+              'v2_angle', 'v3_angle']:
         write_out(x)
     print('Cheerio')
     sys.exit(0)
