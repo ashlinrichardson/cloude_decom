@@ -24,6 +24,8 @@
 
 using namespace std;
 
+str exit_command;  // command to run on exit.. ( deferred file-writing to be done on exit ) 
+
 float MIN1, MIN2, MIN3, MAX1, MAX2, MAX3;
 
 SA<float> * SCENE_DAT = NULL;
@@ -761,8 +763,10 @@ void zprInstance::keyboard(unsigned char key, int x, int y){
 
     // Escape
     case 27 :
-    quitme();
-    exit(0); //printf( "%d Pressed Esc\n",(char)key);
+      quitme();
+
+      system(exit_command.c_str());
+      exit(0); //printf( "%d Pressed Esc\n",(char)key);
     break;
 
     // Delete
@@ -976,6 +980,9 @@ void zprInstance::zprMouse(int button, int state, int x, int y){
   else{
     /* run Cloude decom, then rebuffer.. */
     str cmd(str("cloude_decom ./ ") + to_string(y) + str(" ") + to_string(x) + str(" ") + to_string(NWIN));
+    exit_command = cmd;
+    cmd += str(" 1");
+    
     cout << "run: " << cmd << endl;
     system(cmd.c_str());
     writeHeader("opt_vis.hdr", IMG_NR, IMG_NC, 3);

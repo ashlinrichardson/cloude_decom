@@ -439,7 +439,9 @@ void decom(size_t i){
 
 int main(int argc, char ** argv){
   printf("cloude_decom.cpp\n");
-  if(argc < 2) err("cloude.exe [input T3 directory] # [null target row] [null target col] # null target window size");
+  if(argc < 2){
+    err("cloude.exe [input T3 directory] # [null target row] [null target col] # [null target window size]");
+  }
   char * path = argv[1]; /* T3 matrix data path */
   int xp = -1; int yp = -1;
   int xp2 = -1; int yp2 = -1;
@@ -460,6 +462,11 @@ int main(int argc, char ** argv){
     dw = (ws - 1) / 2;
   }
   printf("**** ws %d dw %d\n", ws, dw);
+
+  int write_out = true;
+  if(argc > 5){
+    write_out = false;
+  }
 
   int i, j, k, np, nrow, ncol, di, dj, ii, jj, x, ix, jx, nw;
 
@@ -621,14 +628,16 @@ int main(int argc, char ** argv){
 
   FILE * out_f[N_OUT];
   for0(i, N_OUT){
-    strcpy(fn, path);
-    fn[strlen(path)] = sep();
-    strcpy(fn + strlen(path) + 1, out_fn[i]);
-    hwrite(fn, nrow, ncol, 1); /* write envi header */
-    out_f[i] = open(fn, WRITE); /* open output file */
-    nw = fwrite(out_d[i], sizeof(float), np, out_f[i]);
-    if(nw != np) err("failed to write expected number of floats");
-    fclose(out_f[i]);
+    if(write_out || i == 6){
+      strcpy(fn, path);
+      fn[strlen(path)] = sep();
+      strcpy(fn + strlen(path) + 1, out_fn[i]);
+      hwrite(fn, nrow, ncol, 1); /* write envi header */
+      out_f[i] = open(fn, WRITE); /* open output file */
+      nw = fwrite(out_d[i], sizeof(float), np, out_f[i]);
+      if(nw != np) err("failed to write expected number of floats");
+      fclose(out_f[i]);
+    }
   }
 
   for0(k, n_arrays)
