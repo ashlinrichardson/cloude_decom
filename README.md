@@ -199,6 +199,7 @@ Thanks to:
 * Subhadip Dey, Indian Institute of Technology Bombay
 * Shane Cloude, AELc
 * Adithi Balaji (U.Vic)
+
 for initial beta testing
 
 # Contributing
