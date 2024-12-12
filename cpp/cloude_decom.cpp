@@ -8,7 +8,7 @@ run:
   ./cloude.exe T3 # for T3 matrix data in folder T3
 
 output:
-  OPT.bin
+  opt.bin
 
 References
 [1] Shane R Cloude, Ashlin Richardson, Generalized Poincare Orthogonality: A New Approach to POLSAR Data Analysis, https://arxiv.org/pdf/2109.09093
