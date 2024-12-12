@@ -30,9 +30,7 @@ To install dependencies:
 
 To upgrade pip:
     python3 -m pip install --upgrade pip
-
 '''
-
 import warnings; warnings.filterwarnings("ignore", message="Unable to import Axes3D")
 from misc import read_config, read_binary, write_binary, write_hdr, parfor, err, exist
 from matplotlib.backend_bases import MouseEvent
@@ -305,12 +303,12 @@ def lamcloude(a, b=None, c=None, z1=None, z2=None, z3=None):
 
 
 def lamcloude_vectorised(a, b, c, z1, z2, z3):
-    e1 = np.array([math.nan + 0j for i in range(npx)])
-    e2 = copy.deepcopy(e1)
-    e3 = copy.deepcopy(e1)
-    v1 = copy.deepcopy(e1)
-    v2 = copy.deepcopy(e1)
-    v3 = copy.deepcopy(e1)
+    e1 = np.full(npx, np.nan + 0j) # e1 = np.array([math.nan + 0j for i in range(npx)])
+    e2 = np.copy(e1) # e2 = copy.deepcopy(e1)
+    e3 = np.copy(e1) # e3 = copy.deepcopy(e1)
+    v1 = np.copy(e1) # v1 = copy.deepcopy(e1)
+    v2 = np.copy(e1) #  copy.deepcopy(e1)
+    v3 = np.copy(e1) #copy.deepcopy(e1)
 
     print("prepare data..")
     inputs = [[a[i], b[i], c[i], z1[i], z2[i], z3[i]] for i in range(npx)]
@@ -393,16 +391,20 @@ def decom(o2d1, o2d2, o2d3, o3d1, o3d2, o3d3, o2d1c, o2d2c, o2d3c, o3d1c, o3d2c,
     z2 = o3d1c * v1_v + o3d2c * v2_v + o3d3c * v3_v
     
     # find optimum weights
-    popt = np.angle(t13c * np.conjugate(t12c)) * 180. / M_PI   # cmath.phase(z2 * z1.conjugate()) * 180. / M_PI
-    za = (t12c * np.conjugate(t12c) - t13c * np.conjugate(t13c)) + 1j * 2. * np.abs(t12c) * np.abs( t13c) #  abs(z1) * abs(z2)
+    npct12c = np.conjugate(t12c)
+    popt = np.angle(t13c * npct12c) * 180. / M_PI   # cmath.phase(z2 * z1.conjugate()) * 180. / M_PI
+    za = (t12c * npct12c - t13c * np.conjugate(t13c)) + 2j * np.abs(t12c) * np.abs( t13c) #  abs(z1) * abs(z2)
     aopt = np.angle(za) * 90. / M_PI # cmath.phase(za) * 90. / M_PI
     ar = aopt * M_PI / 180.
     br = popt * M_PI / 180.
     
     # optimum weight vector
-    w1 = np.conjugate(np.cos(ar) * o2d1 + np.sin(ar) * np.exp(1j * br) * o3d1) # .conjugate()
-    w2 = np.conjugate(np.cos(ar) * o2d2 + np.sin(ar) * np.exp(1j * br) * o3d2) # .conjugate()
-    w3 = np.conjugate(np.cos(ar) * o2d3 + np.sin(ar) * np.exp(1j * br) * o3d3) # .conjugate()
+    npcar = np.cos(ar)
+    npsar = np.sin(ar)
+    npe1br = np.exp(1j * br)
+    w1 = np.conjugate(npcar * o2d1 + npsar * npe1br * o3d1) # .conjugate()
+    w2 = np.conjugate(npcar * o2d2 + npsar * npe1br * o3d2) # .conjugate()
+    w3 = np.conjugate(npcar * o2d3 + npsar * npe1br * o3d3) # .conjugate()
     
     # find optimum subspace signal
     zopt = w1 * v1_v + w2 * v2_v + w3 * v3_v
